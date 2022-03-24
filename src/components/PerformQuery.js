@@ -189,7 +189,7 @@ function PerformQuery(props) {
           dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage));
           
           console.log(
-            "URLbase: "+ props.serviceName  + encodeURI(url) + " \n \
+            "URLbase: "+ props.serviceName + "WebReport/rest/webreport/search/" + encodeURI(url) + " \n \
             ------------------------------------------------------------------------------------------------------------ \n \
             MonitorsMagnitude Data was recibe successfully!! \n \
             Sampling Period Choosen: " + sampling + " microsegundos \n \

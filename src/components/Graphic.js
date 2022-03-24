@@ -186,40 +186,6 @@ function Graphic() {
 
 
 //----------------------------------------Generate Graphic-----------------------------------------------------
-// const dataTEST = [
-//   {
-//     "time_sample": parseInt("1646092937861277"),
-//     "value": 154
-//   },
-//   {
-//     "time_sample": parseInt("1646092997861249"),
-//     "value": 154
-//   },
-//   {
-//     "time_sample": parseInt("1646093057861307"),
-//     "value": 154
-//   },
-//   {
-//     "time_sample": parseInt("1646093117861181"),
-//     "value": parseFloat("154")
-//   },
-//   {
-//     "time_sample": parseInt("1646093177861310"),
-//     "value": parseFloat("145")
-//   },
-//   {
-//     "time_sample": parseInt("1646093187861310"),
-//     "value": parseFloat("145")
-//   },
-//   {
-//     "time_sample": parseInt("1646093197861310"),
-//     "value": parseFloat("110")
-//   },
-//   {
-//     "time_sample": parseInt("1646093207861310"),
-//     "value": parseFloat("122")
-//   }
-// ]
 
 const generateGraphic = (info, generalOptions, numberFormat, sampling_period) =>{
     /*
@@ -470,7 +436,6 @@ const generateGraphic = (info, generalOptions, numberFormat, sampling_period) =>
            dateFields: ["time_sample"]
          });
          series.data.setAll(info[y].data);
-        // series.data.setAll(dataTEST);
 
      } // --- --- --- --- --- end for 'info.length' --- --- --- --- --- --- ---
 
@@ -632,10 +597,10 @@ const generateGraphic = (info, generalOptions, numberFormat, sampling_period) =>
       {/* The Graphic will be display here  */}
 
       {/*
-       Initial Return State to 'ListSelectedMonitors',
-       the class of 'initialImg' is remove onces when the component 'ListSelectedMonitors' mounts, then When
-       the useEffect is update here it will lose this propertie and the display-none class will be set again by default
-       resulting in that it will never show up a second time
+        Initial Return State to 'ListSelectedMonitors',
+        the class of 'initialImg' is remove onces when the component 'ListSelectedMonitors' mounts, then When
+        the useEffect is update here it will lose this propertie and the display-none class will be set again by default
+        resulting in that it will never show up a second time
        */}
        <InsertChartIcon id="initialImg" className="display-none" />
        {/* -- -- -- */}
