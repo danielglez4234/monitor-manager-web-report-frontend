@@ -1,0 +1,11 @@
+1D:
+[[2]]           -> devuelve el 2
+[[3],[4],[5]]   -> devuelve el 3, 4 y 5
+[[0-4]]         -> devuelve del 0 al 4
+[[0-4],[6-9]]   -> devuelve del 0 al 4 y del 6 al 9
+
+2D:
+[[0,2]]               -> devuelve el 2
+[[0,3],[1,4],[2,5]]   -> devuelve el 3, 4 y 5 del array 0, 1 y 2
+[[0,0-0,4]]           -> devuelve del 0 al 4 del array 0
+[[0,0-0,4],[1,6-2,9]] -> devuelve del 0 al 4 del array 0 y del 6 al 9 desde el array 1 hasta el 2
