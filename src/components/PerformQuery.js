@@ -168,7 +168,7 @@ function PerformQuery(props) {
        */
       let url = constructURL(begin_date, end_date, sampling);
 
-  		let iDisplayLength  = 30000;
+  		let iDisplayLength  = props.urliDisplayLength;
   		let iDisplayStart   = 0;
 
       dispatch(getUrl(url));
