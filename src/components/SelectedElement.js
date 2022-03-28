@@ -338,6 +338,9 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
                     </div>
                   </div>
 
+                {
+                (fnIsMagnitude(monitorData.type)) ? "" :
+
                   <div className="monitor-selected-input-Unit-box">
                     <div>
                       <div className="label-monitor-settings">Unit Conversion:</div>
@@ -351,7 +354,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
                         unitOptions
                       }
 
-                    <div className="label-monitor-settings-pattern">Decimal Pattern:</div>
+                      <div className="label-monitor-settings-pattern">Decimal Pattern:</div>
                       <div>
                         <label className="monitor-limits-label "> Pattern: </label>
                         <LtTooltip
@@ -380,7 +383,9 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
                         defaultValue={defaultPatternOpts}
                         renderInput={(params) => <TextField {...params} />}
                       />
-                  </div>
+                  </div> 
+                  }
+
                         
                 </div>
                 <div className="indexInput-tooltip-contain">

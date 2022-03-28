@@ -25,6 +25,7 @@ import {
   fnIsState,
   fnIsScalar,
   fnIsArray,
+  fnIsMagnitude,
   getCategory
 }
 from './standarFunctions'
@@ -121,26 +122,29 @@ function PerformQuery(props) {
         /*
          * Get Unit & decimalPattern
          */
-        let unitType = $("#Unit" + infoMonitor.id).val();
-        let decimalPattern = $("#Pattern" + infoMonitor.id).val();
-
-        if ((unitType !== "Default" && unitType !== "No Matches") || (decimalPattern !== "Default"))
-        {
-          queryRest += "{"
-          if (unitType !== "Default" && unitType !== "No Matches") 
-          { 
-            queryRest += "unit:" + unitType;
+        if(!fnIsMagnitude(infoMonitor.type)){
+          let unitType = $("#Unit" + infoMonitor.id).val();
+          let decimalPattern = $("#Pattern" + infoMonitor.id).val();
+  
+          if ((unitType !== "Default" && unitType !== "No Matches") || (decimalPattern !== "Default"))
+          {
+            queryRest += "{"
+            if (unitType !== "Default" && unitType !== "No Matches") 
+            { 
+              queryRest += "unit:" + unitType;
+              if (decimalPattern !== "Default")
+              {
+                queryRest += ",";
+              }
+            }
             if (decimalPattern !== "Default")
             {
-              queryRest += ",";
+              queryRest += "decimal:" + decimalPattern; // forcing encode of '#'
             }
+            queryRest += "}"
           }
-          if (decimalPattern !== "Default")
-          {
-            queryRest += "decimal:" + decimalPattern; // forcing encode of '#'
-          }
-          queryRest += "}"
         }
+
 
         if ((i + 1) < monitor.length){
             queryRest += "&";
@@ -373,7 +377,7 @@ function PerformQuery(props) {
                 <MenuItem value={60000000}>1 minute</MenuItem>
                 <MenuItem value={120000000}>2 minutes</MenuItem>
                 <MenuItem value={300000000}>5 minutes</MenuItem>
-                <MenuItem value={300000000}>10 minutes</MenuItem>
+                <MenuItem value={600000000}>10 minutes</MenuItem>
                 <MenuItem value={3600000000}>1 hour</MenuItem>
                 <MenuItem value={7200000000}>2 hours</MenuItem>
                 {/* <MenuItem value={43200000000}>12 hours</MenuItem>
