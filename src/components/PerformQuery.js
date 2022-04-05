@@ -120,8 +120,17 @@ function PerformQuery(props) {
         }
         
         /*
-         * Get Unit & decimalPattern
+         * Get Unit
          */
+        // if(!fnIsMagnitude(infoMonitor.type))
+        // {
+        //   let unitType = $("#Unit" + infoMonitor.id).val()
+        //   if (unitType !== "Default" && unitType !== "No Matches")
+        //   {
+        //     queryRest += "{unit:" + unitType + "}"
+        //   }
+        // }
+
         if(!fnIsMagnitude(infoMonitor.type)){
           let unitType = $("#Unit" + infoMonitor.id).val();
           let decimalPattern = $("#Pattern" + infoMonitor.id).val();
@@ -145,15 +154,25 @@ function PerformQuery(props) {
           }
         }
 
-
-        if ((i + 1) < monitor.length){
-            queryRest += "&";
+        if ((i + 1) < monitor.length)
+        {
+          queryRest += "&";
         }
+        
+      }
+      
+    // let decimalPattern = $("#decimalPattern").val();
+    // if (decimalPattern !== "Default")
+    // {
+    //   queryRest += "&Decimal=" + decimalPattern;
+    // }
 
-    }
-
+  	let iDisplayStart   = 0;
+    let iDisplayLength  = props.urliDisplayLength;
     url = begin_date.replace(/\s{1}/,"@")+".000/"+end_date.replace(/\s{1}/,"@")+".000/"+sampling+"?"+queryRest;
-    console.log("construct url: " + url);
+  	url += "&iDisplayStart=" + iDisplayStart + "&iDisplayLength=" + iDisplayLength;
+
+    console.log("construct url: localhost:8081/Webreport/rest/webreport/seacrh/" + url);
     return url;
   };
 
@@ -171,19 +190,14 @@ function PerformQuery(props) {
        * to prevent it from being displayed on the graph, and then to be able to pass parameters to the function
        */
       let url = constructURL(begin_date, end_date, sampling);
-
-  		let iDisplayLength  = props.urliDisplayLength;
-  		let iDisplayStart   = 0;
-
       dispatch(getUrl(url));
-  		url += "&iDisplayStart=" + iDisplayStart + "&iDisplayLength=" + iDisplayLength;
- 
+
 
       Promise.resolve( getDataFromServer({url}) )
       .then(res => { 
           const totalArraysRecive  = res.samples.length;
           const totalRecords       = res.iTotalRecords;
-          const totalPerPage       = iDisplayLength
+          const totalPerPage       = props.urliDisplayLength
           if (totalArraysRecive === 0) 
           {
             const noData = res.samples // we do this to simplify it to just one array field and thus avoid modifying the sample reducer
