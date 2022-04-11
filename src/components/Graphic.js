@@ -1,3 +1,8 @@
+//  FIXME: 
+//  los monitors enumerados siempre llegan de primeros en la tabla columns
+//  hay que reordenar de alguna manera el array de mis monitores selecionados
+//  para alinear las opciones selecionadas
+
 import React, { useEffect, useRef }  from 'react';
 
 import { useSelector }    from 'react-redux';
@@ -95,13 +100,13 @@ function Graphic() {
           const dataSamples     = getResponse.responseData.samples;
           const dataColumns     = getResponse.responseData.columns;
           const sampling_period = getResponse.sampling_period;
-          let valueDisplayAxisFormat;
+          // let valueDisplayAxisFormat;
 
 
           let b = 0;
           let prevMonitorName = dataColumns[2].sTitle.split("[");
 
-          for (var a = 2; a < dataColumns.length; a++)
+          for (let a = 2; a < dataColumns.length; a++)
           {
             let dateAndValues = [];
             let handleValueSample;
@@ -109,12 +114,13 @@ function Graphic() {
              * compare if the selected monitor is an array. if it is the selected options will be set the same as all of them
              */
             let monitorName = dataColumns[a].sTitle.split("[");
-            if (monitorName[0] !== prevMonitorName[0]){
+            if (monitorName[0] !== prevMonitorName[0])
+            {
               b = b + 1;
               prevMonitorName = monitorName;
             }
 
-            for (var n = 0; n < dataSamples.length; n++)
+            for (let n = 0; n < dataSamples.length; n++)
             {
               let epochDateInMilliSeconds = dataSamples[n][1];
               epochDateInMilliSeconds = epochDateInMilliSeconds.substring(0, epochDateInMilliSeconds.length - 3);
@@ -133,7 +139,7 @@ function Graphic() {
                 if (handleValueSample > graphicOptions.valueMIN[b] && handleValueSample < graphicOptions.valueMAX[b])
                 {
                   dateAndValues.push(setSampleForGraphic(epochDateInMilliSeconds, handleValueSample, graphicOptions.logarithm[b]));
-                  valueDisplayAxisFormat = (Number.isInteger(handleValueSample)) ? "#a" : "#e";
+                  // valueDisplayAxisFormat = (Number.isInteger(handleValueSample)) ? "#a" : "#e";
                 }
               }
             }
@@ -143,10 +149,11 @@ function Graphic() {
               sTitle = sTitle.split("/"); sTitle = sTitle[sTitle.length - 1]; 
             };
             let position = (dataColumns[a].position === -1) ? " " : " /" + dataColumns[a].position;
-            let monitorinfo = { id: a,
+            let monitorinfo = {
                                 name: sTitle + position,
                                 data: dateAndValues,
                                 sampling_period: dataColumns[a].storagePeriod,
+                                unit: graphicOptions.unitType[b],
                                 valueMIN: graphicOptions.valueMIN[b],
                                 valueMAX: graphicOptions.valueMAX[b],
                                 positionAxisY: graphicOptions.positionAxisY[b],
@@ -161,15 +168,15 @@ function Graphic() {
                                       curved: graphicOptions.curved[b],
                                       dotted: graphicOptions.dotted[b]
                                     },
-                                unit: graphicOptions.unitType[b]
                               };
             info.push(monitorinfo);
           }
-          generateGraphic(info, graphicOptions, valueDisplayAxisFormat, sampling_period);
+          generateGraphic(info, graphicOptions, sampling_period);
           $('.no-data-error-message').addClass('display-none');
         }
-        else{
-          $('.no-data-error-message').removeClass('display-none'); // No Data Recibe
+        else
+        {
+          $('.no-data-error-message').removeClass('display-none'); // Show No Data Recibe
         }
       }
     //}
@@ -183,11 +190,9 @@ function Graphic() {
 
 
 
-
-
 //----------------------------------------Generate Graphic-----------------------------------------------------
 
-const generateGraphic = (info, generalOptions, numberFormat, sampling_period) =>{
+const generateGraphic = (info, generalOptions, sampling_period) =>{
     /*
      * Initialize variables for chart
      */
@@ -195,7 +200,7 @@ const generateGraphic = (info, generalOptions, numberFormat, sampling_period) =>
     let xRenderer;
     let dateAxis;
     let yRenderer;
-    let valueAxis
+    let valueAxis;
     let series;
     let legend;
     let scrollbarX;
@@ -206,8 +211,10 @@ const generateGraphic = (info, generalOptions, numberFormat, sampling_period) =>
     /*
      * Set Root format number for the values recived based if the number is integrer or not
      */
+    let ifFormat = (generalOptions.general.numberFormat !== "") ? generalOptions.general.numberFormat : "#";
+    const numberFormat = (generalOptions.general.scientificNotation) ? (ifFormat + "e") : ifFormat;
     root.numberFormatter.setAll({
-      numberFormat: "#e",
+      numberFormat: numberFormat,
       // smallNumberThreshold: 0.001
       // bigNumberPrefixes: [
       //   { "number": 1e+4 }
@@ -288,7 +295,6 @@ const generateGraphic = (info, generalOptions, numberFormat, sampling_period) =>
     {
       millisecondBaseCount = sampling_period / 1000;
     }
-
     /*
      * Set the value representation format and set the count interval for data 
      */
@@ -338,7 +344,7 @@ const generateGraphic = (info, generalOptions, numberFormat, sampling_period) =>
        let setTooltip = am5.Tooltip.new(root, {
          exportable: false,
          pointerOrientation: "horizontal",
-         labelText: "[bold]{name}[/]\n{valueX.formatDate('yyyy-MM-dd HH:mm:ss.SSS')}\n[bold]{valueY}"
+         labelText:  `[bold]{name}[/]\n{valueX.formatDate('yyyy-MM-dd HH:mm:ss.SSS')}\n[bold]{valueY}\n[/]Unit: ${info.unit}`
        });
        if (generalOptions.general.tooltip) { properties["tooltip"] = setTooltip };
        if (info.graphic.curved) { properties["curveFactory"] = d3.curveBumpX };
@@ -436,6 +442,7 @@ const generateGraphic = (info, generalOptions, numberFormat, sampling_period) =>
            dateFields: ["time_sample"]
          });
          series.data.setAll(info[y].data);
+        //  series.data.setAll(dataTest);
 
      } // --- --- --- --- --- end for 'info.length' --- --- --- --- --- --- ---
 
@@ -450,7 +457,7 @@ const generateGraphic = (info, generalOptions, numberFormat, sampling_period) =>
         
       //   range.strokes.template.setAll({
       //     stroke: color,
-      //     strokeWidth: 3
+      //     strokeWidth: 2
       //   });
         
       //   rangeDataItem.get("axisFill").setAll({
@@ -459,7 +466,8 @@ const generateGraphic = (info, generalOptions, numberFormat, sampling_period) =>
       //     visible: true
       //   });
       // }
-      // createRange(series, -60.000456, -60.000462, am5.color(0xff621f));
+      // createRange(series, 30, 20, am5.color(0xf41a1a));
+      // createRange(series, 10, 14, am5.color(0xf41a1a));
 
 
    /*
@@ -603,7 +611,7 @@ const generateGraphic = (info, generalOptions, numberFormat, sampling_period) =>
         resulting in that it will never show up a second time
        */}
        <InsertChartIcon id="initialImg" className="display-none" />
-       {/* -- -- -- */}
+       {/* --- --- --- */}
 
        {/* If there is no data the dislpay-none class of data error will be remove */}
        <div className="no-data-error-message display-none">

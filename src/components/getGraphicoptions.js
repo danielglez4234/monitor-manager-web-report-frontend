@@ -1,23 +1,30 @@
 import * as $  from 'jquery';
 
+
+// TODO: refactor into two functions monitorSettings and graphicSettings 
+// probably use a call inside de monitorSetting and made a parent function in here that call de other two 
+// FIXME: Graphic.js will now call both functions
+
+
 /*
  * Get all options from the monitors selected
  */
 function getGraphicoptions(){
   let selectMonitorName     = [];
   let selectGraphicType     = [];
-  let selectUnitType        = [];
   let selectStrokeWidth     = [];
   let selectCanvas          = [];
   let selectColor           = [];
-
+  
   let selectCurved          = [];
   let selectFilled          = [];
   let selectDotted          = [];
   let selectLogarithm       = [];
-
+  
   let selectValueMIN        = [];
   let selectValueMAX        = [];
+  
+  let selectUnitType        = [];
 
   let selectPositionAxisY   = [];
   let selectPositionAxisX   = [];
@@ -28,6 +35,9 @@ function getGraphicoptions(){
   const selectLegends           = $(".legends").is(":checked");
   const selectLegendContainer   = $("#BottonCont").is(":checked");
   const selectLegendtrunkedName = $(".legendsMonitorName").is(":checked");
+
+  const selectNumberFormat    = $(".numberFormat").val()
+  const selectSciNotation     = $(".scientific-notation").is(":checked");
 
   const selectTooltip         = $(".tooltip").is(":checked");
   const selectGrid            = $(".grid").is(":checked");
@@ -47,37 +57,47 @@ function getGraphicoptions(){
 
 
   for (let i = 0; i < $(".monitor-name").length; i++) {
-    selectMonitorName.push($(".monitor-name").eq(i).text());
-    selectUnitType.push($(".unit-type option:selected").eq(i).text());
+    let name        = $(".monitor-name").eq(i).text();
+    let graphType   = $(".grafic-type .MuiInputBase-input").eq(i).val();
+    let unit        = $(".unit-type .MuiInputBase-input").eq(i).val();;
+    let unitDefult  = $(".default-unit").eq(i).text();
+    let stroke      = $(".stroke-width .MuiInputBase-input").eq(i).val();
+    let canvas      = $(".canvas-width .MuiInputBase-input").eq(i).val();
+    let posY        = $(".position-axis-y option:selected").eq(i).text();
+    let posX        = $(".position-axis-x option:selected").eq(i).text();
+    let curved      = $(".curved").eq(i).is(":checked");
+    let filled      = $(".filled").eq(i).is(":checked");
+    let dotted      = $(".dotted").eq(i).is(":checked");
+    let log_        = $(".logarithm").eq(i).is(":checked");
+    let colorCheck  = $(".checkbox-color").eq(i).is(":checked");
+    let color       = $(".color-line").eq(i).val();
+    let min         = $(".yaxisMin").eq(i).val();
+    let max         = $(".yaxisMax").eq(i).val();
 
-    // selectGraphicType.push($(".grafic-type option:selected").eq(i).text());
-    selectGraphicType.push($(".grafic-type .MuiInputBase-input").eq(i).val());
+    selectMonitorName.push(name);
+    
+    (unit === "Default") ?  selectUnitType.push(unitDefult) :
+    (unit === undefined) ? selectUnitType.push("None") : selectUnitType.push(unit);
 
-    // selectStrokeWidth.push($(".stroke-width").eq(i).val());
-    selectStrokeWidth.push($(".stroke-width .MuiInputBase-input").eq(i).val());
+    selectGraphicType.push(graphType)
+    selectStrokeWidth.push(stroke);
+    selectCanvas.push(canvas);
+    selectPositionAxisY.push(posY);
+    selectPositionAxisX.push(posX);
 
-    // selectCanvas.push($(".canvas-width").eq(i).val());
-    selectCanvas.push($(".canvas-width .MuiInputBase-input").eq(i).val());
-
-    selectPositionAxisY.push($(".position-axis-y option:selected").eq(i).text());
-    selectPositionAxisX.push($(".position-axis-x option:selected").eq(i).text());
-
-    selectCurved.push($(".curved").eq(i).is(":checked"));
-    selectFilled.push($(".filled").eq(i).is(":checked"));
-    selectDotted.push($(".dotted").eq(i).is(":checked"));
-    selectLogarithm.push($(".logarithm").eq(i).is(":checked"));
+    selectCurved.push(curved);
+    selectFilled.push(filled);
+    selectDotted.push(dotted);
+    selectLogarithm.push(log_);
 
     // if the checkbox color is checked gets the color, if not is set o false
-    ($(".checkbox-color").eq(i).is(":checked")) ? selectColor.push($(".color-line").eq(i).val()) : selectColor.push(false);
+    (colorCheck) ? selectColor.push(color) : selectColor.push(false);
+
     // the limit is set to an absurd range when not specified to avoid iterations as much as possible and increase performance
     // we use the "value % 1 !== 0" comprobation because you can use letters and decimals to provide the range => 3e-4, -0.00003 or 3e+5, 6, 10
-    let min = $(".yaxisMin").eq(i).val();
-    // (min === "") ? selectValueMIN.push(-Infinity) :
     (min === "") ? selectValueMIN.push(-9e+99) :
     (min % 1 !== 0) ? selectValueMIN.push(parseFloat(min)) : selectValueMIN.push(parseInt(min));
 
-    let max = $(".yaxisMax").eq(i).val();
-    // (max === "") ? selectValueMAX.push(Infinity) :
     (max === "") ? selectValueMAX.push(9e+99) :
     (max % 1 !== 0) ? selectValueMAX.push(parseFloat(max)) : selectValueMAX.push(parseInt(max));
   }
@@ -109,6 +129,8 @@ function getGraphicoptions(){
       legends:            selectLegends,
       legendContainerPos: selectLegendContainer,
       legendTrunkName:    selectLegendtrunkedName,
+      numberFormat:       selectNumberFormat,
+      scientificNotation: selectSciNotation,
       multiaxisPOS:       selectMultiaxisPOS,
       howManyYAxis:       selectHowManyYAxis,
       howManyXAxis:       selectHowManyXAxis,

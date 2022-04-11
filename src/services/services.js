@@ -25,7 +25,7 @@ export const getComponents = () => {
  * calling /ccomponents/<componentName> to get all monitors from a component
  */
 export const getMonitorsFromComponent = ({componentName}) => {
-    console.log(componentName);
+    // console.log(componentName);
     return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/webreport/components/" + componentName, {header: httpHeaderOptions})
         .then(res => {
             const enumList  = res.data.magnitudeDescriptions;

@@ -1,0 +1,33 @@
+TODO: 
+    1.- Cambiar el botom de mostrar magnitude references a una posicion absoluta encima de las configuraciones generales
+    2.- comentar el input de formato de decimales en los monitores seleccionados 
+
+
+
+
+
+
+
+
+          if(!fnIsMagnitude(infoMonitor.type)){
+          let unitType = $("#Unit" + infoMonitor.id).val();
+          let prefixType = $("#Prefix" + infoMonitor.id).val()
+  
+          if ((unitType !== "Default" && unitType !== "No Matches") || (prefixType !== "None"))
+          {
+            queryRest += "{"
+            if (unitType !== "Default" && unitType !== "No Matches") 
+            { 
+              queryRest += "unit:" + unitType;
+              if (prefixType !== "None")
+              {
+                queryRest += ",";
+              }
+            }
+            if (prefixType !== "None")
+            {
+              queryRest += "prefix:" + prefixType; // forcing encode of '#'
+            }
+            queryRest += "}"
+          }
+        }

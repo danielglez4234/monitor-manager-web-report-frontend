@@ -1,5 +1,5 @@
 // --- React dependencies
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // --- Dependencies
 import * as $  from 'jquery';
@@ -27,6 +27,7 @@ import {
   Button,
   Pagination,
   LinearProgress,
+  Popover
 } from '@mui/material';
 import { LtTooltip } from './uiStyles';
 
@@ -40,6 +41,7 @@ import DetailsIcon                  from '@mui/icons-material/Details';
 import ArrowDropUpSharpIcon         from '@mui/icons-material/ArrowDropUpSharp';
 import ExpandMoreIcon               from '@mui/icons-material/ExpandMore';
 import KeyboardDoubleArrowDownIcon  from '@mui/icons-material/KeyboardDoubleArrowDown';
+import ArrowDropUpIcon              from '@mui/icons-material/ArrowDropUp';
 
 
 // --- React Components
@@ -48,7 +50,8 @@ import Graphic              from './Graphic';
 import SelectedElement      from './SelectedElement';
 import ButtonGeneralOptions from './ButtonGeneralOptions';
 import PopUpMessage         from './handleErrors/PopUpMessage';
-import RangeThresholdsOptions from './RangeThresholdsOptions';
+import ButtonMagnitudeReference from './ButtonMagnitudeReference'
+// import RangeThresholdsOptions from './RangeThresholdsOptions';
 
 
 
@@ -87,6 +90,13 @@ function ListSelectedMonitor(props) {
 
   const [infoSamplesByPage, setInfoSamplesByPage]   = useState(0);
   const [infoTotalSamples, setInfoTotalSamples]     = useState(0);
+
+  // test pop over info 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const openPopoverGraphInfo = (event) => setAnchorEl(event.currentTarget);
+  const closePopoverGraphInfo = () => setAnchorEl(null);
+  const open = Boolean(anchorEl);
+  const popOverGraphID = open ? 'simple-popover' : undefined;
   
 
   /*
@@ -130,7 +140,7 @@ function ListSelectedMonitor(props) {
           // set pagination
           setTotalPages(calculateTotalPages);
           setTotalPerPages(totalResponseData.totalPerPage);
-          setPage(1); // -- set default page
+          setPage(1); // -> set default page
           setDisabled(false);
             if (calculateTotalPages <= 1)
             {
@@ -158,10 +168,10 @@ function ListSelectedMonitor(props) {
       setStartloadingGraphic(loadGraphic);
       if(loadGraphic){
         setDisabled(true);
-        $(".selected-monitors-section").prepend(
-          "<div class='block-monitor-selected-when-searching'> \
-            <img class='bolck-svg-monitors' alt='...' src='"+ blockMonitors +"'/> \
-          </div>")
+        // $(".selected-monitors-section").prepend(
+        //   "<div class='block-monitor-selected-when-searching'> \
+        //     <img class='bolck-svg-monitors' alt='...' src='"+ blockMonitors +"'/> \
+        //   </div>")
       }
   }, [loadGraphic]);
 
@@ -316,14 +326,14 @@ function ListSelectedMonitor(props) {
           const sampling_period    = getResponse.sampling_period;
           if (totalArraysRecive === 0) 
           {
-            const prevPage = page - 1;
-            setTotalPages(prevPage);
-            setPage(prevPage);
+            // const prevPage = page - 1;
+            // setTotalPages(prevPage);
+            // setPage(prevPage);
             handleMessage({
-              message: 'No more data was collected, this may happen if the monitor goes into FAULT state.', 
+              message: 'No data was collected on this page, this may happen if the monitor goes into FAULT state.', 
               type: 'default', 
               persist: true,
-              preventDuplicate: true
+              preventDuplicate: false
             })
           }
           else
@@ -350,6 +360,30 @@ function ListSelectedMonitor(props) {
         })
     }
   },[pagination]);
+
+
+  /*
+   * Check if exists magnitudes and return button component with values references
+   */
+  const checkIfExistsMagnitudes = (data) => {
+    let titles = []
+    let references = []
+    for (let a = 2; a < data.length; a++) 
+    {
+      if ((typeof data[a].stateOrMagnitudeValuesBind !== "undefined") && (data[a].stateOrMagnitudeValuesBind !== null))
+      {
+        titles.push(data[a].sTitle)
+        references.push(data[a].stateOrMagnitudeValuesBind)
+      }
+    }
+    if (references.length > 0) 
+    {
+      return <ButtonMagnitudeReference 
+                magnitudeTitles={titles}
+                magnitudeReferences={references}
+              />;
+    }
+  }
 
 
     return(
@@ -458,12 +492,20 @@ function ListSelectedMonitor(props) {
                   <ButtonGeneralOptions />
                 }
                 {
+                  (graphicStillLoading && getResponse.length !== 0) ?
+                    (getResponse.responseData.length !== 0 && getResponse.responseData.samples.length > 0) ?
+                      checkIfExistsMagnitudes(getResponse.responseData.columns)
+                    : ""
+                  : ""
+                }
+                {
                   // <RangeThresholdsOptions />
                 }
               </div>
               {
                 (startloadingGraphic) ? "" :
                 (totalResponseData.length === 0) ? "" :
+                  <>
                   <div className="displayTotal-responseData">
                     {
                       (totalPages === 0 || totalPages === 1) ? "" :
@@ -475,29 +517,58 @@ function ListSelectedMonitor(props) {
                             disabled={disabled}
                             page={page}
                             onChange={handleChange}
-                            // showFirstButton
-                            // showLastButton
+                            showFirstButton
+                            showLastButton
                             size="small"
                             shape="rounded"
-                            siblingCount={0}
-                            boundaryCount={0}
+                            siblingCount={1}
+                            boundaryCount={1}
                             defaultValue={1}
                           />
                         </div>
-                        <p className="total-pages">
+                        {/* <p className="total-pages">
                           Pages:  <span> { totalPages } </span>
-                        </p>
+                        </p> */}
                       </>
                     }
-                    <div className="totalRecord-box">
-                      <p>
-                        Displayed:  <span> { infoSamplesByPage } </span>
-                      </p>
-                      <p>
-                        TotalEstimated: <span> { infoTotalSamples } </span>
-                      </p>
-                    </div>
                   </div>
+                    <div className="totalRecord-box">
+                      <Button 
+                        aria-describedby={popOverGraphID} 
+                        variant="contained" 
+                        onClick={openPopoverGraphInfo} 
+                        className="totalRecord-button" 
+                        endIcon={<ArrowDropUpIcon />}
+                      >
+                          Displayed:   <span className="totalRecord-button-data">  { infoSamplesByPage.toLocaleString() } </span>
+                      </Button>
+                        <Popover 
+                          id={popOverGraphID}
+                          className="totalRecord-button-Popover"
+                          open={open}
+                          anchorEl={anchorEl}
+                          onClose={closePopoverGraphInfo}
+                          anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'center',
+                          }}
+                          transformOrigin={{
+                            vertical: 'center',
+                            horizontal: 'center',
+                          }}
+                        >
+                          <p className="totalRecord-button-Popover-box">
+                            <span className="totalRecord-button-Popover-label">Displayed:</span>  <span className="totalRecord-button-Popover-data"> { infoSamplesByPage.toLocaleString() } </span>
+                          </p>
+                          <p className="totalRecord-button-Popover-box">
+                            <span className="totalRecord-button-Popover-label">Instance Of Time:</span>  <span className="totalRecord-button-Popover-data"> { totalResponseData.totalArrays.toLocaleString() } </span>
+                          </p>
+                          <p className="totalRecord-button-Popover-box">
+                            <span className="totalRecord-button-Popover-label">Total Estimated:</span> <span className="totalRecord-button-Popover-data"> { infoTotalSamples.toLocaleString() } </span>
+                          </p>
+                        </Popover>
+                    </div>
+                  </>
               }
               <div className="grafic-option-buttons-setbox">
                 <Button 

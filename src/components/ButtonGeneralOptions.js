@@ -22,6 +22,7 @@ import AutoGraphIcon             from '@mui/icons-material/AutoGraph';
 import AnimationIcon             from '@mui/icons-material/Animation';
 import StackedBarChartIcon       from '@mui/icons-material/StackedBarChart';
 import SelectAllIcon             from '@mui/icons-material/SelectAll';
+import Looks3SharpIcon           from '@mui/icons-material/Looks3Sharp';
 
 
 
@@ -207,7 +208,7 @@ function ButtonGeneralOptions() {
                   <BallotIcon />
                 </div>
                 <div className="flex-row input-grahOpt-margin">
-                  <input id="BottonCont" type="radio" defaultChecked value="bottom" name="legendCont" className="legend-container legends-bottom" />
+                  <input defaultChecked id="BottonCont" type="radio" value="bottom" name="legendCont" className="legend-container legends-bottom" />
                   <label htmlFor="BottonCont" className="label-cont-inputchecbox graphOpt-label-radio graphOpt-label-cont-inputcheckbox">
                     <p className="label-legend-radio-text">Bottom container</p>
                     <MoveDownIcon />
@@ -223,6 +224,27 @@ function ButtonGeneralOptions() {
 
               </div>
 
+
+              <div className="graphOpt-flex-column">
+                <div className="graphOpt-title-Limitsection graphOpt-label-headers">
+                  Number Format:
+                </div>
+                <div className="flex-row graphOpt-scitific-notation">
+                  <label className="label-cont-inputchecbox graphOpt-label-cont-inputcheckbox">
+                    Scientific Notation
+                    <input defaultChecked type="checkbox"name="grahpTooltip"  className="checkboxMo graphCheckbox scientific-notation" />
+                    <span className="checkmark graphOpt-checkmark"></span>
+                  </label>
+                  <Looks3SharpIcon className="rotate180"/>
+                </div>
+                <div className="graphOpt-listOption-limits">
+                  <label className="graphOpt-listOption-limits-Labels">
+                    Format
+                    <input id="decimalPattern" type="text" placeholder="00.##" className="graphOpt-inputLimits-checbox numberFormat" />
+                  </label>
+                </div>
+              </div>
+              
           </div>
 
           <div className="graphOpt-action-buttons">

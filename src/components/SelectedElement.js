@@ -1,5 +1,6 @@
 // --- Dependecies
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import * as $ from 'jquery';
 import {
   fnIsArray,
@@ -32,6 +33,18 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 
   const onChangeMax = (e) => {setMax(e.target.value)}
   const onChangeMin = (e) => {setMin(e.target.value)}
+
+  const loadWhileGetData = useSelector(state => state.loadingGraphic);
+  const [disableWhileSearching, setDisableWhileSearching] = useState(false);
+
+  /*
+   * 'loadWhileGetData' will be set to true when the data has arrive, and then buttons will be active again
+   */
+  useEffect(() => {
+      setDisableWhileSearching(loadWhileGetData)
+  }, [loadWhileGetData]);
+
+
 
  /*
   * Set oprions 'select' inputs 
@@ -102,7 +115,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
   */
   const unitOptions = <GetUnitSelecttype 
                         id={id} 
-                        unit={(monitorData.unit=== undefined) ? "None" : monitorData.unit} 
+                        unit={(monitorData.unit === undefined) ? "None" : monitorData.unit} 
                         applyChangesWarning={ applyChangesWarning }
                       />; 
 
@@ -163,7 +176,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
                   </>
                   :
                   <>              
-                    <span>unit: { monitorData.unit } - </span>
+                    <span>unit: <span className="default-unit">{ monitorData.unit }</span> - </span>
                   </>
               }
               <span>type: { monitorData.type } - </span>
@@ -175,9 +188,15 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
         <div className="align-content-flex-row">
 
         <div className="monitor-seleted-options-icons">
-          <div onClick={() => { onRemove(id) }}  className="monitor-seleted-closeIcon">
-            <CloseIcon />
-          </div>
+            <IconButton 
+              className="monitor-seleted-closeIcon"
+              aria-label="upload picture" 
+              component="span" 
+              onClick={() => { onRemove(id) }} 
+              disabled={disableWhileSearching} 
+            >
+              <CloseIcon  />
+            </IconButton>
           {
             icontype
           }

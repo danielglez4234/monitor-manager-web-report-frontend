@@ -69,14 +69,11 @@ function PerformQuery(props) {
     }
   }, [loadWhileGetData]);
 
-
-
   /*
    * Build url with monitors and place index if necessary
    */
   const constructURL = (begin_date, end_date, sampling) =>{
-    let queryRest ="";
-    let url;
+    let queryRest = "";
     for (let i = 0; i < monitor.length; i++)
     {
         const infoMonitor = monitor[i].monitorData;
@@ -120,35 +117,18 @@ function PerformQuery(props) {
         }
         
         /*
-         * Get Unit
+         * Get Unit and Prefix
          */
-        // if(!fnIsMagnitude(infoMonitor.type))
-        // {
-        //   let unitType = $("#Unit" + infoMonitor.id).val()
-        //   if (unitType !== "Default" && unitType !== "No Matches")
-        //   {
-        //     queryRest += "{unit:" + unitType + "}"
-        //   }
-        // }
-
         if(!fnIsMagnitude(infoMonitor.type)){
           let unitType = $("#Unit" + infoMonitor.id).val();
-          let decimalPattern = $("#Pattern" + infoMonitor.id).val();
+          let prefixType = $("#Prefix" + infoMonitor.id).val()
   
-          if ((unitType !== "Default" && unitType !== "No Matches") || (decimalPattern !== "Default"))
+          if (unitType !== "Default" && unitType !== "No Matches")
           {
-            queryRest += "{"
-            if (unitType !== "Default" && unitType !== "No Matches") 
-            { 
-              queryRest += "unit:" + unitType;
-              if (decimalPattern !== "Default")
-              {
-                queryRest += ",";
-              }
-            }
-            if (decimalPattern !== "Default")
+            queryRest += "{unit:" + unitType;
+            if (prefixType !== "None")
             {
-              queryRest += "decimal:" + decimalPattern; // forcing encode of '#'
+              queryRest += ",prefix:" + prefixType;
             }
             queryRest += "}"
           }
@@ -161,18 +141,18 @@ function PerformQuery(props) {
         
       }
       
-    // let decimalPattern = $("#decimalPattern").val();
-    // if (decimalPattern !== "Default")
-    // {
-    //   queryRest += "&Decimal=" + decimalPattern;
-    // }
+    let decimalPattern = $(".numberFormat").val();
+    if (decimalPattern !== "")
+    {
+      queryRest += "&Decimal=" + decimalPattern;
+    }
 
   	let iDisplayStart   = 0;
     let iDisplayLength  = props.urliDisplayLength;
-    url = begin_date.replace(/\s{1}/,"@")+".000/"+end_date.replace(/\s{1}/,"@")+".000/"+sampling+"?"+queryRest;
+    let url = begin_date.replace(/\s{1}/,"@")+".000/"+end_date.replace(/\s{1}/,"@")+".000/"+sampling+"?"+queryRest;
   	url += "&iDisplayStart=" + iDisplayStart + "&iDisplayLength=" + iDisplayLength;
 
-    console.log("construct url: localhost:8081/Webreport/rest/webreport/seacrh/" + url);
+    console.log(`URL => ${window.location.href.replace('3006', '8080')}/rest/webreport/search/${encodeURI(url).replace(/#/g,'%23')}`);
     return url;
   };
 
@@ -196,29 +176,28 @@ function PerformQuery(props) {
       Promise.resolve( getDataFromServer({url}) )
       .then(res => { 
           const totalArraysRecive  = res.samples.length;
-          const totalRecords       = res.iTotalRecords;
+          const totalRecords       = res.iTotalSamples;
           const totalPerPage       = props.urliDisplayLength
           if (totalArraysRecive === 0) 
           {
-            const noData = res.samples // we do this to simplify it to just one array field and thus avoid modifying the sample reducer
-            dispatch(setSamples(noData)); // noData ---> []
+            const noData = res.samples    // we do this to simplify it to just one array field and thus avoid modifying the sample reducer
+            dispatch(setSamples(noData)); // noData -> []
           }
           dispatch(setSamples(res, sampling));
           dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage));
           
           console.log(
-            "URLbase: "+ props.serviceName + "WebReport/rest/webreport/search/" + encodeURI(url) + " \n \
-            ------------------------------------------------------------------------------------------------------------ \n \
+            "\n \
             MonitorsMagnitude Data was recibe successfully!! \n \
             Sampling Period Choosen: " + sampling + " microsegundos \n \
             Arrays Recived: " + totalArraysRecive + " \n \
             total Records: " + totalRecords + " \n \
-            ------------------------------------------------------------------------------------------------------------"
+            ----------------------------------------------------------------"
           );
         })
         .catch(error => {
           handleMessage({ 
-            message: 'Error: ' + error.response.data + " - Code " + error.response.status,
+            message: 'Error: ' + toString(error.response.data) + " - Code " + error.response.status,
             type: 'error',
             persist: true,
             preventDuplicate: false

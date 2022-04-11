@@ -43,6 +43,7 @@ function DownloadEmailData(props){
   /*
    * Disabled the button when the search is performing
    */
+  // TODO: preguntar a josué si ve conviente quitar esta funcionalidad
   useEffect(() => {
     if (ifSearching) {
       setActiveDisabled(true);
