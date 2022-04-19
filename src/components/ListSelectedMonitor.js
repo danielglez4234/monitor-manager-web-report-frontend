@@ -13,9 +13,11 @@ import {
 import {
   menuHandleSelectedMonitors,
   reloadGrafic,
+  loadGraphic,
   setloadingButton,
   setActualPage,
-  setSamples
+  setSamples,
+  getUrl
 } from '../actions';
 
 import loadingSls    from '../img/loadingSls.svg';
@@ -68,7 +70,7 @@ function ListSelectedMonitor(props) {
   const totalResponseData = useSelector(state => state.totalResponseData);
 
   const graphicStillLoading = useSelector(state => state.loadingButton);
-  const loadGraphic         = useSelector(state => state.loadingGraphic);
+  const loadingGraphic      = useSelector(state => state.loadingGraphic);
 
   // pagination
   let url            = useSelector(state => state.url);
@@ -79,6 +81,7 @@ function ListSelectedMonitor(props) {
   const [elements, setSelectedElements] = useState([]);
   const [onSelect, setOnSelect]         = useState(true);
   const [disabled, setDisabled]         = useState(true);
+  // const [disableWhileSearching, setDisableWhileSearching] = useState(false);
 
   const [startloadingGraphic, setStartloadingGraphic]   = useState(false);
 
@@ -165,15 +168,16 @@ function ListSelectedMonitor(props) {
    * Show the loading icon for graphic when the loadingGrahic state changes
    */
   useEffect(() => {
-      setStartloadingGraphic(loadGraphic);
-      if(loadGraphic){
+      setStartloadingGraphic(loadingGraphic);
+      // setDisableWhileSearching(loadingGraphic)
+      if(loadingGraphic){
         setDisabled(true);
         // $(".selected-monitors-section").prepend(
         //   "<div class='block-monitor-selected-when-searching'> \
         //     <img class='bolck-svg-monitors' alt='...' src='"+ blockMonitors +"'/> \
         //   </div>")
       }
-  }, [loadGraphic]);
+  }, [loadingGraphic]);
 
 
   /*
@@ -196,7 +200,7 @@ function ListSelectedMonitor(props) {
       });
 
       // if they match disable is set to false
-      if (!loadGraphic){ // if the graphic is loading dont compare
+      if (!loadingGraphic){ // if the graphic is loading dont compare
         setDisabled(!comparation);
       }
     }
@@ -247,6 +251,14 @@ function ListSelectedMonitor(props) {
     $(".monitor-selected-select option[value='1']").attr('selected', true);
     $(".input-limits-grafic-options").val('');
   }
+
+   /*
+    * Handle graphic Info OPEN popover
+    */
+    const handleClickOpenInfo = () => {
+      $('.totalRecord-button-close_rangeZone').toggleClass('display-none');
+      $('.totalRecord-button-Popover ').toggleClass('display-none');
+    };
 
   /*
    * Change color when checkbox is disabled 
@@ -304,6 +316,7 @@ function ListSelectedMonitor(props) {
    */
   useEffect(()=>{
       if (getResponse.length !== 0 && pagination.active ) {
+        dispatch(loadGraphic(true));
 
         let iDisplayLength = pagination.displayLength
         let actualPage     = pagination.actualPage;
@@ -319,6 +332,7 @@ function ListSelectedMonitor(props) {
         url = url[0];
 
         console.log("url: " + props.serviceName + url);
+        dispatch(getUrl(url));
 
         Promise.resolve( getDataFromServer({url}) )
         .then(res => {
@@ -354,6 +368,7 @@ function ListSelectedMonitor(props) {
         })
         .finally(() => {
           dispatch(setloadingButton(true));
+          dispatch(loadGraphic(false));
           setLoadingPage(false);
           setDisabled(false);
           $(".block-monitor-selected-when-searching").remove(); // unlock monitor selected section
@@ -441,6 +456,7 @@ function ListSelectedMonitor(props) {
                           menuHandle    = { menuHandle }
                           diActivateReload = { diActivateReload }
                           // onRemove      = { onRemove }
+                          // disableWhileSearching = { disableWhileSearching }
                         />
                       )
                    }
@@ -503,7 +519,7 @@ function ListSelectedMonitor(props) {
                 }
               </div>
               {
-                (startloadingGraphic) ? "" :
+                (startloadingGraphic && pagination?.active === false) ? "" :
                 (totalResponseData.length === 0) ? "" :
                   <>
                   <div className="displayTotal-responseData">
@@ -532,41 +548,31 @@ function ListSelectedMonitor(props) {
                       </>
                     }
                   </div>
+                    <div className="totalRecord-button-close_rangeZone display-none" onClick={handleClickOpenInfo}></div>
                     <div className="totalRecord-box">
                       <Button 
                         aria-describedby={popOverGraphID} 
                         variant="contained" 
-                        onClick={openPopoverGraphInfo} 
+                        onClick={handleClickOpenInfo} 
                         className="totalRecord-button" 
                         endIcon={<ArrowDropUpIcon />}
                       >
-                          Displayed:   <span className="totalRecord-button-data">  { infoSamplesByPage.toLocaleString() } </span>
+                          Displayed:  <span className="totalRecord-button-data"> {infoSamplesByPage.toLocaleString()} </span>
                       </Button>
-                        <Popover 
-                          id={popOverGraphID}
-                          className="totalRecord-button-Popover"
-                          open={open}
-                          anchorEl={anchorEl}
-                          onClose={closePopoverGraphInfo}
-                          anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'center',
-                          }}
-                          transformOrigin={{
-                            vertical: 'center',
-                            horizontal: 'center',
-                          }}
-                        >
+                        <div className="totalRecord-button-Popover display-none">
                           <p className="totalRecord-button-Popover-box">
-                            <span className="totalRecord-button-Popover-label">Displayed:</span>  <span className="totalRecord-button-Popover-data"> { infoSamplesByPage.toLocaleString() } </span>
+                            <span className="totalRecord-button-Popover-label">Displayed:</span>  
+                            <span className="totalRecord-button-Popover-data"> {infoSamplesByPage.toLocaleString()} </span>
                           </p>
                           <p className="totalRecord-button-Popover-box">
-                            <span className="totalRecord-button-Popover-label">Instance Of Time:</span>  <span className="totalRecord-button-Popover-data"> { totalResponseData.totalArrays.toLocaleString() } </span>
+                            <span className="totalRecord-button-Popover-label">Instance Of Time:</span>  
+                            <span className="totalRecord-button-Popover-data"> {totalResponseData.totalArrays.toLocaleString()} </span>
                           </p>
                           <p className="totalRecord-button-Popover-box">
-                            <span className="totalRecord-button-Popover-label">Total Estimated:</span> <span className="totalRecord-button-Popover-data"> { infoTotalSamples.toLocaleString() } </span>
+                            <span className="totalRecord-button-Popover-label">Total Estimated:</span> 
+                            <span className="totalRecord-button-Popover-data"> {infoTotalSamples.toLocaleString()} </span>
                           </p>
-                        </Popover>
+                        </div>
                     </div>
                   </>
               }
