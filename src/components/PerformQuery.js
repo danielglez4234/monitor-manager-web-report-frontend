@@ -56,6 +56,7 @@ function PerformQuery(props) {
 
   const monitor          = useSelector(state => state.monitor);
   const loadWhileGetData = useSelector(state => state.loadingButton);
+  const pagination       = useSelector(state => state.pagination);
 
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [samplingValue, setSamplingValue] = useState('');
@@ -72,7 +73,7 @@ function PerformQuery(props) {
   /*
    * Build url with monitors and place index if necessary
    */
-  const constructURL = (begin_date, end_date, sampling) =>{
+  const constructURL = (searchFrom) =>{
     let queryRest = "";
     for (let i = 0; i < monitor.length; i++)
     {
@@ -147,9 +148,15 @@ function PerformQuery(props) {
       queryRest += "&Decimal=" + decimalPattern;
     }
 
-  	let iDisplayStart   = 0;
+    let iDisplayStart;
     let iDisplayLength  = props.urliDisplayLength;
-    let url = begin_date.replace(/\s{1}/,"@")+".000/"+end_date.replace(/\s{1}/,"@")+".000/"+sampling+"?"+queryRest;
+    if (pagination?.active === true){
+      iDisplayStart = (pagination.actualPage * iDisplayLength) - iDisplayLength;
+    }else{
+      iDisplayStart = 0
+    }
+
+    let url = searchFrom.begin_date.replace(/\s{1}/,"@")+".000/"+searchFrom.end_date.replace(/\s{1}/,"@")+".000/"+searchFrom.sampling+"?"+queryRest;
   	url += "&iDisplayStart=" + iDisplayStart + "&iDisplayLength=" + iDisplayLength;
 
     console.log(`URL => ${window.location.href.replace('3006', '8080')}/rest/webreport/search/${encodeURI(url).replace(/#/g,'%23')}`);
@@ -164,12 +171,12 @@ function PerformQuery(props) {
   /*
    * Get Samples From Server
    */
-  const getSamplesFromServer = (begin_date, end_date, sampling) => {
+  const getSamplesFromServer = (searchFrom) => {
       /*
        * we send the data to constructURL because the 'donwload button' uses only the function constructURL 
        * to prevent it from being displayed on the graph, and then to be able to pass parameters to the function
        */
-      let url = constructURL(begin_date, end_date, sampling);
+      let url = constructURL(searchFrom);
       dispatch(getUrl(url));
 
 
@@ -183,13 +190,13 @@ function PerformQuery(props) {
             const noData = res.samples    // we do this to simplify it to just one array field and thus avoid modifying the sample reducer
             dispatch(setSamples(noData)); // noData -> []
           }
-          dispatch(setSamples(res, sampling));
+          dispatch(setSamples(res, searchFrom.sampling));
           dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage));
           
           console.log(
             "\n \
             MonitorsMagnitude Data was recibe successfully!! \n \
-            Sampling Period Choosen: " + sampling + " microsegundos \n \
+            Sampling Period Choosen: " + searchFrom.sampling + " microsegundos \n \
             Arrays Recived: " + totalArraysRecive + " \n \
             total Records: " + totalRecords + " \n \
             ----------------------------------------------------------------"
@@ -304,14 +311,14 @@ function PerformQuery(props) {
         /*
          * construct the url and call the server data 
          */
-        getSamplesFromServer(begin_date, end_date, sampling);
+        getSamplesFromServer({begin_date, end_date, sampling});
       }
       else
       {
         /*
          * construct the url for download
          */
-        return constructURL(begin_date, end_date, sampling)
+        return constructURL({begin_date, end_date, sampling})
       }
       return true
     }
