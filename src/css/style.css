@@ -2180,14 +2180,32 @@ font-size: 13px !important;
   color: #b5a4f0;
 }
 
-.totalRecord-button-Popover .css-3bmhjh-MuiPaper-root-MuiPopover-paper{
+.totalRecord-button-Popover{
+  position: absolute;
+  top:-100px;
   border-top: 3px solid #62bfa5;
   border-bottom: 3px solid #62bfa5;
   background-color: #2e353f !important;
+  border-radius: 4px;
+  color:white;
   padding: 10px !important;
   font-size: 14px;
   font-family: "RobotoMono-Bold";
+  z-index: 5;
 }
+
+.totalRecord-button-close_rangeZone{
+  /* background-color: red; */
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  position: fixed;
+  z-index: 5;
+  left: 0px;
+  z-index: 4;
+}
+
+
 .totalRecord-button-Popover-box{
   display: flex;
 }

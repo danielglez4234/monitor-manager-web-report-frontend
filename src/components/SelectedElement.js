@@ -26,7 +26,7 @@ import AnnouncementIcon     from '@mui/icons-material/Announcement';
 
 
 
-function SelectedElement({ id, monitorData, component, menuHandle, diActivateReload }) {
+function SelectedElement({ id, monitorData, component, menuHandle, diActivateReload}) {
 // const SelectedElement = ({ id, monitorData, component, menuHandle, diActivateReload }) => {
   const [max, setMax] = useState("");
   const [min, setMin] = useState("");
@@ -190,6 +190,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
         <div className="monitor-seleted-options-icons">
             <IconButton 
               className="monitor-seleted-closeIcon"
+              color="success"
               aria-label="upload picture" 
               component="span" 
               onClick={() => { onRemove(id) }} 
