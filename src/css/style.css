@@ -105,13 +105,13 @@ code {
   border: 4px double #f23e3e !important;
 }
 
-.tool-tip-options{
+/* .tool-tip-options{
   
-}
+} */
 
-.tool-tip-options-description{
-  /* font-size: 30px; */
-}
+/* .tool-tip-options-description{
+   font-size: 30px; 
+} */
 
 
 .skeleton-componentmonitor{
@@ -213,9 +213,9 @@ code {
   overflow-y: hidden;
 }
 
-.grafic-size{
+/* .grafic-size{
 
-}
+} */
 
 .grafic-section{
   display: flex;
@@ -312,9 +312,9 @@ code {
   margin-top: 2px !important;
 }
 
-      .btn-and-srch-grafic-button{
+      /* .btn-and-srch-grafic-button{
 
-      }
+      } */
 
       .btn-and-srch-table-button{
         margin-left: 10px !important;
@@ -601,9 +601,9 @@ code {
 .monitor-selected-info-component{
   flex-grow: 1;
 }
-.monitor-selected-info-id{
+/* .monitor-selected-info-id{
 
-}
+} */
 
 
 
@@ -1244,9 +1244,9 @@ outline: none;
     font-weight: 600;
 }
 
-.monitor-selected-checkbox{
+/* .monitor-selected-checkbox{
 
-}
+} */
 
 
 .selected-monitors-extends-buttons{
@@ -2008,8 +2008,8 @@ font-size: 13px !important;
   text-align: center;
 }
 
-.advance-options-select option{
-}
+/* .advance-options-select option{
+} */
 
 
 .advanceSubOptions-infoText{
@@ -2355,7 +2355,8 @@ font-size: 13px !important;
   top: -243px;
   background-color: #45505e;
   height: 240px;
-  width: 805px;
+  /* width: 805px; */
+  width: 600px;
   text-align: left;
   display: flex;
   flex-direction: column;

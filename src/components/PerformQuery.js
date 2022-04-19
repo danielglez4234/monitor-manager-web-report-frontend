@@ -120,16 +120,40 @@ function PerformQuery(props) {
         /*
          * Get Unit and Prefix
          */
+        // if(!fnIsMagnitude(infoMonitor.type)){
+        //   let unitType = $("#Unit" + infoMonitor.id).val();
+        //   let prefixType = $("#Prefix" + infoMonitor.id).val()
+  
+        //   if (unitType !== "Default" && unitType !== "No Matches")
+        //   {
+        //     queryRest += "{unit:" + unitType;
+        //     if (prefixType !== "None")
+        //     {
+        //       queryRest += ",prefix:" + prefixType;
+        //     }
+        //     queryRest += "}"
+        //   }
+        // }
+
+
         if(!fnIsMagnitude(infoMonitor.type)){
           let unitType = $("#Unit" + infoMonitor.id).val();
-          let prefixType = $("#Prefix" + infoMonitor.id).val()
+          let decimalPattern = $("#Pattern" + infoMonitor.id).val();
   
-          if (unitType !== "Default" && unitType !== "No Matches")
+          if ((unitType !== "Default" && unitType !== "No Matches") || (decimalPattern !== "Default"))
           {
-            queryRest += "{unit:" + unitType;
-            if (prefixType !== "None")
+            queryRest += "{"
+            if (unitType !== "Default" && unitType !== "No Matches") 
+            { 
+              queryRest += "unit:" + unitType;
+              if (decimalPattern !== "Default")
+              {
+                queryRest += ",";
+              }
+            }
+            if (decimalPattern !== "Default")
             {
-              queryRest += ",prefix:" + prefixType;
+              queryRest += "decimal:" + decimalPattern; // forcing encode of '#'
             }
             queryRest += "}"
           }
@@ -142,11 +166,11 @@ function PerformQuery(props) {
         
       }
       
-    let decimalPattern = $(".numberFormat").val();
-    if (decimalPattern !== "")
-    {
-      queryRest += "&Decimal=" + decimalPattern;
-    }
+    // let decimalPattern = $(".numberFormat").val();
+    // if (decimalPattern !== "")
+    // {
+    //   queryRest += "&Decimal=" + decimalPattern;
+    // }
 
     let iDisplayStart;
     let iDisplayLength  = props.urliDisplayLength;

@@ -214,7 +214,8 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
     let ifFormat = (generalOptions.general.numberFormat !== "") ? generalOptions.general.numberFormat : "#";
     const numberFormat = (generalOptions.general.scientificNotation) ? (ifFormat + "e") : ifFormat;
     root.numberFormatter.setAll({
-      numberFormat: numberFormat,
+      // numberFormat: numberFormat,
+      numberFormat: "#e",
       // smallNumberThreshold: 0.001
       // bigNumberPrefixes: [
       //   { "number": 1e+4 }

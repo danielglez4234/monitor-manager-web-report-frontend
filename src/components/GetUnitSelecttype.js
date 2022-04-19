@@ -58,7 +58,7 @@ function GetUnitSelecttype({id, unit}) {
     <div className="unit-and-prefix-box">
       {/* {
         (prefixes.length > 0) ?  */}
-          <Autocomplete
+          {/* <Autocomplete
             disablePortal // --> disabled entrys not related with the select
             disableClearable // --> disabled the posibility to leave the input empty
             // freeSolo
@@ -83,7 +83,7 @@ function GetUnitSelecttype({id, unit}) {
                 }}
               />
             )}
-          />
+          /> */}
       {/*   : ""
        } */}
 
