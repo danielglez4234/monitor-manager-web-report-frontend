@@ -24,18 +24,27 @@ function GetUnitSelecttype({id, unit}) {
     const getcompatibleconversion = (unit) => {
       Promise.resolve( getUnitConversion(unit) )
       .then(res => {
-        const units    = res.units
-        const prefix   = res.prefixes
-        const fullname = prefix.map(value => value.fullName)
+        // const units    = res.units
+        // const prefix   = res.prefixes
+        // const fullname = prefix.map(value => value.fullName)
 
-        if (units.length > 0){
-          setCompatibleConversion([defaultUnitOpt, ...units]);
-          setPrefixes([defaultPrefixOpt, ...fullname]);
+        // if (units.length > 0){
+        //   setCompatibleConversion([defaultUnitOpt, ...units]);
+        //   setPrefixes([defaultPrefixOpt, ...fullname]);
+        // }
+        // else 
+        // {
+        //   setCompatibleConversion([defaultUnitOpt, noMatches]); 
+        //   setPrefixes([defaultPrefixOpt, noMatches]);
+        // }
+
+        // set options if res is greater than 0
+        if (res.length > 0){
+          setCompatibleConversion([defaultUnitOpt, ...res]);
         }
         else 
         {
           setCompatibleConversion([defaultUnitOpt, noMatches]); 
-          setPrefixes([defaultPrefixOpt, noMatches]);
         }
       })
       .catch(error => {
