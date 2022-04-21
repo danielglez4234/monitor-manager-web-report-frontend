@@ -174,8 +174,10 @@ function PerformQuery(props) {
 
     let iDisplayStart;
     let iDisplayLength  = props.urliDisplayLength;
-    if (pagination?.active === true){
-      iDisplayStart = (pagination.actualPage * iDisplayLength) - iDisplayLength;
+    if (pagination?.active === true) // pagination.active can be false
+    { 
+      // iDisplayStart = (pagination.actualPage * iDisplayLength) - iDisplayLength;
+      iDisplayStart = pagination.actualPage
     }else{
       iDisplayStart = 0
     }

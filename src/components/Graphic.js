@@ -138,6 +138,7 @@ function Graphic() {
               {
                 if (handleValueSample > graphicOptions.valueMIN[b] && handleValueSample < graphicOptions.valueMAX[b])
                 {
+                  // REFACTOR: busacar la forma de hacer mas optimizable (usando un map)
                   dateAndValues.push(setSampleForGraphic(epochDateInMilliSeconds, handleValueSample, graphicOptions.logarithm[b]));
                   // valueDisplayAxisFormat = (Number.isInteger(handleValueSample)) ? "#a" : "#e";
                 }
@@ -148,8 +149,11 @@ function Graphic() {
             { 
               sTitle = sTitle.split("/"); sTitle = sTitle[sTitle.length - 1]; 
             };
+
+
             let position = (dataColumns[a].position === -1) ? " " : " /" + dataColumns[a].position;
             let monitorinfo = {
+                                title: sTitle,
                                 name: sTitle + position,
                                 data: dateAndValues,
                                 sampling_period: dataColumns[a].storagePeriod,
@@ -169,8 +173,25 @@ function Graphic() {
                                       dotted: graphicOptions.dotted[b]
                                     },
                               };
-            info.push(monitorinfo);
+            info.push(monitorinfo);         
           }
+            // FIXME: ordenar la variable info en función de la variable colunms del backend
+            // ^FIXME: <==> NOTE: hacer la ordenación aquí
+            // let arrangeItems = info.map(orden => {
+            //   let removeArrayNumber = orden.title.split("[")
+            //   removeArrayNumber = removeArrayNumber[0]
+            //   let removeBarName = removeArrayNumber.split("/")
+            //   removeBarName = removeBarName[removeBarName.length -1]
+            //   console.log("name", removeBarName)
+            //   return graphicOptions.name.find(x => x.name === removeBarName)
+            // })
+            // console.log(graphicOptions.name)
+            // console.log("backend_items", arrangeItems)
+  
+            // let items = graphicOptions.name.map(order => {
+            //   return info.find(x => x.title === order)
+            // })
+
           generateGraphic(info, graphicOptions, sampling_period);
           $('.no-data-error-message').addClass('display-none');
         }
