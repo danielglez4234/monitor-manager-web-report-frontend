@@ -180,10 +180,12 @@ function PerformQuery(props) {
       iDisplayStart = 0
     }
 
+    
     let url = searchFrom.begin_date.replace(/\s{1}/,"@")+".000/"+searchFrom.end_date.replace(/\s{1}/,"@")+".000/"+searchFrom.sampling+"?"+queryRest;
   	url += "&iDisplayStart=" + iDisplayStart + "&iDisplayLength=" + iDisplayLength;
-
-    console.log(`URL => ${window.location.href.replace('3006', '8080')}/rest/webreport/search/${encodeURI(url).replace(/#/g,'%23')}`);
+    
+    const action = (searchFrom.download) ? "download" : "search"
+    console.log(`URL => ${window.location.href.replace('3006', '8080')}/rest/webreport/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
     return url;
   };
 
@@ -342,7 +344,7 @@ function PerformQuery(props) {
         /*
          * construct the url for download
          */
-        return constructURL({begin_date, end_date, sampling})
+        return constructURL({begin_date, end_date, sampling, download: true})
       }
       return true
     }
