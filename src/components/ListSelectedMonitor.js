@@ -137,16 +137,21 @@ function ListSelectedMonitor(props) {
     {
         if (getResponse.responseData.length !== 0 && getResponse.responseData.samples.length > 0)
         {
-          let calculateTotalPages = Math.ceil(getResponse.responseData.iTotalRows / totalResponseData.totalPerPage);
+          // let calculateTotalPages = Math.ceil(getResponse.responseData.iTotalRows / totalResponseData.totalPerPage);
+          const totalPages   = getResponse.responseData.iTotalPages
+          const totalSamples = getResponse.responseData.iTotalSamples
+          const totalDisplay = getResponse.responseData.iTotalDisplaySamplesByPage
+          const totalPerPage = totalResponseData.totalPerPage 
+
           // info display
-          setInfoSamplesByPage(getResponse.responseData.iTotalDisplaySamplesByPage)
-          setInfoTotalSamples(getResponse.responseData.iTotalSamples)
+          setInfoSamplesByPage(totalDisplay)
+          setInfoTotalSamples(totalSamples)
           // set pagination
-          setTotalPages(calculateTotalPages);
-          setTotalPerPages(totalResponseData.totalPerPage);
-          setPage(1); // -> set default page
+          setTotalPages(totalPages);
+          setTotalPerPages(totalPerPage);
+          setPage(1); // default page
           setDisabled(false);
-            if (calculateTotalPages <= 1)
+            if (totalPages <= 1)
             {
               setActivatePagination(false);
             }else
