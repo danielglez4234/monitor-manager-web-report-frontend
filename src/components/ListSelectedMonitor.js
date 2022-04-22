@@ -15,6 +15,7 @@ import {
   reloadGrafic,
   loadGraphic,
   setloadingButton,
+  setTotalResponseData,
   setActualPage,
   setSamples,
   getUrl
@@ -162,7 +163,7 @@ function ListSelectedMonitor(props) {
     else {
       setDisabled(true);
     }
-  }, [totalResponseData, graphicStillLoading]);
+  }, [graphicStillLoading]);
 
   /*
    * Show the loading icon for graphic when the loadingGrahic state changes
@@ -338,7 +339,10 @@ function ListSelectedMonitor(props) {
         Promise.resolve( getDataFromServer({url}) )
         .then(res => {
           const totalArraysRecive  = res.samples.length;
+          const totalRecords       = res.iTotalSamples;
+          const totalPerPage       = props.urliDisplayLength;
           const sampling_period    = getResponse.sampling_period;
+          dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage));
           if (totalArraysRecive === 0) 
           {
             // const prevPage = page - 1;
