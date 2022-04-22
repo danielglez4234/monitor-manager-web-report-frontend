@@ -252,7 +252,19 @@ function PerformQuery(props) {
    const handleChange = (event) => {
        setSamplingValue(event.target.value);
    };
-
+   
+  /*
+   * handle warning message
+   */
+   const showWarningMeggage = (message) => {
+    handleMessage({ 
+      message: message, 
+      type: 'warning', 
+      persist: false,
+      preventDuplicate: false
+    })
+   }
+   
   /*
    * Hide Component and monitor list
    */
@@ -288,42 +300,22 @@ function PerformQuery(props) {
     // handle all errors from the date inputs
     if (begin_date === '' || end_date === '')
     {
-      handleMessage({ 
-        message: 'The Date Fields cannot be empty', 
-        type: 'warning', 
-        persist: false,
-        preventDuplicate: false
-     })
-     return false
+      showWarningMeggage('The Date Fields cannot be empty')
+      return false
     }
     else if (begin_dateLong > end_dateLong)
     {
-      handleMessage({ 
-        message: 'The begin Date cannot be greater than end Date', 
-        type: 'warning', 
-        persist: false,
-        preventDuplicate: false
-     })
-     return false
+      showWarningMeggage('The begin Date cannot be greater than end Date')
+      return false
     }
     else if (begin_date === end_date)
     {
-      handleMessage({ 
-        message: 'The begin and end Date cannot be the same', 
-        type: 'warning', 
-        persist: false,
-        preventDuplicate: false
-     })
-     return false
+      showWarningMeggage('The begin and end Date cannot be the same')
+      return false
     }
     else if (monitor[0] === undefined)
     {
-      handleMessage({ 
-        message: 'There are no monitors selected', 
-        type: 'warning', 
-        persist: false,
-        preventDuplicate: false
-     })
+      showWarningMeggage('There are no monitors selected')
      return false
     }
     else
