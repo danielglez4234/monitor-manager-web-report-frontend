@@ -204,7 +204,7 @@ function PerformQuery(props) {
        * we send the data to constructURL because the 'donwload button' uses only the function constructURL 
        * to prevent it from being displayed on the graph, and then to be able to pass parameters to the function
        */
-      let url = constructURL(searchFrom);
+      const url = constructURL(searchFrom);
       dispatch(getUrl(url));
 
 
