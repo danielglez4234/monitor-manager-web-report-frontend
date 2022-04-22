@@ -177,7 +177,7 @@ function PerformQuery(props) {
     if (pagination?.active === true) // pagination.active can be false
     { 
       // iDisplayStart = (pagination.actualPage * iDisplayLength) - iDisplayLength;
-      iDisplayStart = pagination.actualPage
+      iDisplayStart = pagination.actualPage-1
     }else{
       iDisplayStart = 0
     }

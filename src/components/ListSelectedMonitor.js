@@ -328,7 +328,7 @@ function ListSelectedMonitor(props) {
         let actualPage     = pagination.actualPage;
 
         // let start = (actualPage * iDisplayLength) - iDisplayLength;
-        let start = actualPage
+        let start = actualPage-1
 
         dispatch(setloadingButton(true));
         setLoadingPage(true);
