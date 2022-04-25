@@ -120,17 +120,49 @@ function PerformQuery(props) {
         /*
          * Get Unit and Prefix
          */
+        // if(!fnIsMagnitude(infoMonitor.type)){
+        //   let unitType = $("#Unit" + infoMonitor.id).val();
+        //   let prefixType = $("#Prefix" + infoMonitor.id).val()
+  
+        //   if (unitType !== "Default" && unitType !== "No Matches")
+        //   {
+        //     queryRest += "{unit:" + unitType;
+        //     if (prefixType !== "None")
+        //     {
+        //       queryRest += ",prefix:" + prefixType;
+        //     }
+        //     queryRest += "}"
+        //   }
+        // }
+
+
         if(!fnIsMagnitude(infoMonitor.type)){
           let unitType = $("#Unit" + infoMonitor.id).val();
-          let prefixType = $("#Prefix" + infoMonitor.id).val()
+          let prefixType = $("#Prefix" + infoMonitor.id).val();
+          let decimalPattern = $("#Pattern" + infoMonitor.id).val();
   
-          if (unitType !== "Default" && unitType !== "No Matches")
+          if ((unitType !== "Default" && unitType !== "No Matches") || (decimalPattern !== "Default"))
           {
-            queryRest += "{unit:" + unitType;
-            if (prefixType !== "None")
+            queryRest += "{"
+
+            if(unitType !== "Default" && unitType !== "No Matches")
             {
-              queryRest += ",prefix:" + prefixType;
+              queryRest += "unit:" + unitType
+              if(prefixType !== "Default" && prefixType !== "No Matches")
+              {
+                queryRest += ",prefix:" + prefixType
+              }
             }
+
+            if(decimalPattern !== "Default")
+            {
+              if(unitType !== "Default" && unitType !== "No Matches")
+              {
+                queryRest += ","
+              }
+              queryRest += "decimal:" + decimalPattern
+            }
+
             queryRest += "}"
           }
         }
@@ -142,24 +174,28 @@ function PerformQuery(props) {
         
       }
       
-    let decimalPattern = $(".numberFormat").val();
-    if (decimalPattern !== "")
-    {
-      queryRest += "&Decimal=" + decimalPattern;
-    }
+    // let decimalPattern = $(".numberFormat").val();
+    // if (decimalPattern !== "")
+    // {
+    //   queryRest += "&Decimal=" + decimalPattern;
+    // }
 
     let iDisplayStart;
     let iDisplayLength  = props.urliDisplayLength;
-    if (pagination?.active === true){
-      iDisplayStart = (pagination.actualPage * iDisplayLength) - iDisplayLength;
+    if (pagination?.active === true) // pagination.active can be false
+    { 
+      // iDisplayStart = (pagination.actualPage * iDisplayLength) - iDisplayLength;
+      iDisplayStart = pagination.actualPage-1
     }else{
       iDisplayStart = 0
     }
 
+    
     let url = searchFrom.begin_date.replace(/\s{1}/,"@")+".000/"+searchFrom.end_date.replace(/\s{1}/,"@")+".000/"+searchFrom.sampling+"?"+queryRest;
   	url += "&iDisplayStart=" + iDisplayStart + "&iDisplayLength=" + iDisplayLength;
-
-    console.log(`URL => ${window.location.href.replace('3006', '8080')}/rest/webreport/search/${encodeURI(url).replace(/#/g,'%23')}`);
+    
+    const action = (searchFrom.download) ? "download" : "search"
+    console.log(`URL => ${window.location.href.replace('3006', '8080')}/rest/webreport/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
     return url;
   };
 
@@ -176,7 +212,7 @@ function PerformQuery(props) {
        * we send the data to constructURL because the 'donwload button' uses only the function constructURL 
        * to prevent it from being displayed on the graph, and then to be able to pass parameters to the function
        */
-      let url = constructURL(searchFrom);
+      const url = constructURL(searchFrom);
       dispatch(getUrl(url));
 
 
@@ -224,7 +260,19 @@ function PerformQuery(props) {
    const handleChange = (event) => {
        setSamplingValue(event.target.value);
    };
-
+   
+  /*
+   * handle warning message
+   */
+   const showWarningMeggage = (message) => {
+    handleMessage({ 
+      message: message, 
+      type: 'warning', 
+      persist: false,
+      preventDuplicate: false
+    })
+   }
+   
   /*
    * Hide Component and monitor list
    */
@@ -260,42 +308,22 @@ function PerformQuery(props) {
     // handle all errors from the date inputs
     if (begin_date === '' || end_date === '')
     {
-      handleMessage({ 
-        message: 'The Date Fields cannot be empty', 
-        type: 'warning', 
-        persist: false,
-        preventDuplicate: false
-     })
-     return false
+      showWarningMeggage('The Date Fields cannot be empty')
+      return false
     }
     else if (begin_dateLong > end_dateLong)
     {
-      handleMessage({ 
-        message: 'The begin Date cannot be greater than end Date', 
-        type: 'warning', 
-        persist: false,
-        preventDuplicate: false
-     })
-     return false
+      showWarningMeggage('The begin Date cannot be greater than end Date')
+      return false
     }
     else if (begin_date === end_date)
     {
-      handleMessage({ 
-        message: 'The begin and end Date cannot be the same', 
-        type: 'warning', 
-        persist: false,
-        preventDuplicate: false
-     })
-     return false
+      showWarningMeggage('The begin and end Date cannot be the same')
+      return false
     }
     else if (monitor[0] === undefined)
     {
-      handleMessage({ 
-        message: 'There are no monitors selected', 
-        type: 'warning', 
-        persist: false,
-        preventDuplicate: false
-     })
+      showWarningMeggage('There are no monitors selected')
      return false
     }
     else
@@ -312,13 +340,15 @@ function PerformQuery(props) {
          * construct the url and call the server data 
          */
         getSamplesFromServer({begin_date, end_date, sampling});
+        console.log("uno")
       }
       else
       {
         /*
          * construct the url for download
          */
-        return constructURL({begin_date, end_date, sampling})
+        console.log("dos")
+        return constructURL({begin_date, end_date, sampling, download: true})
       }
       return true
     }

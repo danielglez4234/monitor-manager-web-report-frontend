@@ -15,6 +15,7 @@ import {
   reloadGrafic,
   loadGraphic,
   setloadingButton,
+  setTotalResponseData,
   setActualPage,
   setSamples,
   getUrl
@@ -136,16 +137,21 @@ function ListSelectedMonitor(props) {
     {
         if (getResponse.responseData.length !== 0 && getResponse.responseData.samples.length > 0)
         {
-          let calculateTotalPages = Math.ceil(getResponse.responseData.iTotalRows / totalResponseData.totalPerPage);
+          // let calculateTotalPages = Math.ceil(getResponse.responseData.iTotalRows / totalResponseData.totalPerPage);
+          const totalPages   = getResponse.responseData.iTotalPages
+          const totalSamples = getResponse.responseData.iTotalSamples
+          const totalDisplay = getResponse.responseData.iTotalDisplaySamplesByPage
+          const totalPerPage = totalResponseData.totalPerPage 
+
           // info display
-          setInfoSamplesByPage(getResponse.responseData.iTotalDisplaySamplesByPage)
-          setInfoTotalSamples(getResponse.responseData.iTotalSamples)
+          setInfoSamplesByPage(totalDisplay)
+          setInfoTotalSamples(totalSamples)
           // set pagination
-          setTotalPages(calculateTotalPages);
-          setTotalPerPages(totalResponseData.totalPerPage);
-          setPage(1); // -> set default page
+          setTotalPages(totalPages);
+          setTotalPerPages(totalPerPage);
+          setPage(1); // default page
           setDisabled(false);
-            if (calculateTotalPages <= 1)
+            if (totalPages <= 1)
             {
               setActivatePagination(false);
             }else
@@ -162,7 +168,7 @@ function ListSelectedMonitor(props) {
     else {
       setDisabled(true);
     }
-  }, [totalResponseData, graphicStillLoading]);
+  }, [graphicStillLoading]);
 
   /*
    * Show the loading icon for graphic when the loadingGrahic state changes
@@ -321,7 +327,8 @@ function ListSelectedMonitor(props) {
         let iDisplayLength = pagination.displayLength
         let actualPage     = pagination.actualPage;
 
-        let start = (actualPage * iDisplayLength) - iDisplayLength;
+        // let start = (actualPage * iDisplayLength) - iDisplayLength;
+        let start = actualPage-1
 
         dispatch(setloadingButton(true));
         setLoadingPage(true);
@@ -337,7 +344,10 @@ function ListSelectedMonitor(props) {
         Promise.resolve( getDataFromServer({url}) )
         .then(res => {
           const totalArraysRecive  = res.samples.length;
+          const totalRecords       = res.iTotalSamples;
+          const totalPerPage       = props.urliDisplayLength;
           const sampling_period    = getResponse.sampling_period;
+          dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage));
           if (totalArraysRecive === 0) 
           {
             // const prevPage = page - 1;

@@ -225,7 +225,7 @@ function ButtonGeneralOptions() {
               </div>
 
 
-              <div className="graphOpt-flex-column">
+              {/* <div className="graphOpt-flex-column">
                 <div className="graphOpt-title-Limitsection graphOpt-label-headers">
                   Number Format:
                 </div>
@@ -243,7 +243,7 @@ function ButtonGeneralOptions() {
                     <input id="decimalPattern" type="text" placeholder="00.##" className="graphOpt-inputLimits-checbox numberFormat" />
                   </label>
                 </div>
-              </div>
+              </div> */}
               
           </div>
 

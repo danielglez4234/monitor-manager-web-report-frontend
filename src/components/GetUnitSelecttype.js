@@ -10,7 +10,7 @@ import PopUpMessage                   from './handleErrors/PopUpMessage';
 
 function GetUnitSelecttype({id, unit}) {
   const defaultUnitOpt = "Default";  
-  const defaultPrefixOpt = "None"  
+  const defaultPrefixOpt = "Default"  
   const noMatches = "No Matches";
   const [msg, handleMessage] = PopUpMessage();
   const [loading, setLoading] = useState(false);
@@ -37,6 +37,15 @@ function GetUnitSelecttype({id, unit}) {
           setCompatibleConversion([defaultUnitOpt, noMatches]); 
           setPrefixes([defaultPrefixOpt, noMatches]);
         }
+
+        // set options if res is greater than 0
+        // if (res.length > 0){
+        //   setCompatibleConversion([defaultUnitOpt, ...res]);
+        // }
+        // else 
+        // {
+        //   setCompatibleConversion([defaultUnitOpt, noMatches]); 
+        // }
       })
       .catch(error => {
         console.log(error);
@@ -56,9 +65,9 @@ function GetUnitSelecttype({id, unit}) {
 
   return (
     <div className="unit-and-prefix-box">
-      {/* {
-        (prefixes.length > 0) ?  */}
-          <Autocomplete
+      { 
+        // (prefixes.length > 0) ?
+           <Autocomplete
             disablePortal // --> disabled entrys not related with the select
             disableClearable // --> disabled the posibility to leave the input empty
             // freeSolo
@@ -67,7 +76,7 @@ function GetUnitSelecttype({id, unit}) {
             name="deimnalPattern"
             loading={loading}
             options={prefixes}
-            defaultValue={"None"}
+            defaultValue={"Default"}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -84,8 +93,8 @@ function GetUnitSelecttype({id, unit}) {
               />
             )}
           />
-      {/*   : ""
-       } */}
+        // : ""
+       }
 
 
       <Autocomplete
