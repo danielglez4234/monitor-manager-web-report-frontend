@@ -156,7 +156,8 @@ useEffect(() => {
 						name: sTitle + position,
 						data: dateAndValues,
 						sampling_period: dataColumns[a].storagePeriod,
-						unit: graphicOptions.unitType[b],
+						// unit: graphicOptions.unitType[b],
+						unit:dataColumns[a].unit.abbreviature, 
 						valueMIN: graphicOptions.valueMIN[b],
 						valueMAX: graphicOptions.valueMAX[b],
 						positionAxisY: graphicOptions.positionAxisY[b],
@@ -366,7 +367,8 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 		let setTooltip = am5.Tooltip.new(root, {
 			exportable: false,
 			pointerOrientation: "horizontal",
-			labelText:  `[bold]{name}[/]\n{valueX.formatDate('yyyy-MM-dd HH:mm:ss.SSS')}\n[bold]{valueY}\n[/]Unit: ${info.unit}`
+			// labelText:  `[bold]{name}[/]\n{valueX.formatDate('yyyy-MM-dd HH:mm:ss.SSS')}\n[bold]{valueY}\n[/]Unit: ${info.unit}`
+			labelText:  `[bold]{name}[/]\n{valueX.formatDate('yyyy-MM-dd HH:mm:ss.SSS')}\n[bold]{valueY}[/] ${info.unit}`
 		});
 		if (generalOptions.general.tooltip) { properties["tooltip"] = setTooltip };
 		if (info.graphic.curved) { properties["curveFactory"] = d3.curveBumpX };
