@@ -133,11 +133,13 @@ useEffect(() => {
 				{
 					handleValueSample = dataSamples[n][a];
 				}
-				if (handleValueSample !== "-")
+				// if (handleValueSample !== "-")
+				if (handleValueSample !== "")
 				{
 					if (handleValueSample > graphicOptions.valueMIN[b] && handleValueSample < graphicOptions.valueMAX[b])
 					{
-						// REFACTOR: busacar la forma de hacer mas optimizable (usando un map)
+						// REFACTOR: (usando un map)
+						// TODO: cambiar nombres de las variables a unos mas coherentes
 						dateAndValues.push(setSampleForGraphic(epochDateInMilliSeconds, handleValueSample, graphicOptions.logarithm[b]));
 						// valueDisplayAxisFormat = (Number.isInteger(handleValueSample)) ? "#a" : "#e";
 					}
