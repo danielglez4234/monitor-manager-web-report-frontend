@@ -74,6 +74,13 @@ function GetUnitSelecttype({id, unit}) {
             id={`Prefix` + id}
             className="input-limits-grafic-options input-select-prefix"
             name="deimnalPattern"
+            onOpen={() => {
+              // if(compatibleConversion.length < 2)
+              // {
+                setLoading(true);
+                getcompatibleconversion(unit);
+              // }
+            }}
             loading={loading}
             options={prefixes}
             defaultValue={"Default"}
