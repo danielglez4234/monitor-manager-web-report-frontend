@@ -144,7 +144,7 @@ useEffect(() => {
 						// valueDisplayAxisFormat = (Number.isInteger(handleValueSample)) ? "#a" : "#e";
 					}
 				}
-				}
+			}
 
             let sTitle = dataColumns[a].sTitle;
             if (graphicOptions.general.legendTrunkName) 

@@ -21,7 +21,6 @@ import PerformQuery         from './components/PerformQuery';
 import PageNotFound         from './components/handleErrors/PageNotFound';
 
 
-
 const store = createStore(
   allReducers,
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
@@ -32,57 +31,56 @@ const { REACT_APP_SERVICES_NAME }   = process.env;
 const { REACT_APP_IDISPLAYLENGTH }  = process.env;
 
 function App() {
-  const notistackRef = React.createRef();
+  	const notistackRef = React.createRef();
+	/*
+	 * handle close information messages
+	 */
+	const onClickDismiss = key => () => {
+		notistackRef.current.closeSnackbar(key);
+	}
 
-  /*
-   * handle close information messages
-   */
-  const onClickDismiss = key => () => {
-      notistackRef.current.closeSnackbar(key);
-  }
-
-  return (
-    <SnackbarProvider
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      ref={notistackRef}
-      action={(key) => (
-          <Button className="snackbar-handle-close" onClick={onClickDismiss(key)}>
-              X
-          </Button>
-      )}
-    >
-      <Provider store={store}>
-        <Router>
-          <Routes>
-            <Route exact path="/" element={<Navigate to="/WebReport" />} /> {/*blank path redirects to -> /WebReport*/}
-            <Route exact path="/WebReport" element={
-              <div className="container">
-                <Header />
-                <div className="content">
-                  <ListComponentMonitor 
-                    serviceIP={REACT_APP_SERVICES_IP} 
-                    serviceName={REACT_APP_SERVICES_NAME} 
-                    urliDisplayLength={REACT_APP_IDISPLAYLENGTH}
-                    />
-                  <ListSelectedMonitor  
-                    serviceIP={REACT_APP_SERVICES_IP} 
-                    serviceName={REACT_APP_SERVICES_NAME} 
-                    urliDisplayLength={REACT_APP_IDISPLAYLENGTH}
-                    />
-                  <PerformQuery         
-                    serviceIP={REACT_APP_SERVICES_IP} 
-                    serviceName={REACT_APP_SERVICES_NAME} 
-                    urliDisplayLength={REACT_APP_IDISPLAYLENGTH}
-                    />
-                </div>
-              </div>
-            } />
-            <Route path='*' element={<PageNotFound />} /> {/*only appears when no route matches*/}
-          </Routes>
-        </Router>
-      </Provider>
-    </SnackbarProvider>
-  );
+	return (
+		<SnackbarProvider
+		anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+		ref={notistackRef}
+		action={(key) => (
+			<Button className="snackbar-handle-close" onClick={onClickDismiss(key)}>
+				X
+			</Button>
+		)}
+		>
+			<Provider store={store}>
+				<Router>
+					<Routes>
+						<Route exact path="/" element={<Navigate to="/WebReport" />} /> {/*blank path redirects to -> /WebReport*/}
+						<Route exact path="/WebReport" element={
+							<div className="container">
+								<Header />
+								<div className="content">
+									<ListComponentMonitor 
+										serviceIP={REACT_APP_SERVICES_IP} 
+										serviceName={REACT_APP_SERVICES_NAME} 
+										urliDisplayLength={REACT_APP_IDISPLAYLENGTH}
+									/>
+									<ListSelectedMonitor  
+										serviceIP={REACT_APP_SERVICES_IP} 
+										serviceName={REACT_APP_SERVICES_NAME} 
+										urliDisplayLength={REACT_APP_IDISPLAYLENGTH}
+									/>
+									<PerformQuery         
+										serviceIP={REACT_APP_SERVICES_IP} 
+										serviceName={REACT_APP_SERVICES_NAME} 
+										urliDisplayLength={REACT_APP_IDISPLAYLENGTH}
+									/>
+								</div>
+							</div>
+						} />
+						<Route path='*' element={<PageNotFound />} /> {/*only appears when no route matches*/}
+					</Routes>
+				</Router>
+			</Provider>
+		</SnackbarProvider>
+  	);
 }
 
 export default App;
