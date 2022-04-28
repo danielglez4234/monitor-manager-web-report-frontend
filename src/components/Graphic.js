@@ -21,6 +21,7 @@ import * as d3            from "d3-shape";
 import InsertChartIcon    from '@mui/icons-material/InsertChart';
 import LiveHelpIcon       from '@mui/icons-material/LiveHelp';
 import MoreHorizIcon      from '@mui/icons-material/MoreHoriz';
+import NearbyErrorIcon from '@mui/icons-material/NearbyError';
 
 import PopUpMessage from './handleErrors/PopUpMessage';
 
@@ -80,16 +81,20 @@ useEffect(() => {
     //}
     //else
     //{
-	if (getResponse.length === 0){
+	if (getResponse.length === 0)
+	{
 		$('.no-data-error-message').addClass('display-none');
 	}
-      else{
+      else
+	  {
         // if(getResponse.responseData.samples === undefined){
-        if(!getResponse.responseData?.samples){
-          	$('.no-data-error-message').removeClass('display-none'); // No Data Recibe
+        if(!getResponse.responseData?.samples)
+		{
+          	$('.no-data-error-message').removeClass('display-none'); // remove div No Data Recibe
           	$("#initialImg").addClass('display-none');
         }
-        else if (getResponse.responseData.samples.length > 0){
+        else if (getResponse.responseData.samples.length > 0)
+		{
           	const graphicOptions = getGraphicoptions();
 
           	let setThemes = [];
@@ -100,7 +105,6 @@ useEffect(() => {
           	const dataSamples     = getResponse.responseData.samples;
           	const dataColumns     = getResponse.responseData.columns;
           	const sampling_period = getResponse.sampling_period;
-          	// let valueDisplayAxisFormat;
 
           	let b = 0;
           	let prevMonitorName = dataColumns[2].sTitle.split("[");
@@ -110,8 +114,8 @@ useEffect(() => {
 				let dateAndValues = [];
 				let handleValueSample;
 				/*
-				* compare if the selected monitor is an array. if it is the selected options will be set the same as all of them
-				*/
+				 * compare if the selected monitor is an array. if it is the selected options will be set the same as all of them
+				 */
 				let monitorName = dataColumns[a].sTitle.split("[");
 				if (monitorName[0] !== prevMonitorName[0])
 				{
@@ -133,7 +137,6 @@ useEffect(() => {
 				{
 					handleValueSample = dataSamples[n][a];
 				}
-				// if (handleValueSample !== "-")
 				if (handleValueSample !== "")
 				{
 					if (handleValueSample > graphicOptions.valueMIN[b] && handleValueSample < graphicOptions.valueMAX[b])
@@ -141,7 +144,6 @@ useEffect(() => {
 						// REFACTOR: (usando un map)
 						// TODO: cambiar nombres de las variables a unos mas coherentes
 						dateAndValues.push(setSampleForGraphic(epochDateInMilliSeconds, handleValueSample, graphicOptions.logarithm[b]));
-						// valueDisplayAxisFormat = (Number.isInteger(handleValueSample)) ? "#a" : "#e";
 					}
 				}
 			}
@@ -152,14 +154,14 @@ useEffect(() => {
               sTitle = sTitle.split("/"); sTitle = sTitle[sTitle.length - 1]; 
             };
 
-            let position = (dataColumns[a].position === -1) ? " " : " /" + dataColumns[a].position;
+            let position = (dataColumns[a].position === -1) ? " " :" /" + dataColumns[a].position;
+			let unitAbbr = (dataColumns[a].unit === null) ? "" : dataColumns[a].unit.abbreviature
             let monitorinfo = {
 						title: sTitle,
 						name: sTitle + position,
 						data: dateAndValues,
 						sampling_period: dataColumns[a].storagePeriod,
-						// unit: graphicOptions.unitType[b],
-						unit:dataColumns[a].unit.abbreviature, 
+						unit: unitAbbr, 
 						valueMIN: graphicOptions.valueMIN[b],
 						valueMAX: graphicOptions.valueMAX[b],
 						positionAxisY: graphicOptions.positionAxisY[b],
@@ -303,8 +305,8 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
      * Calculate tooltip 
      */
     let millisecondBaseCount;
-    let sum = 0;
-    let media = info.length;
+    let totalSum = 0;
+    let totalLength = info.length;
     let numSampling;
     if (sampling_period === 0) 
     {
@@ -312,9 +314,9 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 		{
 			let ifsampling = (info[n].sampling_period === "null") ? 2000000 : info[n].sampling_period;
 			numSampling = Math.trunc(ifsampling) / 1000; // tranform to milliseconds
-			sum += numSampling;
+			totalSum += numSampling;
 		}
-		millisecondBaseCount = sum / media; 
+		millisecondBaseCount = totalSum / totalLength; 
     }
     else 
     {
@@ -643,9 +645,23 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 			<div className="no-data-error-message display-none">
 				<LiveHelpIcon className="icon-no-data help-icon" />
 				<MoreHorizIcon className="icon-no-data dot-icon" />
-				<p>No Data Available</p>
-				<p>Try to use a different date range or a different Monitor</p>
+				<p>No Data Available.</p>
+				<p>Try to use a different date range or a different Monitor.</p>
 			</div>
+
+			{
+			// (responseError) ?
+			// (true) ?
+			// 	<div className="no-data-error-message display-none"> 
+			// 		<NearbyErrorIcon className="icon-no-data help-icon error-color" />
+			// 		{/* <MoreHorizIcon className="icon-no-data dot-icon" /> */}
+			// 		<p>An Error has Ocurred.</p>
+			// 		<p>Try to use a different date range or a different Monitor</p>
+			// 		<p>If the Error persist</p>
+			// 		<p>please contact the administrators.</p>
+			// 	</div>
+			// : ""
+			}
 			</div>
 			{/*<div id="legendContainer"></div>*/}
 		</div>
