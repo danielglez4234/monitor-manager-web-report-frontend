@@ -2355,8 +2355,8 @@ font-size: 13px !important;
   top: -243px;
   background-color: #45505e;
   height: 240px;
-  /* width: 805px; */
-  width: 600px;
+  width: 805px;
+  /* width: 600px; */
   text-align: left;
   display: flex;
   flex-direction: column;
