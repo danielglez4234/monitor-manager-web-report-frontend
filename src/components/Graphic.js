@@ -312,7 +312,8 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
     {
 		for (let n = 0; n < info.length; n++) 
 		{
-			let ifsampling = (info[n].sampling_period === "null") ? 2000000 : info[n].sampling_period;
+			// let ifsampling = (info[n].sampling_period === "null") ? 2000000 : info[n].sampling_period;
+			let ifsampling = (info[n].sampling_period === "") ? 2000000 : info[n].sampling_period;
 			numSampling = Math.trunc(ifsampling) / 1000; // tranform to milliseconds
 			totalSum += numSampling;
 		}
