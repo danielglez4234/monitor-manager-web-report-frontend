@@ -235,11 +235,11 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
     /*
      * Set Root format number for the values recived based if the number is integrer or not
      */
-    let ifFormat = (generalOptions.general.numberFormat !== "") ? generalOptions.general.numberFormat : "#";
-    const numberFormat = (generalOptions.general.scientificNotation) ? (ifFormat + "e") : ifFormat;
+    // let ifFormat = (generalOptions.general.numberFormat !== "") ? generalOptions.general.numberFormat : "#";
+    const sciNotation = (generalOptions.general.scientificNotation) ? "e" : "";
     root.numberFormatter.setAll({
 		// numberFormat: numberFormat,
-		numberFormat: "#e",
+		numberFormat: "#" + sciNotation,
 		// smallNumberThreshold: 0.001
 		// bigNumberPrefixes: [
 		//   { "number": 1e+4 }
