@@ -170,17 +170,17 @@ function PerformQuery(props) {
 		//   queryRest += "&Decimal=" + decimalPattern;
 		// }
 
-		let iDisplayStart;
+		let iDisplayStart = 0;
 		let iDisplayLength  = props.urliDisplayLength;
-		if (pagination?.active === true) // pagination.active can be false
-		{ 
-			// iDisplayStart = (pagination.actualPage * iDisplayLength) - iDisplayLength;
-			iDisplayStart = pagination.actualPage-1
-		}
-		else
-		{
-			iDisplayStart = 0
-		}
+		// if (pagination?.active === true) // pagination.active can be false
+		// { 
+		// 	// iDisplayStart = (pagination.actualPage * iDisplayLength) - iDisplayLength;
+		// 	iDisplayStart = pagination.actualPage-1
+		// }
+		// else
+		// {
+		//	 iDisplayStart = 0
+		// }
 		let url = searchFrom.begin_date.replace(/\s{1}/,"@")+".000/"+searchFrom.end_date.replace(/\s{1}/,"@")+".000/"+searchFrom.sampling+"?"+queryRest;
 		url += "&iDisplayStart=" + iDisplayStart + "&iDisplayLength=" + iDisplayLength;
 
@@ -216,7 +216,6 @@ function PerformQuery(props) {
 			}
 			dispatch(setSamples(res, searchFrom.sampling));
 			dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage));
-			
 			console.log(
 				"\n \
 				MonitorsMagnitude Data was recibe successfully!! \n \
@@ -225,23 +224,23 @@ function PerformQuery(props) {
 				total Records: " + totalRecords + " \n \
 				----------------------------------------------------------------"
 			);
+		})
+		.catch(error => {
+			const error_message = (error.response?.data) ? error.response.data.toString() : "Unsupported error";
+			const error_status = (error.response?.status) ? error.response.status : "Unknown"
+			handleMessage({ 
+				message: 'Error: ' + error_message + " - Code " + error_status,
+				type: 'error',
+				persist: true,
+				preventDuplicate: false
 			})
-			.catch(error => {
-				const error_message = (error.response?.data) ? error.response.data.toString() : "Unsupported error";
-				const error_status = (error.response?.status) ? error.response.status : "Unknown"
-				handleMessage({ 
-					message: 'Error: ' + error_message + " - Code " + error_status,
-					type: 'error',
-					persist: true,
-					preventDuplicate: false
-				})
-			console.error(error);
-			})
-			.finally(() => {
-				dispatch(setloadingButton(true));
-				dispatch(loadGraphic(false));
-				$(".block-monitor-selected-when-searching").remove(); // unlock monitor selected section
-			})
+		console.error(error);
+		})
+		.finally(() => {
+			dispatch(setloadingButton(true));
+			dispatch(loadGraphic(false));
+			$(".block-monitor-selected-when-searching").remove(); // unlock monitor selected section
+		})
 	}
 
 	/*
@@ -330,14 +329,12 @@ function PerformQuery(props) {
 				* construct the url and call the server data 
 				*/
 				getSamplesFromServer({begin_date, end_date, sampling});
-				console.log("uno")
 			}
 			else
 			{
 				/*
 				* construct the url for download
 				*/
-				console.log("dos")
 				return constructURL({begin_date, end_date, sampling, download: true})
 			}
 			return true
