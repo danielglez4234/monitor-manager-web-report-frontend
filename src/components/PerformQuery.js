@@ -227,12 +227,14 @@ function PerformQuery(props) {
 			);
 			})
 			.catch(error => {
-			handleMessage({ 
-				message: 'Error: ' + toString(error.response.data) + " - Code " + error.response.status,
-				type: 'error',
-				persist: true,
-				preventDuplicate: false
-			})
+				const error_message = (error.response?.data) ? error.response.data.toString() : "Unsupported error";
+				const error_status = (error.response?.status) ? error.response.status : "Unknown"
+				handleMessage({ 
+					message: 'Error: ' + error_message + " - Code " + error_status,
+					type: 'error',
+					persist: true,
+					preventDuplicate: false
+				})
 			console.error(error);
 			})
 			.finally(() => {
