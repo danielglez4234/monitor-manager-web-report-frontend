@@ -1,6 +1,10 @@
 TODO: 
     1.- Cambiar el botom de mostrar magnitude references a una posicion absoluta encima de las configuraciones generales
     2.- comentar el input de formato de decimales en los monitores seleccionados 
+    3.- refactorizar css en los settings de los monitors de las
+
+NOT_WORKING:
+    1.- deseleccion de propiedades a la hora de borrar monitores
 
 
 

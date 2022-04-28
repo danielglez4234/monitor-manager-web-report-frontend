@@ -71,3 +71,6 @@ typings/
 
 # FuseBox cache
 .fusebox/
+
+# enviroment variable
+.env
