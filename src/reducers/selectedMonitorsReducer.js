@@ -1,18 +1,29 @@
 const selectedMonitorsReducer = (state = [], action) => {
   switch(action.type) {
     case 'getSelectedMonitor':
-      return [
+      let reOrderMonitors = [
         ...state,
           {
-            id: action.id,
             monitorData: action.monitorData,
             component: action.component
           }
       ];
-
+      const sortEnumFirst = (data) => {
+        var first = [];
+        var others = [];
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].monitorData["type"] === "e" || data[i].monitorData["type"] === "b") {
+                first.push(data[i]);
+            } else {
+                others.push(data[i]);
+            }
+        }
+        return [...first, ...others]
+      }
+      return sortEnumFirst(reOrderMonitors)
 
     case 'diselectMonitor':
-      return state.filter((item) => item.id !== action.idMonitorMagnitude);
+      return state.filter((item) => item.monitorData.id !== action.idMonitorMagnitude);
       
 
     case 'diselectALLMonitor':

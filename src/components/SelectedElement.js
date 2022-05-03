@@ -86,7 +86,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
    * Handle remove item from list 
    */
   const onRemove = (id) => {
-    // $(".tr-monMag" + id).empty();
+    // $(".tr-monMag" + id).empty(); // NOT_WORKING:
     menuHandle(id, 'diselectMonitor');
     diActivateReload();
   }

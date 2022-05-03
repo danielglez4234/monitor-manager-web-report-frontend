@@ -6,19 +6,19 @@ import * as $  from 'jquery';
 import { getDataFromServer } from '../services/services';
 
 import {
-  useDispatch,
-  useSelector
+	useDispatch,
+	useSelector
 } from 'react-redux';
 
 import {
-  menuHandleSelectedMonitors,
-  reloadGrafic,
-  loadGraphic,
-  setloadingButton,
-  setTotalResponseData,
-  setActualPage,
-  setSamples,
-  getUrl
+	menuHandleSelectedMonitors,
+	reloadGrafic,
+	loadGraphic,
+	setloadingButton,
+	setTotalResponseData,
+	setActualPage,
+	setSamples,
+	getUrl
 } from '../actions';
 
 import loadingSls    from '../img/loadingSls.svg';
@@ -26,11 +26,11 @@ import blockMonitors from '../img/blockMonitors.svg';
 
 // --- Model Component elements
 import {
-  Stack,
-  Button,
-  Pagination,
-  LinearProgress,
-  Popover
+	Stack,
+	Button,
+	Pagination,
+	LinearProgress,
+	Popover
 } from '@mui/material';
 import { LtTooltip } from './uiStyles';
 
@@ -61,355 +61,360 @@ import ButtonMagnitudeReference from './ButtonMagnitudeReference'
 
 
 function ListSelectedMonitor(props) {
-  const dispatch             = useDispatch();
-  const [msg, handleMessage] = PopUpMessage();
+	const dispatch             = useDispatch();
+	const [msg, handleMessage] = PopUpMessage();
 
+	const monitor           = useSelector(state => state.monitor);
+	const getResponse       = useSelector(state => state.getResponse);
+	const onSearch          = useSelector(state => state.onSearch);
+	const totalResponseData = useSelector(state => state.totalResponseData);
 
-  const monitor           = useSelector(state => state.monitor);
-  const getResponse       = useSelector(state => state.getResponse);
-  const onSearch          = useSelector(state => state.onSearch);
-  const totalResponseData = useSelector(state => state.totalResponseData);
+	const graphicStillLoading = useSelector(state => state.loadingButton);
+	const loadingGraphic      = useSelector(state => state.loadingGraphic);
 
-  const graphicStillLoading = useSelector(state => state.loadingButton);
-  const loadingGraphic      = useSelector(state => state.loadingGraphic);
+	// pagination
+	let url            = useSelector(state => state.url);
+	const pagination   = useSelector(state => state.pagination);
 
-  // pagination
-  let url            = useSelector(state => state.url);
-  const pagination   = useSelector(state => state.pagination);
+	const [countMonitors, setCountMonitors] = useState(0);
 
-  const [countMonitors, setCountMonitors] = useState(0);
+	const [elements, setSelectedElements] = useState([]);
+	const [onSelect, setOnSelect]         = useState(true);
+	const [disabled, setDisabled]         = useState(true);
+	// const [disableWhileSearching, setDisableWhileSearching] = useState(false);
 
-  const [elements, setSelectedElements] = useState([]);
-  const [onSelect, setOnSelect]         = useState(true);
-  const [disabled, setDisabled]         = useState(true);
-  // const [disableWhileSearching, setDisableWhileSearching] = useState(false);
+	const [startloadingGraphic, setStartloadingGraphic]   = useState(false);
 
-  const [startloadingGraphic, setStartloadingGraphic]   = useState(false);
+	const [page, setPage]                             = useState(1);
+	const [totalPages, setTotalPages]                 = useState(0);
+	const [activatePagination, setActivatePagination] = useState(false);
+	const [loadingPage, setLoadingPage]               = useState(false);
+	const [totalPerPage, setTotalPerPages]            = useState(0);
 
-  const [page, setPage]                             = useState(1);
-  const [totalPages, setTotalPages]                 = useState(0);
-  const [activatePagination, setActivatePagination] = useState(false);
-  const [loadingPage, setLoadingPage]               = useState(false);
-  const [totalPerPage, setTotalPerPages]            = useState(0);
+	const [infoSamplesByPage, setInfoSamplesByPage]   = useState(0);
+	const [infoTotalSamples, setInfoTotalSamples]     = useState(0);
 
-  const [infoSamplesByPage, setInfoSamplesByPage]   = useState(0);
-  const [infoTotalSamples, setInfoTotalSamples]     = useState(0);
-
-  // test pop over info 
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const openPopoverGraphInfo = (event) => setAnchorEl(event.currentTarget);
-  const closePopoverGraphInfo = () => setAnchorEl(null);
-  const open = Boolean(anchorEl);
-  const popOverGraphID = open ? 'simple-popover' : undefined;
-  
 
   /*
    * Default State of the list
    */
-  let initialInfoText = <div className="no_monitor_selected">
-                          <DataUsageIcon className="img_monitor_selected"/>
-                          <p className="no_monitor_selected_message">Select a Monitor from the MonitorList</p>
-                        </div>;
+	let initialInfoText = <div className="no_monitor_selected">
+							<DataUsageIcon className="img_monitor_selected"/>
+							<p className="no_monitor_selected_message">Select a Monitor from the MonitorList</p>
+						  </div>;
 
-  /*
-   * Map selected elements
-   */
-  useEffect(() => {
-    if (monitor.length > 0) 
-    {
-      setOnSelect(false);
-      setCountMonitors(monitor.length);
-      setSelectedElements(monitor);
-      // $('#resizable').scrollBottom(0); // if a monitor is selected set the scroll to the bottom
-    }
-    else 
-    {
-      setOnSelect(true);
-      setCountMonitors(0);
-    }
-  }, [monitor]);
+	/*
+	 * Blink animation when a monitor is selected
+	 */
+	const blinkAnimation = () => {
+		const animationListeners = 'webkitAnimationEnd oanimationend msAnimationEnd animationend';
+		$('.selected-monitors-extends-buttons').addClass('blink')
+		$('.selected-monitors-extends-buttons').one(animationListeners, function () {  // when the animation ends remove the class
+			$('.selected-monitors-extends-buttons').removeClass('blink')
+		})
+	}
+
+	/*
+	* Map selected elements
+	*/
+	useEffect(() => {
+		if (monitor.length > 0) 
+		{
+			setOnSelect(false)
+			setCountMonitors(monitor.length)
+			setSelectedElements(monitor)
+				blinkAnimation()
+		}
+		else 
+		{
+			setOnSelect(true)
+			setCountMonitors(0)
+		}
+	}, [monitor]);
 
 
   /*
    * Update reload button when 'loadingbutton' and 'responseData'states changes
    */
-  useEffect(() => {
-    if (graphicStillLoading && getResponse.length !== 0)
-    {
-        if (getResponse.responseData.length !== 0 && getResponse.responseData.samples.length > 0)
-        {
-          // let calculateTotalPages = Math.ceil(getResponse.responseData.iTotalRows / totalResponseData.totalPerPage);
-          const totalPages   = getResponse.responseData.iTotalPages
-          const totalSamples = getResponse.responseData.iTotalSamples
-          const totalDisplay = getResponse.responseData.iTotalDisplaySamplesByPage
-          const totalPerPage = totalResponseData.totalPerPage 
+	useEffect(() => {
+		if (graphicStillLoading && getResponse.length !== 0)
+		{
+			if (getResponse.responseData.length !== 0 && getResponse.responseData.samples.length > 0)
+			{
+				// let calculateTotalPages = Math.ceil(getResponse.responseData.iTotalRows / totalResponseData.totalPerPage);
+				const totalPages   = getResponse.responseData.iTotalPages
+				const totalSamples = getResponse.responseData.iTotalSamples
+				const totalDisplay = getResponse.responseData.iTotalDisplaySamplesByPage
+				const totalPerPage = totalResponseData.totalPerPage 
 
-          // info display
-          setInfoSamplesByPage(totalDisplay)
-          setInfoTotalSamples(totalSamples)
-          // set pagination
-          setTotalPages(totalPages);
-          setTotalPerPages(totalPerPage);
-          setPage(1); // default page
-          setDisabled(false);
-            if (totalPages <= 1)
-            {
-              setActivatePagination(false);
-            }else
-            {
-              setActivatePagination(true);
-            }
-        }else {
-          setDisabled(true);
-          setTotalPages(0);
-          setInfoSamplesByPage(0);
-          setInfoTotalSamples(0);
-        }
-    }
-    else {
-      setDisabled(true);
-    }
-  }, [graphicStillLoading]);
+				// info display
+				setInfoSamplesByPage(totalDisplay)
+				setInfoTotalSamples(totalSamples)
+				// set pagination
+				setTotalPages(totalPages);
+				setTotalPerPages(totalPerPage);
+				setPage(1); // default page
+				setDisabled(false);
+				// TODO REFACTOR: convertir este if en una sola sentencia
+				// setActivatePagination((totalPages <= 1) ? false : true) // ==> ?? test {}()
+				if (totalPages <= 1)
+				{
+					setActivatePagination(false);
+				}else
+				{
+					setActivatePagination(true);
+				}
+			}else {
+				setDisabled(true);
+				setTotalPages(0);
+				setInfoSamplesByPage(0);
+				setInfoTotalSamples(0);
+			}
+		}
+		else {
+			setDisabled(true);
+		}
+	}, [graphicStillLoading]);
 
-  /*
-   * Show the loading icon for graphic when the loadingGrahic state changes
-   */
-  useEffect(() => {
-      setStartloadingGraphic(loadingGraphic);
-      // setDisableWhileSearching(loadingGraphic)
-      if(loadingGraphic){
-        setDisabled(true);
-        // $(".selected-monitors-section").prepend(
-        //   "<div class='block-monitor-selected-when-searching'> \
-        //     <img class='bolck-svg-monitors' alt='...' src='"+ blockMonitors +"'/> \
-        //   </div>")
-      }
-  }, [loadingGraphic]);
-
-
-  /*
-   * If perform is true the monitors selected 'id' will be stored,
-   + This will reset the 'reset_button' to 'active' if it returns to
-   + the original state of the monitors selected when the search was made
-   */
-  useEffect(() => {
-    if (getResponse?.responseData && onSearch?.perform && monitor.length > 0)
-    {
-      let monitorLastState    = onSearch.searchedMonitors;
-      let monitorsNowSelected = monitor.map(e => e.id);
-      // transform object to array, so we can use the every() and includes() functions
-      let a = Object.values(monitorLastState)
-      let b = Object.values(monitorsNowSelected)
-
-      let comparation = b.every(function (e) {
-          let val = (a.includes(e) && a.length === b.length)
-          return val
-      });
-
-      // if they match disable is set to false
-      if (!loadingGraphic){ // if the graphic is loading dont compare
-        setDisabled(!comparation);
-      }
-    }
-  }, [monitor, onSearch, getResponse]);
+	/*
+	* Show the loading icon for graphic when the loadingGrahic state changes
+	*/
+	useEffect(() => {
+		setStartloadingGraphic(loadingGraphic);
+		// setDisableWhileSearching(loadingGraphic)
+		if(loadingGraphic){
+			setDisabled(true);
+			// $(".selected-monitors-section").prepend(
+			//   "<div class='block-monitor-selected-when-searching'> \
+			//     <img class='bolck-svg-monitors' alt='...' src='"+ blockMonitors +"'/> \
+			//   </div>")
+		}
+	}, [loadingGraphic]);
 
 
-  /*
-   * Hide Component and monitor list handle arrows movement
-   */
-  const handleExpandSection = (icon, setHeightPX) => {
-    $(".menu-monitorSelected-contain").css('height', setHeightPX + "px");
-    if (setHeightPX === 0) {
-      $(".menu-monitorSelected-contain").addClass('hide-sections');
-      $(".selected-monitors-select-all").addClass('hide-sections');
-    }else {
-      $(".menu-monitorSelected-contain").removeClass('hide-sections');
-      $(".selected-monitors-select-all").removeClass('hide-sections');
-    }
-    $('.rotback').removeClass('rotate180 activeExpandColor');
-    if (icon === "visibilityMiddle-icon") {
-      if (!$('.visibilityMiddle-icon').hasClass('activeExpandColor')) {
-        $('.' + icon).toggleClass('activeExpandColor');
-      }
-    }else if (icon === "visibilityOff-icon") {
-      $('.' + icon).toggleClass('rotate180 activeExpandColor');
-      $('.visibilityMiddle-icon').removeClass('rotate180');
-    }else {
-      $('.' + icon).toggleClass('rotate180 activeExpandColor');
-      $('.visibilityMiddle-icon').toggleClass('rotate180');
-    }
-  }
+	/*
+	* If perform is true the monitors selected 'id' will be stored,
+	+ This will reset the 'reset_button' to 'active' if it returns to
+	+ the original state of the monitors selected when the search was made
+	*/
+	useEffect(() => {
+		if (getResponse?.responseData && onSearch?.perform && monitor.length > 0)
+		{
+			let monitorLastState    = onSearch.searchedMonitors;
+			let monitorsNowSelected = monitor.map(e => e.monitorData["id"]);
+			// transform object to array, so we can use the every() and includes() functions
+			let a = Object.values(monitorLastState)
+			let b = Object.values(monitorsNowSelected)
 
-  /*
-   * Show Less Details
-   */
-  const lessDatails = () => {
-    $('.monitor-selected-info_component_id').toggleClass('display-none');
-    $('.lessDetail-icon').toggleClass('color-menu-active');
-  }
+			let comparation = b.every(function (e) {
+				let val = (a.includes(e) && a.length === b.length)
+				return val
+			});
 
-  /*
-   * Reset all options
-   */
-  const resetOptions = () => {
-    $(".checkboxMo-monitor").prop('checked', false);
-    $('.color-line').prop('disabled', true);
-    $(".monitor-selected-select option").attr('selected', false);
-    $(".monitor-selected-select option[value='1']").attr('selected', true);
-    $(".input-limits-grafic-options").val('');
-  }
+			// if they match disable is set to false
+			if (!loadingGraphic){ // if the graphic is loading dont compare
+				setDisabled(!comparation);
+			}
+		}
+	}, [monitor, onSearch, getResponse]);
+
+
+	/*
+	* Hide Component and monitor list handle arrows movement
+	*/
+	const handleExpandSection = (icon, setHeightPX) => {
+		$(".menu-monitorSelected-contain").css('height', setHeightPX + "px");
+		if (setHeightPX === 0) {
+			$(".menu-monitorSelected-contain").addClass('hide-sections');
+			$(".selected-monitors-select-all").addClass('hide-sections');
+		}else {
+			$(".menu-monitorSelected-contain").removeClass('hide-sections');
+			$(".selected-monitors-select-all").removeClass('hide-sections');
+		}
+		$('.rotback').removeClass('rotate180 activeExpandColor');
+		if (icon === "visibilityMiddle-icon") {
+			if (!$('.visibilityMiddle-icon').hasClass('activeExpandColor')) {
+				$('.' + icon).toggleClass('activeExpandColor');
+			}
+		}else if (icon === "visibilityOff-icon") {
+			$('.' + icon).toggleClass('rotate180 activeExpandColor');
+			$('.visibilityMiddle-icon').removeClass('rotate180');
+		}else {
+			$('.' + icon).toggleClass('rotate180 activeExpandColor');
+			$('.visibilityMiddle-icon').toggleClass('rotate180');
+		}
+	}
+
+	/*
+	* Show Less Details
+	*/
+	const lessDatails = () => {
+		$('.monitor-selected-info_component_id').toggleClass('display-none');
+		$('.lessDetail-icon').toggleClass('color-menu-active');
+	}
+
+	/*
+	* Reset all options
+	*/
+	const resetOptions = () => {
+		$(".checkboxMo-monitor").prop('checked', false);
+		$('.color-line').prop('disabled', true);
+		$(".monitor-selected-select option").attr('selected', false);
+		$(".monitor-selected-select option[value='1']").attr('selected', true);
+		$(".input-limits-grafic-options").val('');
+	}
 
    /*
     * Handle graphic Info OPEN popover
     */
     const handleClickOpenInfo = () => {
-      $('.totalRecord-button-close_rangeZone').toggleClass('display-none');
-      $('.totalRecord-button-Popover ').toggleClass('display-none');
+		$('.totalRecord-button-close_rangeZone').toggleClass('display-none');
+		$('.totalRecord-button-Popover ').toggleClass('display-none');
     };
 
-  /*
-   * Change color when checkbox is disabled 
-   */
-   const disabledGraficOptions = (menuName) => {
-     var checkbox = $('.' + menuName + '-checkbox')
-     var menuIcon = $('.' + menuName + '-icon');
+	/*
+	* Change color when checkbox is disabled 
+	*/
+	const disabledGraficOptions = (menuName) => {
+		var checkbox = $('.' + menuName + '-checkbox')
+		var menuIcon = $('.' + menuName + '-icon');
 
-    if (checkbox.is(":checked")){
-      menuIcon.addClass('color-menu-disabled');
-    }else{
-      menuIcon.removeClass('color-menu-disabled');
-    }
-   }
+		if (checkbox.is(":checked")){
+			menuIcon.addClass('color-menu-disabled');
+		}else{
+			menuIcon.removeClass('color-menu-disabled');
+		}
+	}
 
-  /*
-   * handle all menu global state acions from monitorSelected
-   */
-  const menuHandle = (id, type) => {
-    dispatch(menuHandleSelectedMonitors(id, type));
-  }
+	/*
+	* handle all menu global state acions from monitorSelected
+	*/
+	const menuHandle = (id, type) => {
+		dispatch(menuHandleSelectedMonitors(id, type));
+	}
 
-  /*
-   * Disabled reload when the conditions are not compatible
-   */
-  const diActivateReload = () => {
-    dispatch(setloadingButton(false));
-    setDisabled(true);
-  }
+	/*
+	* Disabled reload when the conditions are not compatible
+	*/
+	const diActivateReload = () => {
+		dispatch(setloadingButton(false));
+		setDisabled(true);
+	}
 
-  /*
-   * Check all the corresponding checkboxes when you click the selected all 
-   */
-  const checkAllCheckboxes = (selectedCheckbox) => {
-    var checkboxAll       = $("." + selectedCheckbox + "-all");
-    var checkboxMonitors  = $("." + selectedCheckbox);
+	/*
+	* Check all the corresponding checkboxes when you click the selected all 
+	*/
+	const checkAllCheckboxes = (selectedCheckbox) => {
+		var checkboxAll       = $("." + selectedCheckbox + "-all");
+		var checkboxMonitors  = $("." + selectedCheckbox);
 
-    if (checkboxAll.is(":checked")) {
-        checkboxMonitors.prop('checked', true);
-    }else {
-        checkboxMonitors.prop('checked', false);
-    }
-  }
+		if (checkboxAll.is(":checked")) {
+			checkboxMonitors.prop('checked', true);
+		}else {
+			checkboxMonitors.prop('checked', false);
+		}
+	}
 
-  /*
-   * Handle pagination input value
-   */
-  const handleChange = (event, value) => {
-    setPage(value);
-    dispatch(setActualPage(activatePagination, totalPerPage, value, totalPages));
-  };
+	/*
+	* Handle pagination input value
+	*/
+	const handleChange = (event, value) => {
+		setPage(value);
+		dispatch(setActualPage(activatePagination, totalPerPage, value, totalPages));
+	};
 
-  /*
-   * Handle next page dataSamples
-   */
-  useEffect(()=>{
-      if (getResponse.length !== 0 && pagination.active ) {
-        dispatch(loadGraphic(true));
+	/*
+	* Handle next page dataSamples
+	*/
+	useEffect(()=>{
+		if (getResponse.length !== 0 && pagination.active ) {
+			dispatch(loadGraphic(true));
 
-        let iDisplayLength = pagination.displayLength
-        let actualPage     = pagination.actualPage;
+			let iDisplayLength = pagination.displayLength
+			let actualPage     = pagination.actualPage;
 
-        // let start = (actualPage * iDisplayLength) - iDisplayLength;
-        let start = actualPage-1
+			// let start = (actualPage * iDisplayLength) - iDisplayLength;
+			let start = actualPage-1
 
-        dispatch(setloadingButton(true));
-        setLoadingPage(true);
-        setDisabled(true);
+			dispatch(setloadingButton(true));
+			setLoadingPage(true);
+			setDisabled(true);
 
-        url = url.split('&iDisplayStart');
-        url[0] += "&iDisplayStart="+ start +"&iDisplayLength="+ iDisplayLength;
-        url = url[0];
+			url = url.split('&iDisplayStart');
+			url[0] += "&iDisplayStart="+ start +"&iDisplayLength="+ iDisplayLength;
+			url = url[0];
 
-        console.log("url: " + props.serviceName + url);
-        dispatch(getUrl(url));
+			console.log("url: " + props.serviceName + url);
+			dispatch(getUrl(url));
 
-        Promise.resolve( getDataFromServer({url}) )
-        .then(res => {
-          const totalArraysRecive  = res.samples.length;
-          const totalRecords       = res.iTotalSamples;
-          const totalPerPage       = props.urliDisplayLength;
-          const sampling_period    = getResponse.sampling_period;
-          dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage));
-          if (totalArraysRecive === 0) 
-          {
-            // const prevPage = page - 1;
-            // setTotalPages(prevPage);
-            // setPage(prevPage);
-            handleMessage({
-              message: 'No data was collected on this page, this may happen if the monitor goes into FAULT state.', 
-              type: 'default', 
-              persist: true,
-              preventDuplicate: false
-            })
-          }
-          else
-          {
-            dispatch(setSamples(res, sampling_period));
-            setInfoSamplesByPage(res.iTotalDisplaySamplesByPage)
-          }
-          console.log("Data recibe successfully");
-        })
-        .catch(error => {
-          handleMessage({
-            message: 'Error: Request failed with status code 500', 
-            type: 'error', 
-            persist: true,
-            preventDuplicate: false
-          })
-          console.error(error);
-        })
-        .finally(() => {
-          dispatch(setloadingButton(true));
-          dispatch(loadGraphic(false));
-          setLoadingPage(false);
-          setDisabled(false);
-          $(".block-monitor-selected-when-searching").remove(); // unlock monitor selected section
-        })
-    }
-  },[pagination]);
+			Promise.resolve( getDataFromServer({url}) )
+			.then(res => {
+				const totalArraysRecive  = res.samples.length;
+				const totalRecords       = res.iTotalSamples;
+				const totalPerPage       = props.urliDisplayLength;
+				const sampling_period    = getResponse.sampling_period;
+				dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage));
+					if (totalArraysRecive === 0) 
+					{
+						// const prevPage = page - 1;
+						// setTotalPages(prevPage);
+						// setPage(prevPage);
+						handleMessage({
+							message: 'No data was collected on this page, this may happen if the monitor goes into FAULT state.', 
+							type: 'default', 
+							persist: true,
+							preventDuplicate: false
+						})
+					}
+					else
+					{
+						dispatch(setSamples(res, sampling_period));
+						setInfoSamplesByPage(res.iTotalDisplaySamplesByPage)
+					}
+					console.log("Data recibe successfully");
+				})
+				.catch(error => {
+					handleMessage({
+						message: 'Error: Request failed with status code 500', 
+						type: 'error', 
+						persist: true,
+						preventDuplicate: false
+					})
+					console.error(error);
+				})
+				.finally(() => {
+					dispatch(setloadingButton(true));
+					dispatch(loadGraphic(false));
+					setLoadingPage(false);
+					setDisabled(false);
+					$(".block-monitor-selected-when-searching").remove(); // unlock monitor selected section
+				})
+		}
+	},[pagination]);
 
 
-  /*
-   * Check if exists magnitudes and return button component with values references
-   */
-  const checkIfExistsMagnitudes = (data) => {
-    let titles = []
-    let references = []
-    for (let a = 2; a < data.length; a++) 
-    {
-      if ((typeof data[a].stateOrMagnitudeValuesBind !== "undefined") && (data[a].stateOrMagnitudeValuesBind !== null))
-      {
-        titles.push(data[a].sTitle)
-        references.push(data[a].stateOrMagnitudeValuesBind)
-      }
-    }
-    if (references.length > 0) 
-    {
-      return <ButtonMagnitudeReference 
-                magnitudeTitles={titles}
-                magnitudeReferences={references}
-              />;
-    }
-  }
+	/*
+	* Check if exists magnitudes and return button component with values references
+	*/
+	const checkIfExistsMagnitudes = (data) => {
+		let titles = []
+		let references = []
+		for (let a = 2; a < data.length; a++) 
+		{
+			if ((typeof data[a].stateOrMagnitudeValuesBind !== "undefined") && (data[a].stateOrMagnitudeValuesBind !== null))
+			{
+				titles.push(data[a].sTitle)
+				references.push(data[a].stateOrMagnitudeValuesBind)
+			}
+		}
+		if (references.length > 0) 
+		{
+			return <ButtonMagnitudeReference 
+						magnitudeTitles={titles}
+						magnitudeReferences={references}
+					/>;
+		}
+	}
 
 
     return(
@@ -461,7 +466,7 @@ function ListSelectedMonitor(props) {
                       elements.map((element, index) =>
                         <SelectedElement
                           key           = { index }
-                          id            = { element.id }
+                          id            = { element.monitorData.id }
                           monitorData   = { element.monitorData }
                           component     = { element.component }
                           menuHandle    = { menuHandle }
@@ -561,8 +566,7 @@ function ListSelectedMonitor(props) {
                   </div>
                     <div className="totalRecord-button-close_rangeZone display-none" onClick={handleClickOpenInfo}></div>
                     <div className="totalRecord-box">
-                      <Button 
-                        aria-describedby={popOverGraphID} 
+                      <Button  
                         variant="contained" 
                         onClick={handleClickOpenInfo} 
                         className="totalRecord-button" 

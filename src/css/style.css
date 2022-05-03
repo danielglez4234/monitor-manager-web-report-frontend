@@ -2730,6 +2730,24 @@ font-size: 13px !important;
   animation-delay: .8s;
 }
 
+
+.selected-monitors-extends-buttons.blink{
+  -webkit-animation: fastblink 0.3s 0.1s 1 linear alternate;
+  -moz-animation: fastblink 0.3s 0.1s 1 linear alternate;
+  -ms-animation: fastblink 0.3s 0.1s 1 linear alternate;
+  -o-animation: fastblink 0.3s 0.1s 1 linear alternate;
+  animation: fastblink 0.3s 0.1s 1 linear alternate;
+}
+
+@keyframes fastblink {
+  0% {
+    background-color: #b8bdc5;
+  }
+  100% {
+    background-color: #333a44;
+  }
+}
+
 @keyframes float {
   100% {
     transform: translateY(20px);

@@ -652,7 +652,6 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 
 			{
 			// (responseError) ?
-			// (true) ?
 			// 	<div className="no-data-error-message display-none"> 
 			// 		<NearbyErrorIcon className="icon-no-data help-icon error-color" />
 			// 		{/* <MoreHorizIcon className="icon-no-data dot-icon" /> */}

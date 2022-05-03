@@ -1,7 +1,6 @@
-export const selectMonitor = (id, monitorData, componentName) => {
+export const selectMonitor = (monitorData, componentName) => {
   return{
     type: 'getSelectedMonitor',
-    id: id,
     monitorData: monitorData,
     component: componentName
   }
