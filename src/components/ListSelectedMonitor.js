@@ -120,6 +120,7 @@ function ListSelectedMonitor(props) {
       setOnSelect(false);
       setCountMonitors(monitor.length);
       setSelectedElements(monitor);
+      // $('#resizable').scrollBottom(0); // if a monitor is selected set the scroll to the bottom
     }
     else 
     {

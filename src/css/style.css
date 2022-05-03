@@ -722,6 +722,9 @@ table.table-selected-monitors tr:nth-child(odd)
   top: 3px;
   cursor: pointer;
 }
+.error-color{
+  color: #EC5B5B !important;
+}
 
 .description-info-icon{
   color: #ffffff !important;
