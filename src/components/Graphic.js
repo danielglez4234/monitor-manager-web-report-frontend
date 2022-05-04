@@ -1,8 +1,3 @@
-//  FIXME: 
-//  los monitors enumerados siempre llegan de primeros en la tabla columns
-//  hay que reordenar de alguna manera el array de mis monitores selecionados
-//  para alinear las opciones selecionadas
-
 import React, { useEffect, useRef }  from 'react';
 
 import { useSelector }    from 'react-redux';
