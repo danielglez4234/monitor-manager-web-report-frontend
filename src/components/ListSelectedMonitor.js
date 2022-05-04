@@ -130,16 +130,16 @@ function ListSelectedMonitor(props) {
 			setOnSelect(true)
 			setCountMonitors(0)
 		}
-	}, [monitor]);
+	}, [monitor])
 
 
   /*
    * Update reload button when 'loadingbutton' and 'responseData'states changes
    */
 	useEffect(() => {
-		if (graphicStillLoading && getResponse.length !== 0)
-		{
-			if (getResponse.responseData.length !== 0 && getResponse.responseData.samples.length > 0)
+		// if (graphicStillLoading && getResponse.length !== 0)
+		// {
+			if (getResponse?.responseData?.samples && getResponse.responseData.samples.length > 0)
 			{
 				// let calculateTotalPages = Math.ceil(getResponse.responseData.iTotalRows / totalResponseData.totalPerPage);
 				const totalPages   = getResponse.responseData.iTotalPages
@@ -151,45 +151,46 @@ function ListSelectedMonitor(props) {
 				setInfoSamplesByPage(totalDisplay)
 				setInfoTotalSamples(totalSamples)
 				// set pagination
-				setTotalPages(totalPages);
-				setTotalPerPages(totalPerPage);
-				setPage(1); // default page
-				setDisabled(false);
-				// TODO REFACTOR: convertir este if en una sola sentencia
-				// setActivatePagination((totalPages <= 1) ? false : true) // ==> ?? test {}()
-				if (totalPages <= 1)
-				{
-					setActivatePagination(false);
-				}else
-				{
-					setActivatePagination(true);
-				}
-			}else {
-				setDisabled(true);
-				setTotalPages(0);
-				setInfoSamplesByPage(0);
-				setInfoTotalSamples(0);
+				setTotalPages(totalPages)
+				setTotalPerPages(totalPerPage)
+				setPage(1) 								// default page
+				setDisabled(false)
+				setActivatePagination((totalPages <= 1) ? false : true)
+				// if (totalPages <= 1)
+				// {
+				// 	setActivatePagination(false);
+				// }else
+				// {
+				// 	setActivatePagination(true);
+				// }
 			}
-		}
-		else {
-			setDisabled(true);
-		}
-	}, [graphicStillLoading]);
+			else 
+			{
+				setDisabled(true)
+				setTotalPages(0)
+				setInfoSamplesByPage(0)
+				setInfoTotalSamples(0)
+			}
+		// }
+		// else {
+		// 	setDisabled(true);
+		// }
+	}, [graphicStillLoading])
 
 	/*
 	 * Show the loading icon for graphic when the loadingGrahic state changes
 	 */
 	useEffect(() => {
-		setStartloadingGraphic(loadingGraphic);
+		setStartloadingGraphic(loadingGraphic)
 		// setDisableWhileSearching(loadingGraphic)
 		if(loadingGraphic){
-			setDisabled(true);
+			setDisabled(true)
 			// $(".selected-monitors-section").prepend(
 			//   "<div class='block-monitor-selected-when-searching'> \
 			//     <img class='bolck-svg-monitors' alt='...' src='"+ blockMonitors +"'/> \
 			//   </div>")
 		}
-	}, [loadingGraphic]);
+	}, [loadingGraphic])
 
 
 	/*
@@ -200,8 +201,8 @@ function ListSelectedMonitor(props) {
 	useEffect(() => {
 		if (getResponse?.responseData && onSearch?.perform && monitor.length > 0)
 		{
-			let monitorLastState    = onSearch.searchedMonitors;
-			let monitorsNowSelected = monitor.map(e => e.monitorData["id"]);
+			let monitorLastState    = onSearch.searchedMonitors
+			let monitorsNowSelected = monitor.map(e => e.monitorData["id"])
 			// transform object to array, so we can use the every() and includes() functions
 			let a = Object.values(monitorLastState)
 			let b = Object.values(monitorsNowSelected)
@@ -213,35 +214,35 @@ function ListSelectedMonitor(props) {
 
 			// if they match disable is set to false
 			if (!loadingGraphic){ // if the graphic is loading dont compare
-				setDisabled(!comparation);
+				setDisabled(!comparation)
 			}
 		}
-	}, [monitor, onSearch, getResponse]);
+	}, [monitor, onSearch, getResponse])
 
 
 	/*
 	 * Hide Component and monitor list handle arrows movement
 	 */
 	const handleExpandSection = (icon, setHeightPX) => {
-		$(".menu-monitorSelected-contain").css('height', setHeightPX + "px");
+		$(".menu-monitorSelected-contain").css('height', setHeightPX + "px")
 		if (setHeightPX === 0) {
-			$(".menu-monitorSelected-contain").addClass('hide-sections');
-			$(".selected-monitors-select-all").addClass('hide-sections');
+			$(".menu-monitorSelected-contain").addClass('hide-sections')
+			$(".selected-monitors-select-all").addClass('hide-sections')
 		}else {
-			$(".menu-monitorSelected-contain").removeClass('hide-sections');
-			$(".selected-monitors-select-all").removeClass('hide-sections');
+			$(".menu-monitorSelected-contain").removeClass('hide-sections')
+			$(".selected-monitors-select-all").removeClass('hide-sections')
 		}
-		$('.rotback').removeClass('rotate180 activeExpandColor');
+		$('.rotback').removeClass('rotate180 activeExpandColor')
 		if (icon === "visibilityMiddle-icon") {
 			if (!$('.visibilityMiddle-icon').hasClass('activeExpandColor')) {
-				$('.' + icon).toggleClass('activeExpandColor');
+				$('.' + icon).toggleClass('activeExpandColor')
 			}
 		}else if (icon === "visibilityOff-icon") {
-			$('.' + icon).toggleClass('rotate180 activeExpandColor');
-			$('.visibilityMiddle-icon').removeClass('rotate180');
+			$('.' + icon).toggleClass('rotate180 activeExpandColor')
+			$('.visibilityMiddle-icon').removeClass('rotate180')
 		}else {
-			$('.' + icon).toggleClass('rotate180 activeExpandColor');
-			$('.visibilityMiddle-icon').toggleClass('rotate180');
+			$('.' + icon).toggleClass('rotate180 activeExpandColor')
+			$('.visibilityMiddle-icon').toggleClass('rotate180')
 		}
 	}
 
@@ -249,27 +250,27 @@ function ListSelectedMonitor(props) {
 	 * Show Less Details
 	 */
 	const lessDatails = () => {
-		$('.monitor-selected-info_component_id').toggleClass('display-none');
-		$('.lessDetail-icon').toggleClass('color-menu-active');
+		$('.monitor-selected-info_component_id').toggleClass('display-none')
+		$('.lessDetail-icon').toggleClass('color-menu-active')
 	}
 
 	/*
 	 * Reset all options
 	 */
 	const resetOptions = () => {
-		$(".checkboxMo-monitor").prop('checked', false);
-		$('.color-line').prop('disabled', true);
-		$(".monitor-selected-select option").attr('selected', false);
-		$(".monitor-selected-select option[value='1']").attr('selected', true);
-		$(".input-limits-grafic-options").val('');
+		$(".checkboxMo-monitor").prop('checked', false)
+		$('.color-line').prop('disabled', true)
+		$(".monitor-selected-select option").attr('selected', false)
+		$(".monitor-selected-select option[value='1']").attr('selected', true)
+		$(".input-limits-grafic-options").val('')
 	}
 
    	/*
      * Handle graphic Info OPEN popover
      */
     const handleClickOpenInfo = () => {
-		$('.totalRecord-button-close_rangeZone').toggleClass('display-none');
-		$('.totalRecord-button-Popover ').toggleClass('display-none');
+		$('.totalRecord-button-close_rangeZone').toggleClass('display-none')
+		$('.totalRecord-button-Popover ').toggleClass('display-none')
     };
 
 	/*
@@ -280,9 +281,9 @@ function ListSelectedMonitor(props) {
 		var menuIcon = $('.' + menuName + '-icon');
 
 		if (checkbox.is(":checked")){
-			menuIcon.addClass('color-menu-disabled');
+			menuIcon.addClass('color-menu-disabled')
 		}else{
-			menuIcon.removeClass('color-menu-disabled');
+			menuIcon.removeClass('color-menu-disabled')
 		}
 	}
 
@@ -290,28 +291,28 @@ function ListSelectedMonitor(props) {
 	 * handle all menu global state acions from monitorSelected
 	 */
 	const menuHandle = (id, type) => {
-		dispatch(menuHandleSelectedMonitors(id, type));
+		dispatch(menuHandleSelectedMonitors(id, type))
 	}
 
 	/*
 	 * Disabled reload when the conditions are not compatible
 	 */
 	const diActivateReload = () => {
-		dispatch(setloadingButton(false));
-		setDisabled(true);
+		dispatch(setloadingButton(false))
+		setDisabled(true)
 	}
 
 	/*
 	 * Check all the corresponding checkboxes when you click the selected all 
 	 */
 	const checkAllCheckboxes = (selectedCheckbox) => {
-		var checkboxAll       = $("." + selectedCheckbox + "-all");
+		var checkboxAll       = $("." + selectedCheckbox + "-all")
 		var checkboxMonitors  = $("." + selectedCheckbox);
 
 		if (checkboxAll.is(":checked")) {
-			checkboxMonitors.prop('checked', true);
+			checkboxMonitors.prop('checked', true)
 		}else {
-			checkboxMonitors.prop('checked', false);
+			checkboxMonitors.prop('checked', false)
 		}
 	}
 
@@ -319,41 +320,42 @@ function ListSelectedMonitor(props) {
 	 * Handle pagination input value
 	 */
 	const handleChange = (event, value) => {
-		setPage(value);
-		dispatch(setActualPage(activatePagination, totalPerPage, value, totalPages));
+		setPage(value)
+		dispatch(setActualPage(activatePagination, totalPerPage, value, totalPages))
 	};
 
 	/*
 	 * Handle next page dataSamples
 	 */
 	useEffect(()=>{
-		if (getResponse.length !== 0 && pagination.active ) {
-			dispatch(loadGraphic(true));
+		if (getResponse.length !== 0 && pagination.active ) 
+		{
+			dispatch(loadGraphic(true))
 
 			let iDisplayLength = pagination.displayLength
-			let actualPage     = pagination.actualPage;
+			let actualPage     = pagination.actualPage
 
 			// let start = (actualPage * iDisplayLength) - iDisplayLength;
 			let start = actualPage-1
 
-			dispatch(setloadingButton(true));
-			setLoadingPage(true);
-			setDisabled(true);
+			dispatch(setloadingButton(true))
+			setLoadingPage(true)
+			setDisabled(true)
 
-			url = url.split('&iDisplayStart');
-			url[0] += "&iDisplayStart="+ start +"&iDisplayLength="+ iDisplayLength;
-			url = url[0];
+			url = url.split('&iDisplayStart')
+			url[0] += "&iDisplayStart="+ start +"&iDisplayLength="+ iDisplayLength
+			url = url[0]
 
-			console.log("url: " + props.serviceName + url);
-			dispatch(getUrl(url));
+			console.log("url: " + props.serviceName + url)
+			dispatch(getUrl(url))
 
 			Promise.resolve( getDataFromServer({url}) )
 			.then(res => {
-				const totalArraysRecive  = res.samples.length;
-				const totalRecords       = res.iTotalSamples;
-				const totalPerPage       = props.urliDisplayLength;
-				const sampling_period    = getResponse.sampling_period;
-				dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage));
+				const totalArraysRecive  = res.samples.length
+				const totalRecords       = res.iTotalSamples
+				const totalPerPage       = props.urliDisplayLength
+				const sampling_period    = getResponse.sampling_period
+				dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
 					if (totalArraysRecive === 0) 
 					{
 						// const prevPage = page - 1;
@@ -368,7 +370,7 @@ function ListSelectedMonitor(props) {
 					}
 					else
 					{
-						dispatch(setSamples(res, sampling_period));
+						dispatch(setSamples(res, sampling_period))
 						setInfoSamplesByPage(res.iTotalDisplaySamplesByPage)
 					}
 					console.log("Data recibe successfully");
@@ -380,14 +382,14 @@ function ListSelectedMonitor(props) {
 						persist: true,
 						preventDuplicate: false
 					})
-					console.error(error);
+					console.error(error)
 				})
 				.finally(() => {
-					dispatch(setloadingButton(true));
-					dispatch(loadGraphic(false));
-					setLoadingPage(false);
-					setDisabled(false);
-					$(".block-monitor-selected-when-searching").remove(); // unlock monitor selected section
+					dispatch(setloadingButton(true))
+					dispatch(loadGraphic(false))
+					setLoadingPage(false)
+					setDisabled(false)
+					$(".block-monitor-selected-when-searching").remove() // unlock monitor selected section
 				})
 		}
 	},[pagination]);
