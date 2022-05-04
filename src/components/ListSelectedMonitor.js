@@ -177,8 +177,8 @@ function ListSelectedMonitor(props) {
 	}, [graphicStillLoading]);
 
 	/*
-	* Show the loading icon for graphic when the loadingGrahic state changes
-	*/
+	 * Show the loading icon for graphic when the loadingGrahic state changes
+	 */
 	useEffect(() => {
 		setStartloadingGraphic(loadingGraphic);
 		// setDisableWhileSearching(loadingGraphic)
@@ -193,10 +193,10 @@ function ListSelectedMonitor(props) {
 
 
 	/*
-	* If perform is true the monitors selected 'id' will be stored,
-	+ This will reset the 'reset_button' to 'active' if it returns to
-	+ the original state of the monitors selected when the search was made
-	*/
+	 * If perform is true the monitors selected 'id' will be stored,
+	 + This will reset the 'reset_button' to 'active' if it returns to
+	 + the original state of the monitors selected when the search was made
+	 */
 	useEffect(() => {
 		if (getResponse?.responseData && onSearch?.perform && monitor.length > 0)
 		{
@@ -220,8 +220,8 @@ function ListSelectedMonitor(props) {
 
 
 	/*
-	* Hide Component and monitor list handle arrows movement
-	*/
+	 * Hide Component and monitor list handle arrows movement
+	 */
 	const handleExpandSection = (icon, setHeightPX) => {
 		$(".menu-monitorSelected-contain").css('height', setHeightPX + "px");
 		if (setHeightPX === 0) {
@@ -246,16 +246,16 @@ function ListSelectedMonitor(props) {
 	}
 
 	/*
-	* Show Less Details
-	*/
+	 * Show Less Details
+	 */
 	const lessDatails = () => {
 		$('.monitor-selected-info_component_id').toggleClass('display-none');
 		$('.lessDetail-icon').toggleClass('color-menu-active');
 	}
 
 	/*
-	* Reset all options
-	*/
+	 * Reset all options
+	 */
 	const resetOptions = () => {
 		$(".checkboxMo-monitor").prop('checked', false);
 		$('.color-line').prop('disabled', true);
@@ -264,17 +264,17 @@ function ListSelectedMonitor(props) {
 		$(".input-limits-grafic-options").val('');
 	}
 
-   /*
-    * Handle graphic Info OPEN popover
-    */
+   	/*
+     * Handle graphic Info OPEN popover
+     */
     const handleClickOpenInfo = () => {
 		$('.totalRecord-button-close_rangeZone').toggleClass('display-none');
 		$('.totalRecord-button-Popover ').toggleClass('display-none');
     };
 
 	/*
-	* Change color when checkbox is disabled 
-	*/
+	 * Change color when checkbox is disabled 
+	 */
 	const disabledGraficOptions = (menuName) => {
 		var checkbox = $('.' + menuName + '-checkbox')
 		var menuIcon = $('.' + menuName + '-icon');
@@ -287,23 +287,23 @@ function ListSelectedMonitor(props) {
 	}
 
 	/*
-	* handle all menu global state acions from monitorSelected
-	*/
+	 * handle all menu global state acions from monitorSelected
+	 */
 	const menuHandle = (id, type) => {
 		dispatch(menuHandleSelectedMonitors(id, type));
 	}
 
 	/*
-	* Disabled reload when the conditions are not compatible
-	*/
+	 * Disabled reload when the conditions are not compatible
+	 */
 	const diActivateReload = () => {
 		dispatch(setloadingButton(false));
 		setDisabled(true);
 	}
 
 	/*
-	* Check all the corresponding checkboxes when you click the selected all 
-	*/
+	 * Check all the corresponding checkboxes when you click the selected all 
+	 */
 	const checkAllCheckboxes = (selectedCheckbox) => {
 		var checkboxAll       = $("." + selectedCheckbox + "-all");
 		var checkboxMonitors  = $("." + selectedCheckbox);
@@ -316,16 +316,16 @@ function ListSelectedMonitor(props) {
 	}
 
 	/*
-	* Handle pagination input value
-	*/
+	 * Handle pagination input value
+	 */
 	const handleChange = (event, value) => {
 		setPage(value);
 		dispatch(setActualPage(activatePagination, totalPerPage, value, totalPages));
 	};
 
 	/*
-	* Handle next page dataSamples
-	*/
+	 * Handle next page dataSamples
+	 */
 	useEffect(()=>{
 		if (getResponse.length !== 0 && pagination.active ) {
 			dispatch(loadGraphic(true));
@@ -394,8 +394,8 @@ function ListSelectedMonitor(props) {
 
 
 	/*
-	* Check if exists magnitudes and return button component with values references
-	*/
+	 * Check if exists magnitudes and return button component with values references
+	 */
 	const checkIfExistsMagnitudes = (data) => {
 		let titles = []
 		let references = []

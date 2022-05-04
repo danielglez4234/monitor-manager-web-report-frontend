@@ -321,7 +321,7 @@ function PerformQuery(props) {
 			{
 				setLoadingSearch(true);
 				dispatch(setActualPage(false, 0, 0)); // reset pagination if it is already display
-				let searchedMonitors = monitor.map(e => e.id); // save the monitors id's that where choosen for the search
+				let searchedMonitors = monitor.map(e => e.monitorData["id"]); // save the monitors id's that where choosen for the search
 				dispatch(hadleSearch(perform, begin_date, end_date, sampling, searchedMonitors));
 				dispatch(setloadingButton(false));
 				dispatch(loadGraphic(true));
