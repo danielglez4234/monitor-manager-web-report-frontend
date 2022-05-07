@@ -44,7 +44,7 @@ import ArrowLeftIcon             from '@mui/icons-material/ArrowLeft';
 
 import DownloadEmailData from './DownloadEmailData';
 // import AdvancedOptions from './AdvancedOptions';
-import StoreQuery     from './StoreQuery';
+import MainStoreQuery     from './stroreQuerys/MainStoreQuery';
 import PopUpMessage      from './handleErrors/PopUpMessage';
 
 
@@ -343,7 +343,7 @@ function PerformQuery(props) {
 
 
     return(
-		<div className="container-adjust-height">
+		<>
 			<div className="arrowShowHide arrow-showPerfomSection hide-sections"><ArrowLeftIcon onClick={() => { hideAndShowSection() }} className="arrow-rightSection" /></div>
 			<div className="perform-query-section">
 				<div className="sample-header-perform-query">
@@ -447,9 +447,9 @@ function PerformQuery(props) {
 
 					</Stack>
 				</div>
-					{/* <StoreQuery /> */}
+					<MainStoreQuery />
 			</div>
-		</div>
+		</>
     );
 
 }

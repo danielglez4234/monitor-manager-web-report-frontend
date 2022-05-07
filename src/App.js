@@ -41,13 +41,13 @@ function App() {
 
 	return (
 		<SnackbarProvider
-		anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-		ref={notistackRef}
-		action={(key) => (
-			<Button className="snackbar-handle-close" onClick={onClickDismiss(key)}>
-				X
-			</Button>
-		)}
+			anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+			ref={notistackRef}
+			action={(key) => (
+				<Button className="snackbar-handle-close" onClick={onClickDismiss(key)}>
+					X
+				</Button>
+			)}
 		>
 			<Provider store={store}>
 				<Router>

@@ -78,3 +78,54 @@ export const getUnitConversion = (unitType) => {
 
 // apaño temporal hacia el backend --> replace '###' por %23 forzando el cambio de esta forma para evitar errores
 const fnReplacePad = (url) => { return url.replace(/#/g, '%23') }
+
+
+/*
+-------------------------------
+*
+* STORE QUERY ROUTES
+*
+-------------------------------
+*/
+
+
+/*
+ * GET all querys
+ */
+export const getAllQuerys = () => {
+    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/query/", {header: httpHeaderOptions})
+            .then(res => res.data)
+}
+
+/*
+ *  GET specific query
+ */
+export const getQuery = (id) => {
+    return axios.get(REACT_APP_SERVICES_IP + `/WebReport/query/${id}`, {header: httpHeaderOptions})
+            .then(res => res.data)
+}
+
+/*
+ * POST a new query
+ */
+export const insertQuery = (payload) => {
+    return axios.post(REACT_APP_SERVICES_IP + "/WebReport/query/", payload, {header: httpHeaderOptions})
+            .then(res => res.data)
+}
+
+
+/*
+ * UPDATE a new query
+ */
+export const updateQuery = (id, payload) => {
+    return axios.post(REACT_APP_SERVICES_IP + `/WebReport/query/${id}`, payload, {header: httpHeaderOptions})
+            .then(res => res.data)
+}
+
+/*
+ * Remove query
+ */
+export const deleteQuery = (id, payload) => {
+    return axios.delete(REACT_APP_SERVICES_IP + `/WebReport/query/${id}`, payload, {header: httpHeaderOptions})
+            .then(res => res.data)
+}
