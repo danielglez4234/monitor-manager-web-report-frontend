@@ -27,6 +27,7 @@ import {
 } from './uiStyles';
 
 // --- Icons
+import CachedIcon 					  from '@mui/icons-material/Cached';
 import SearchIcon                     from '@mui/icons-material/Search';
 import SnippetFolderIcon              from '@mui/icons-material/SnippetFolder';
 import ArrowLeftIcon                  from '@mui/icons-material/ArrowLeft';
@@ -42,26 +43,26 @@ import PopUpMessage                   from './handleErrors/PopUpMessage';
 
 
 function ListComponentMonitor() {
-	const dispatch             = useDispatch();
-	const [msg, handleMessage] = PopUpMessage();
+	const dispatch             = useDispatch()
+	const [msg, handleMessage] = PopUpMessage()
 
-	const monitorAlreadySelected  = useSelector(state => state.monitor);
+	const monitorAlreadySelected  = useSelector(state => state.monitor)
 
-	const [idMonitorsAlreadySelected, setIdMonitorsAlreadySelected] = useState([]);
+	const [idMonitorsAlreadySelected, setIdMonitorsAlreadySelected] = useState([])
 
-	const [data_components, setData_components]            = useState([]);
-	const [loadingComponent, setLoadingComponent]          = useState(true);
-	const [resultQueryComponent, setResultQueryComponent]  = useState([]);
-	const [component_clicked, setComponent_clicked]        = useState('');
+	const [data_components, setData_components]            = useState([])
+	const [loadingComponent, setLoadingComponent]          = useState(true)
+	const [resultQueryComponent, setResultQueryComponent]  = useState([])
+	const [component_clicked, setComponent_clicked]        = useState('')
 
-	const [data_monitors, setData_monitors]                = useState([]);
-	const [initialStateMonitors, setInitialStateMonitors]  = useState(true);
-	const [resultQueryMonitor, setResultQueryMonitor]      = useState([]);
+	const [data_monitors, setData_monitors]                = useState([])
+	const [initialStateMonitors, setInitialStateMonitors]  = useState(true)
+	const [resultQueryMonitor, setResultQueryMonitor]      = useState([])
 
-	const [loadingMonitors, setLoadingMonitors]            = useState(true);
-	const [monitorsAvailable, setNoMonitorsAvailable]      = useState(true);
+	const [loadingMonitors, setLoadingMonitors]            = useState(true)
+	const [monitorsAvailable, setNoMonitorsAvailable]      = useState(true)
 
-	const [connectionError, setConnectionError] = useState(false);
+	const [connectionError, setConnectionError] = useState(false)
 
 
   /*
@@ -94,35 +95,51 @@ function ListComponentMonitor() {
 
 
 	/*
-	* Get All Components
-	*/
-	useEffect(() => {
-		$("#initialImg").removeClass('display-none'); // return to default state
+	 * Get All Components
+	 */
+	const getAllComponents = () => {
 		Promise.resolve( getComponents() )
 		.then(res => {
-			setData_components(res);
-			setResultQueryComponent(res); 
-			console.log("Comoponet Data was recibe successfully");
+			setConnectionError(false)
+			setData_components(res)
+			setResultQueryComponent(res)
+			console.log("Comoponet Data was recibe successfully")
 		})
 		.catch(error => { 
-			setConnectionError(true);
+			setConnectionError(true)
 			handleMessage({ 
 				message: 'Error fetching components data on the Server', 
 				type: 'error', 
 				persist: true,
 				preventDuplicate: false
 			})
-			console.error(error);
+			console.error(error)
 		})
 		.finally(() => { 
-			setLoadingComponent(false);
+			setLoadingComponent(false)
 		});
 		// var mon = ["component", "arbitrario", "nosecomo", "Fresa" ,"Manzana", "Banana", "Repollo", "Nabo", "Rábano", "Zanahoria"];
 		// setData_components(mon);
 		// setResultQueryComponent(mon);
 		// setResultQueryComponent(mon);
 		// setLoadingComponent(false);
+	}
+	
+	/*
+	 * Init load
+	 */
+	useEffect(() => {
+		$("#initialImg").removeClass('display-none'); // return to default state
+		getAllComponents()
 	}, []);
+
+	/*
+	 * Try reconnecting components
+	 */
+	const tryReconnect = () => {
+		setLoadingComponent(true)
+		getAllComponents()
+	}
 
 	/*
 	* Check if monitor is alredy selected
@@ -146,7 +163,6 @@ function ListComponentMonitor() {
 			.then(res => {
 				if (res) 
 				{
-					setLoadingMonitors(false);
 					setNoMonitorsAvailable(false);
 					setData_monitors(res);
 					setResultQueryMonitor(res);
@@ -154,11 +170,12 @@ function ListComponentMonitor() {
 				}
 				else 
 				{
-					setLoadingMonitors(false);
 					setNoMonitorsAvailable(true);
 				}
+				setLoadingMonitors(false);
 			})
 			.catch(error => {
+
 				handleMessage({ 
 					message: 'Error fetching monitors data on the Server', 
 					type: 'error', 
@@ -282,23 +299,41 @@ function ListComponentMonitor() {
 			<div className="SampleMonitorList-section">
 				<div className="sample-list-box">
 					<div className="sample-header sample-items-components">
-					<Stack direction="column" spacing={2}>
-						<Stack className="stack-row-components-title-buttons" direction="row">
-							<p className="components-item-title">Components Item List</p>
-							<ArrowLeftIcon onClick={() => { hideAndShowSection() }} className="hide_icon_componentList"/>
+						<Stack direction="column" spacing={2}>
+							<Stack className="stack-row-components-title-buttons" direction="row">
+								<p className="components-item-title">Components Item List</p>
+								<ArrowLeftIcon onClick={() => { hideAndShowSection() }} className="hide_icon_componentList"/>
+							</Stack>
+							<Search>
+								<SearchIconWrapper>
+									<SearchIcon />
+								</SearchIconWrapper>
+								<StyledInputBase
+									placeholder="Search…"
+									onChange={handleOnSeacrhComponent}
+									inputProps={{ 'aria-label': 'search' }}
+									className="searchInputCompMon"
+								/>
+							</Search>
+							{
+								(connectionError) ?
+									<CachedIcon 
+										className={"try-reconnect-button"}
+										onClick = {() => {
+											tryReconnect()
+										}}
+									/>
+									// <IconButton color="primary" aria-label="upload picture" component="span">
+									// 	<CachedIcon 
+									// className={"try-reconnect-button"}
+									// 	onClick = {() => {
+									// 		tryReconnect()
+									// 	}}
+									// />
+									// </IconButton>
+								: ""
+							}
 						</Stack>
-						<Search>
-							<SearchIconWrapper>
-								<SearchIcon />
-							</SearchIconWrapper>
-							<StyledInputBase
-								placeholder="Search…"
-								onChange={handleOnSeacrhComponent}
-								inputProps={{ 'aria-label': 'search' }}
-								className="searchInputCompMon"
-							/>
-						</Search>
-					</Stack>
 					</div>
 
 					<div className="sample-items component-list-items">
