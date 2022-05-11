@@ -1,3 +1,5 @@
+// TODO: REFACTOR: quitar el MainStoreQuery y convertir en el saveQuery (eliminar el main) y sacar dos componentes distintos
+
 import React, { useEffect, useState } from 'react';
 import * as $ 						from 'jquery'
 import { useSelector } 				from 'react-redux';
@@ -33,46 +35,35 @@ const usesTyles = makeStyles({
 	}
 })
 
-function MainStoreQuery() {
-	// //setup before functions
-	// var typingTimer;                //timer identifier
-	// var doneTypingInterval = 5000;  //time in ms, 5 seconds for example
-	// var $input = $('#myInput');
-
-	// //on keyup, start the countdown
-	// $input.on('keyup', function () {
-	// 	clearTimeout(typingTimer);
-	// 	typingTimer = setTimeout(doneTyping, doneTypingInterval);
-	// });
-
-	// //on keydown, clear the countdown 
-	// $input.on('keydown', function () {
-	// 	clearTimeout(typingTimer);
-	// });
-
-	// //user is "finished typing," do something
-	// function doneTyping () {
-	// 	//do something
-	// }
-
+function MainStoreQuery({convertToUnix, constructURL, searchForm}) {
 	const classes = usesTyles()
 	const [msg, handleMessage] = PopUpMessage()
 	
 	const [disabled, setDisabled] = useState(true)
 	const [openSaveQuery, setOpenSaveQuery] = useState(false)
-	const [beginDate, setBeginDate] = useState("")
-	const [endDate, setEndDate] = useState("")
+	const [searchData, setSearchData] = useState(searchForm)
 
 	const handleOpenSaveQuery = () => {
 		setOpenSaveQuery(true)
-		setBeginDate($('#beginDate').val())
-		setEndDate($('#endDate').val())
 	}
+	
+	useEffect(() => {
+		setSearchData(searchForm)
+	}, [searchForm]);
+
 	const handleCloseSaveQuery = () => setOpenSaveQuery(false)
 	
 	
 	const monitor = useSelector(state => state.monitor)
-	useEffect(() => {setDisabled((monitor.length > 0) ? false : true)}, [monitor])
+	useEffect(() => {
+		const unixBeginDate = convertToUnix(searchData.beginDate)
+		const unixEndDate = convertToUnix(searchData.endDate)
+		if(monitor.length > 0 && searchData.beginDate !== "" && searchData.endDate !== "" && unixBeginDate < unixEndDate){
+			setDisabled(false)
+		}else{
+			setDisabled(true)
+		}
+	}, [monitor, searchData])
 
 
     return(
@@ -87,7 +78,7 @@ function MainStoreQuery() {
 					className={classes.savebutton}
 					variant="contained"
 					startIcon={<ArchiveIcon />}
-					disabled={false}
+					disabled={disabled}
 				>
 					Save Actual Query
 				</Button>
@@ -101,15 +92,18 @@ function MainStoreQuery() {
 				</Button>
 			</Stack>
 
-			{/* 
+			{/*
 				Modals
 			*/}
 			<SaveQuery
 				open={openSaveQuery}
 				handleClose={handleCloseSaveQuery}
 				monitorsSelected={monitor}
-				beginDate={beginDate}
-				endDate={endDate}
+				// TODO refactor begin an end date on state change value
+				// beginDate={beginDate}
+				// endDate={endDate}
+				searchForm={searchData}
+				constructURL={constructURL}
 			/>
 
 			</div>

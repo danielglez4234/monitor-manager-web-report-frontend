@@ -99,8 +99,8 @@ function ListSelectedMonitor(props) {
    * Default State of the list
    */
 	let initialInfoText = <div className="no_monitor_selected">
-							<DataUsageIcon className="img_monitor_selected"/>
-							<p className="no_monitor_selected_message">Select a Monitor from the MonitorList</p>
+								<DataUsageIcon className="img_monitor_selected"/>
+								<p className="no_monitor_selected_message">Select a Monitor from the MonitorList</p>
 						  </div>;
 
 	/*
@@ -137,44 +137,29 @@ function ListSelectedMonitor(props) {
    * Update reload button when 'loadingbutton' and 'responseData'states changes
    */
 	useEffect(() => {
-		// if (graphicStillLoading && getResponse.length !== 0)
-		// {
-			if (getResponse?.responseData?.samples && getResponse.responseData.samples.length > 0)
-			{
-				// let calculateTotalPages = Math.ceil(getResponse.responseData.iTotalRows / totalResponseData.totalPerPage);
-				const totalPages   = getResponse.responseData.iTotalPages
-				const totalSamples = getResponse.responseData.iTotalSamples
-				const totalDisplay = getResponse.responseData.iTotalDisplaySamplesByPage
-				const totalPerPage = totalResponseData.totalPerPage 
-
-				// info display
-				setInfoSamplesByPage(totalDisplay)
-				setInfoTotalSamples(totalSamples)
-				// set pagination
-				setTotalPages(totalPages)
-				setTotalPerPages(totalPerPage)
-				setPage(1) 								// default page
-				setDisabled(false)
-				setActivatePagination((totalPages <= 1) ? false : true)
-				// if (totalPages <= 1)
-				// {
-				// 	setActivatePagination(false);
-				// }else
-				// {
-				// 	setActivatePagination(true);
-				// }
-			}
-			else 
-			{
-				setDisabled(true)
-				setTotalPages(0)
-				setInfoSamplesByPage(0)
-				setInfoTotalSamples(0)
-			}
-		// }
-		// else {
-		// 	setDisabled(true);
-		// }
+		if (getResponse?.responseData?.samples && getResponse.responseData.samples.length > 0)
+		{
+			const totalPages   = getResponse.responseData.iTotalPages
+			const totalSamples = getResponse.responseData.iTotalSamples
+			const totalDisplay = getResponse.responseData.iTotalDisplaySamplesByPage
+			const totalPerPage = totalResponseData.totalPerPage 
+			// info display
+			setInfoSamplesByPage(totalDisplay)
+			setInfoTotalSamples(totalSamples)
+			// set pagination
+			setTotalPages(totalPages)
+			setTotalPerPages(totalPerPage)
+			setPage(1) // default page
+			setDisabled(false)
+			setActivatePagination((totalPages <= 1) ? false : true)
+		}
+		else 
+		{
+			setDisabled(true)
+			setTotalPages(0)
+			setInfoSamplesByPage(0)
+			setInfoTotalSamples(0)
+		}
 	}, [graphicStillLoading])
 
 	/*
@@ -389,7 +374,7 @@ function ListSelectedMonitor(props) {
 					dispatch(loadGraphic(false))
 					setLoadingPage(false)
 					setDisabled(false)
-					$(".block-monitor-selected-when-searching").remove() // unlock monitor selected section
+					// $(".block-monitor-selected-when-searching").remove() // unlock monitor selected section
 				})
 		}
 	},[pagination]);
@@ -420,196 +405,200 @@ function ListSelectedMonitor(props) {
 
 
     return(
-      <div className="grafic-section">
+		<div className="grafic-section">
 
-        {/*<MenuGraficOrTable />*/}
+			{/*<MenuGraficOrTable />*/}
 
-        <div  className="selected-monitors-section">
-        <div className="selected-monitors-select-all">
-          <div className="selected-monitors-select-all-title"> Selected Monitors </div>
-            <label onClick={() =>{ checkAllCheckboxes("logarithm") }} className="label-cont-inputchecbox select-all-checkbox">logarithm
-              <input type="checkbox" className="checkboxMo checkboxMo-monitor logarithm-all" />
-              <span className="checkmark"></span>
-            </label>
-            <label onClick={() =>{ checkAllCheckboxes("curved") }} className="label-cont-inputchecbox select-all-checkbox">curved
-              <input type="checkbox" className="checkboxMo checkboxMo-monitor curved-all" />
-              <span className="checkmark"></span>
-            </label>
-            <label onClick={() =>{ checkAllCheckboxes("filled") }} className="label-cont-inputchecbox select-all-checkbox">filled
-              <input type="checkbox" className="checkboxMo checkboxMo-monitor filled-all" />
-              <span className="checkmark"></span>
-            </label>
-             {/*<label onClick={() =>{ checkAllCheckboxes("dotted") }}  className="label-cont-inputchecbox select-all-checkbox">dotted
-              <input type="checkbox" className="checkboxMo checkboxMo-monitor dotted-all" />
-              <span className="checkmark"></span>
-            </label>*/}
-        </div>
+			<div  className="selected-monitors-section">
+			<div className="selected-monitors-select-all">
+			<div className="selected-monitors-select-all-title"> Selected Monitors </div>
+				<label onClick={() =>{ checkAllCheckboxes("logarithm") }} className="label-cont-inputchecbox select-all-checkbox">logarithm
+					<input type="checkbox" className="checkboxMo checkboxMo-monitor logarithm-all" />
+				<span className="checkmark"></span>
+				</label>
+				<label onClick={() =>{ checkAllCheckboxes("curved") }} className="label-cont-inputchecbox select-all-checkbox">curved
+					<input type="checkbox" className="checkboxMo checkboxMo-monitor curved-all" />
+				<span className="checkmark"></span>
+				</label>
+				<label onClick={() =>{ checkAllCheckboxes("filled") }} className="label-cont-inputchecbox select-all-checkbox">filled
+					<input type="checkbox" className="checkboxMo checkboxMo-monitor filled-all" />
+				<span className="checkmark"></span>
+				</label>
+				{/*<label onClick={() =>{ checkAllCheckboxes("dotted") }}  className="label-cont-inputchecbox select-all-checkbox">dotted
+				<input type="checkbox" className="checkboxMo checkboxMo-monitor dotted-all" />
+				<span className="checkmark"></span>
+				</label>*/}
+			</div>
 
-        <div className="menu-monitorSelected-contain">
-            <div className="table-selected-monitors-options">
-
-              <LtTooltip onClick={() => { resetOptions() }} title="Reset Options" placement="left" className="tool-tip-options">
-                <SettingsBackupRestoreIcon className="table-selected-clearAll-icon reset-menu-icon"/>
-              </LtTooltip>
-              <LtTooltip onClick={() => { menuHandle('', 'diselectALLMonitor'); diActivateReload() }} title="Clear All" placement="left" className="tool-tip-options">
-                <ClearAllIcon className="table-selected-clearAll-icon"/>
-              </LtTooltip>
-              <LtTooltip onClick={() => { lessDatails() }} title="Less Details" placement="left" className="tool-tip-options">
-                <DetailsIcon id="lessDetail-icon" className="table-selected-clearAll-icon lessDetail-icon"/>
-              </LtTooltip>
-
-            </div>
-            <div id="resizable" data-bottom="true" className="selected-monitors-box">
-            {
-              (onSelect) ? initialInfoText :
-                <table id="drop-area" className="table-selected-monitors">
-                 <tbody>
-                   {
-                      elements.map((element, index) =>
-                        <SelectedElement
-                          key           = { index }
-                          id            = { element.monitorData.id }
-                          monitorData   = { element.monitorData }
-                          component     = { element.component }
-                          menuHandle    = { menuHandle }
-                          diActivateReload = { diActivateReload }
-                          // onRemove      = { onRemove }
-                          // disableWhileSearching = { disableWhileSearching }
-                        />
-                      )
-                   }
-                 </tbody>
-                </table>
-            }
-            </div>
-        </div>
-        <div className="selected-monitors-extends-buttons">
-          <div className="selected-monitor-count">
-            º
-            {
-              countMonitors
-            }
-          </div>
-          <KeyboardDoubleArrowDownIcon onClick={() => { handleExpandSection("visibilityLarge-icon", 400) }} className="section-selected-extends-icons rotback visibilityLarge-icon" />
-          <ExpandMoreIcon onClick={() => { handleExpandSection("visibilityMiddle-icon", 98) }} className="section-selected-extends-icons rotback activeExpandColor visibilityMiddle-icon" />
-          <ArrowDropUpSharpIcon onClick={() => { handleExpandSection("visibilityOff-icon", 0) }} className="section-selected-extends-icons rotback visibilityOff-icon" />
-        </div>
-
-      </div>
-
-
-        {
-          (startloadingGraphic) ? 
-            <div className="img-load-svg-box">
-              <img src={loadingSls} alt='loading.....' className="img-load-svg" /> 
-            </div>
-          : 
-            <Graphic />
-        }
+			<div className="menu-monitorSelected-contain">
+				<div className="table-selected-monitors-options">
+					<LtTooltip onClick={() => { resetOptions() }} title="Reset Options" placement="left" className="tool-tip-options">
+						<SettingsBackupRestoreIcon className="table-selected-clearAll-icon reset-menu-icon"/>
+					</LtTooltip>
+					<LtTooltip onClick={() => { menuHandle('', 'diselectALLMonitor'); diActivateReload() }} title="Clear All" placement="left" className="tool-tip-options">
+						<ClearAllIcon className="table-selected-clearAll-icon"/>
+					</LtTooltip>
+					<LtTooltip onClick={() => { lessDatails() }} title="Less Details" placement="left" className="tool-tip-options">
+						<DetailsIcon id="lessDetail-icon" className="table-selected-clearAll-icon lessDetail-icon"/>
+					</LtTooltip>
+				</div>
+				<div id="resizable" data-bottom="true" className="selected-monitors-box">
+					{
+					(onSelect) ? initialInfoText :
+						<table id="drop-area" className="table-selected-monitors">
+							<tbody>
+							{
+								elements.map((element, index) =>
+									<SelectedElement
+										key           = { index }
+										id            = { element.monitorData.id }
+										monitorData   = { element.monitorData }
+										component     = { element.component }
+										menuHandle    = { menuHandle }
+										diActivateReload = { diActivateReload }
+										// onRemove      = { onRemove }
+										// disableWhileSearching = { disableWhileSearching }
+									/>
+								)
+							}
+							</tbody>
+						</table>
+					}
+				</div>
+			</div>
+				<div className="selected-monitors-extends-buttons">
+					<div className="selected-monitor-count">
+						º
+						{
+						countMonitors
+						}
+					</div>
+					<KeyboardDoubleArrowDownIcon 
+						onClick={() => { handleExpandSection("visibilityLarge-icon", 400) }} 
+						className="section-selected-extends-icons rotback visibilityLarge-icon"
+					/>
+					<ExpandMoreIcon 
+						onClick={() => { handleExpandSection("visibilityMiddle-icon", 98) }} 
+						className="section-selected-extends-icons rotback activeExpandColor visibilityMiddle-icon" 
+					/>
+					<ArrowDropUpSharpIcon 
+						onClick={() => { handleExpandSection("visibilityOff-icon", 0) }} 
+						className="section-selected-extends-icons rotback visibilityOff-icon" 
+					/>
+				</div>
+			</div>
 
 
-      <div className="grafic-options-section">
-        <div className="cover_amchart5-promotion"></div>
-
-          {
-            (loadingPage) ?
-              <div className="loading-graphic-page-box">
-                <LinearProgress className="loading-graphic-page" color="secondary" />
-              </div>
-            : ""
-          }
-
-        <Stack className="grafic-option-display-width" direction="row" spacing={2}>
-          <div className="grafic-option-box">
-              <div className="display-option-for-grafic">
-                {
-                  <ButtonGeneralOptions />
-                }
-                {
-                  (graphicStillLoading && getResponse.length !== 0) ?
-                    (getResponse.responseData.length !== 0 && getResponse.responseData.samples.length > 0) ?
-                      checkIfExistsMagnitudes(getResponse.responseData.columns)
-                    : ""
-                  : ""
-                }
-                {
-                  // <RangeThresholdsOptions />
-                }
-              </div>
-              {
-                (startloadingGraphic && pagination?.active === false) ? "" :
-                (totalResponseData.length === 0) ? "" :
-                  <>
-                  <div className="displayTotal-responseData">
-                    {
-                      (totalPages === 0 || totalPages === 1) ? "" :
-                      <>
-                        <div className="pagination-box">
-                          <Pagination
-                            id="pagination"
-                            count={totalPages}
-                            disabled={disabled}
-                            page={page}
-                            onChange={handleChange}
-                            showFirstButton
-                            showLastButton
-                            size="small"
-                            shape="rounded"
-                            siblingCount={1}
-                            boundaryCount={1}
-                            defaultValue={1}
-                          />
-                        </div>
-                        {/* <p className="total-pages">
-                          Pages:  <span> { totalPages } </span>
-                        </p> */}
-                      </>
-                    }
-                  </div>
-                    <div className="totalRecord-button-close_rangeZone display-none" onClick={handleClickOpenInfo}></div>
-                    <div className="totalRecord-box">
-                      <Button  
-                        variant="contained" 
-                        onClick={handleClickOpenInfo} 
-                        className="totalRecord-button" 
-                        endIcon={<ArrowDropUpIcon />}
-                      >
-                          Displayed:  <span className="totalRecord-button-data"> {infoSamplesByPage.toLocaleString()} </span>
-                      </Button>
-                        <div className="totalRecord-button-Popover display-none">
-                          <p className="totalRecord-button-Popover-box">
-                            <span className="totalRecord-button-Popover-label">Displayed:</span>  
-                            <span className="totalRecord-button-Popover-data"> {infoSamplesByPage.toLocaleString()} </span>
-                          </p>
-                          <p className="totalRecord-button-Popover-box">
-                            <span className="totalRecord-button-Popover-label">Instance Of Time:</span>  
-                            <span className="totalRecord-button-Popover-data"> {totalResponseData.totalArrays.toLocaleString()} </span>
-                          </p>
-                          <p className="totalRecord-button-Popover-box">
-                            <span className="totalRecord-button-Popover-label">Total Estimated:</span> 
-                            <span className="totalRecord-button-Popover-data"> {infoTotalSamples.toLocaleString()} </span>
-                          </p>
-                        </div>
-                    </div>
-                  </>
-              }
-              <div className="grafic-option-buttons-setbox">
-                <Button 
-                  disabled={disabled} 
-                  onClick={() => { dispatch(reloadGrafic(1)) }} 
-                  className="grafic-option-buttons grafic-option-button-save" 
-                  variant="contained" 
-                  startIcon={<ReplayIcon />}
-                >
-                  Reload
-                </Button>
-              </div>
-          </div>
-        </Stack>
-      </div>
+			{
+				(startloadingGraphic) ? 
+					<div className="img-load-svg-box">
+						<img src={loadingSls} alt='loading.....' className="img-load-svg" /> 
+					</div>
+				: 
+					<Graphic />
+			}
 
 
-    </div>
+		<div className="grafic-options-section">
+			<div className="cover_amchart5-promotion"></div>
+
+			{
+				(loadingPage) ?
+					<div className="loading-graphic-page-box">
+						<LinearProgress className="loading-graphic-page" color="secondary" />
+					</div>
+				: ""
+			}
+
+			<Stack className="grafic-option-display-width" direction="row" spacing={2}>
+			<div className="grafic-option-box">
+				<div className="display-option-for-grafic">
+					{
+						<ButtonGeneralOptions />
+					}
+					{
+						(graphicStillLoading && getResponse.length !== 0) ?
+							(getResponse.responseData.length !== 0 && getResponse.responseData.samples.length > 0) ?
+								checkIfExistsMagnitudes(getResponse.responseData.columns)
+							: ""
+						: ""
+					}
+					{
+						// <RangeThresholdsOptions />
+					}
+				</div>
+				{
+					(startloadingGraphic && pagination?.active === false) ? "" :
+					(totalResponseData.length === 0) ? "" :
+					<>
+					<div className="displayTotal-responseData">
+						{
+						(totalPages === 0 || totalPages === 1) ? "" :
+						<>
+							<div className="pagination-box">
+								<Pagination
+									id="pagination"
+									count={totalPages}
+									disabled={disabled}
+									page={page}
+									onChange={handleChange}
+									showFirstButton
+									showLastButton
+									size="small"
+									shape="rounded"
+									siblingCount={1}
+									boundaryCount={1}
+									defaultValue={1}
+								/>
+							</div>
+							{/* <p className="total-pages">
+							Pages:  <span> { totalPages } </span>
+							</p> */}
+						</>
+						}
+					</div>
+						<div className="totalRecord-button-close_rangeZone display-none" onClick={handleClickOpenInfo}></div>
+						<div className="totalRecord-box">
+						<Button  
+							variant="contained" 
+							onClick={handleClickOpenInfo} 
+							className="totalRecord-button" 
+							endIcon={<ArrowDropUpIcon />}
+						>
+							Displayed:  <span className="totalRecord-button-data"> {infoSamplesByPage.toLocaleString()} </span>
+						</Button>
+							<div className="totalRecord-button-Popover display-none">
+							<p className="totalRecord-button-Popover-box">
+								<span className="totalRecord-button-Popover-label">Displayed:</span>  
+								<span className="totalRecord-button-Popover-data"> {infoSamplesByPage.toLocaleString()} </span>
+							</p>
+							<p className="totalRecord-button-Popover-box">
+								<span className="totalRecord-button-Popover-label">Instance Of Time:</span>  
+								<span className="totalRecord-button-Popover-data"> {totalResponseData.totalArrays.toLocaleString()} </span>
+							</p>
+							<p className="totalRecord-button-Popover-box">
+								<span className="totalRecord-button-Popover-label">Total Estimated:</span> 
+								<span className="totalRecord-button-Popover-data"> {infoTotalSamples.toLocaleString()} </span>
+							</p>
+							</div>
+						</div>
+					</>
+				}
+				<div className="grafic-option-buttons-setbox">
+					<Button 
+						disabled={disabled} 
+						onClick={() => { dispatch(reloadGrafic(1)) }} 
+						className="grafic-option-buttons grafic-option-button-save" 
+						variant="contained" 
+						startIcon={<ReplayIcon />}
+					>
+						Reload
+					</Button>
+				</div>
+			</div>
+			</Stack>
+		</div>
+		</div>
     );
 
 }

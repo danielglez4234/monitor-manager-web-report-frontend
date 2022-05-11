@@ -51,29 +51,34 @@ import PopUpMessage      from './handleErrors/PopUpMessage';
 
 
 function PerformQuery(props) {
-  const dispatch             = useDispatch();
-  const [msg, handleMessage] = PopUpMessage();
+	const dispatch             = useDispatch();
+	const [msg, handleMessage] = PopUpMessage();
 
-  const monitor          = useSelector(state => state.monitor);
-  const loadWhileGetData = useSelector(state => state.loadingButton);
-  const pagination       = useSelector(state => state.pagination);
+	const monitor          = useSelector(state => state.monitor);
+	const loadWhileGetData = useSelector(state => state.loadingButton);
+	const pagination       = useSelector(state => state.pagination);
 
-  const [loadingSearch, setLoadingSearch] = useState(false);
-  const [samplingValue, setSamplingValue] = useState('');
- 
-  /*
-   * 'loadWhileGetData' will be set to true when the data has arrive, and then buttons will be active again
-   */
+	const [loadingSearch, setLoadingSearch] = useState(false);
+	const [beginDateValue, setBeginDateValue] = useState("");
+	const [beginDateInput, setBeginDateInput] = useState("");
+	const [endDateValue, setEndDateValue] = useState("");
+	const [endDateInput, setEndDateInput] = useState("");
+	const [samplingValue, setSamplingValue] = useState('');
+	
+	/*
+	 * 'loadWhileGetData' will be set to true when the data has arrive, and then buttons will be active again
+	 */
 	useEffect(() => {
 		if (loadWhileGetData) {
 			setLoadingSearch(false);
 		}
 	}, [loadWhileGetData]);
 
-  /*
-   * Build url with monitors and place index if necessary
-   */
+  	/*
+	 * Build url with monitors and place index if necessary
+	 */
 	const constructURL = (searchFrom) =>{
+		console.log("???> ", JSON.stringify(searchFrom["donwload"]))
 		let queryRest = "";
 		for (let i = 0; i < monitor.length; i++)
 		{
@@ -116,21 +121,6 @@ function PerformQuery(props) {
 					preventDuplicate: false
 				})
 			}
-			// Get Unit and Prefix
-			// if(!fnIsMagnitude(infoMonitor.type)){
-			//   let unitType = $("#Unit" + infoMonitor.id).val();
-			//   let prefixType = $("#Prefix" + infoMonitor.id).val()
-
-			//   if (unitType !== "Default" && unitType !== "No Matches")
-			//   {
-			//     queryRest += "{unit:" + unitType;
-			//     if (prefixType !== "None")
-			//     {
-			//       queryRest += ",prefix:" + prefixType;
-			//     }
-			//     queryRest += "}"
-			//   }
-			// }
 			if(!fnIsMagnitude(infoMonitor.type))
 			{
 				let unitType = $("#Unit" + infoMonitor.id).val();
@@ -164,14 +154,13 @@ function PerformQuery(props) {
 				queryRest += "&";
 			}
 		}
-		// let decimalPattern = $(".numberFormat").val();
-		// if (decimalPattern !== "")
-		// {
-		//   queryRest += "&Decimal=" + decimalPattern;
-		// }
 
+		// TODO: change iDisplayStart to page 
+		// let page = 0
 		let iDisplayStart = 0;
-		let iDisplayLength  = props.urliDisplayLength;
+		// TODO: change urliDisplayLength to limit 
+		// let limit  = props.limit
+		let iDisplayLength  = props.urliDisplayLength
 		// if (pagination?.active === true) // pagination.active can be false
 		// { 
 		// 	// iDisplayStart = (pagination.actualPage * iDisplayLength) - iDisplayLength;
@@ -181,13 +170,12 @@ function PerformQuery(props) {
 		// {
 		//	 iDisplayStart = 0
 		// }
-		let url = searchFrom.begin_date.replace(/\s{1}/,"@")+".000/"+searchFrom.end_date.replace(/\s{1}/,"@")+".000/"+searchFrom.sampling+"?"+queryRest;
+
+		let url = searchFrom.beginDate.replace(/\s{1}/,"@")+".000/"+searchFrom.endDate.replace(/\s{1}/,"@")+".000/"+searchFrom.sampling+"?"+queryRest;
 		url += "&iDisplayStart=" + iDisplayStart + "&iDisplayLength=" + iDisplayLength;
 
-		// log
-		const action = (searchFrom.download) ? "download" : "search"
-		console.log(`URL => ${window.location.href.replace('3006', '8080')}/rest/webreport/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
-		// end log
+		const action = (searchFrom?.download) ? "download" : "search"
+		console.log(`URL:  ${window.location.href.replace('3006', '8081')}/rest/webreport/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
 
 		return url;
 	};
@@ -196,12 +184,12 @@ function PerformQuery(props) {
 	/*
 	 * Get Samples From Server
 	 */
-	const getSamplesFromServer = (searchFrom) => {
+	const getSamplesFromServer = (timeQuery) => {
 	/*
 	 * we send the data to constructURL because the 'donwload button' uses only the function constructURL 
 	 * to prevent it from being displayed on the graph, and then to be able to pass parameters to the function
 	 */
-		const url = constructURL(searchFrom);
+		const url = constructURL(timeQuery);
 		dispatch(getUrl(url));
 		// server call
 		Promise.resolve( getDataFromServer({url}) )
@@ -209,17 +197,17 @@ function PerformQuery(props) {
 			const totalArraysRecive  = res.samples.length;
 			const totalRecords       = res.iTotalSamples;
 			const totalPerPage       = props.urliDisplayLength
-			if (totalArraysRecive === 0) 
-			{
-				const noData = res.samples    // we do this to simplify it to just one array field and thus avoid modifying the sample reducer
-				dispatch(setSamples(noData)); // noData -> []
-			}
-			dispatch(setSamples(res, searchFrom.sampling));
+			// if (totalArraysRecive === 0) 
+			// {
+			// 	const noData = res.samples    // we do this to simplify it to just one array field and thus avoid modifying the sample reducer
+			// 	dispatch(setSamples(noData)); // noData -> []
+			// }
+			dispatch(setSamples(res, timeQuery.sampling));
 			dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage));
 			console.log(
 				"\n \
 				MonitorsMagnitude Data was recibe successfully!! \n \
-				Sampling Period Choosen: " + searchFrom.sampling + " microsegundos \n \
+				Sampling Period Choosen: " + timeQuery.sampling + " microsegundos \n \
 				Arrays Recived: " + totalArraysRecive + " \n \
 				total Records: " + totalRecords + " \n \
 				----------------------------------------------------------------"
@@ -269,43 +257,52 @@ function PerformQuery(props) {
 		$('.perform-query-section').toggleClass('hide-sections');
 		$('.arrow-showPerfomSection').toggleClass('hide-sections');
 	}
+	
+	/*
+	 * Convert Date to unix
+	 */
+	const convertToUnix = (date) => {
+		let format = date.split(" ")
+		format = format[0].split(/[-/]/).reverse().join('/') + " " + format[1] // change format to YYYY/MM/DD
+		return new Date(format).getTime()
+	}
 
 	/*
-	* Check Dates and sampling inputs before submit
-	*/
+	 * Check Dates and sampling inputs before submit
+	 */
 	const checkOnSubmit = (button_click) => {
-		const perform      = true; // initial state use to check searched monitors selected comparation
-		let begin_date     = $('#beginDate').val();
-		let end_date       = $('#endDate').val();
-		let sampling       = samplingValue;
+		const perform = true; // initial state use to check searched monitors selected comparation
 
-		// change format to YYYY/MM/DD
-		let begin_dateformatA = begin_date.split(" ");
-		begin_dateformatA = begin_dateformatA[0].split(/[-/]/).reverse().join('/') + " " + begin_dateformatA[1];
-
-		let end_dateformatA = end_date.split(" ");
-		end_dateformatA = end_dateformatA[0].split(/[-/]/).reverse().join('/') + " " + end_dateformatA[1];
-
-		// Tranform to epoch '1678976324'
-		const begin_dateLong = new Date(begin_dateformatA).getTime();
-		const end_dateLong   = new Date(end_dateformatA).getTime();
-
-		// if sampling is not selected is set to 0 by default
-		if (sampling === ""){
-			sampling = 0;
+		// date&sampling model
+		let timeQuery ={
+			beginDate: beginDateValue,
+			endDate: endDateValue,
+			sampling: samplingValue
 		}
+		
+		// convert to unix 
+		// we use this to get a better control over the correct validation of the dates
+		const unixBeginDate = convertToUnix(timeQuery["beginDate"])
+		const unixEndDate = convertToUnix(timeQuery["endDate"])
+
+		// if sampling is not selected is set to 0 by default 
+		// 0 means for the server the monitor default storage period
+		if (timeQuery.sampling === "" || timeQuery.sampling  === "Default") {
+			timeQuery["sampling"] = 0;
+		}
+		
 		// handle all errors from the date inputs
-		if (begin_date === '' || end_date === '')
+		if (timeQuery.beginDate === '' || timeQuery.endDate === '')
 		{
 			showWarningMeggage('The Date Fields cannot be empty')
 			return false
 		}
-		else if (begin_dateLong > end_dateLong)
+		else if (unixBeginDate > unixEndDate)
 		{
 			showWarningMeggage('The begin Date cannot be greater than end Date')
 			return false
 		}
-		else if (begin_date === end_date)
+		else if (timeQuery.beginDate === timeQuery.endDate)
 		{
 			showWarningMeggage('The begin and end Date cannot be the same')
 			return false
@@ -319,28 +316,38 @@ function PerformQuery(props) {
 		{
 			if(button_click !== "download")
 			{
-				setLoadingSearch(true);
-				dispatch(setActualPage(false, 0, 0)); // reset pagination if it is already display
-				let searchedMonitors = monitor.map(e => e.monitorData["id"]); // save the monitors id's that where choosen for the search
-				dispatch(hadleSearch(perform, begin_date, end_date, sampling, searchedMonitors));
-				dispatch(setloadingButton(false));
-				dispatch(loadGraphic(true));
+				let searchedMonitors = monitor.map(e => e.monitorData["id"]) // save the monitors id's that where choosen for the search
+				setLoadingSearch(true)
+				dispatch(setActualPage(false, 0, 0)) // reset pagination if it is already display
+				dispatch(hadleSearch(perform, timeQuery.beginDate, timeQuery.endDate, timeQuery.sampling, searchedMonitors))
+				dispatch(setloadingButton(false))
+				dispatch(loadGraphic(true))
 				/*
 				* construct the url and call the server data 
 				*/
-				getSamplesFromServer({begin_date, end_date, sampling});
+				getSamplesFromServer(timeQuery);
 			}
 			else
 			{
 				/*
-				* construct the url for download
-				*/
-				return constructURL({begin_date, end_date, sampling, download: true})
+				 * construct the url for download
+				 */
+				timeQuery["download"] = true
+				return constructURL(timeQuery)
 			}
 			return true
 		}
 	}
 
+
+	const onChangeBeginDate = (date, dateString) => {
+		setBeginDateValue(dateString)
+		setBeginDateInput(date)
+	}
+	const onChangeEndDate = (date, dateString) => {
+		setEndDateValue(dateString)
+		setEndDateInput(date)
+	}
 
     return(
 		<>
@@ -358,12 +365,16 @@ function PerformQuery(props) {
 							showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
 							format="DD/MM/YYYY HH:mm:ss"
 							placeholder="Start Date"
+							value={beginDateInput}
+							onChange={onChangeBeginDate}
 						/>
-							<DatePicker
+						<DatePicker
 							id="endDate"
 							showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
 							format="DD/MM/YYYY HH:mm:ss"
 							placeholder="End Date"
+							value={endDateInput}
+							onChange={onChangeEndDate}
 						/>
 					</div>
 					<FormControl sx={{ m: 1, minWidth: 120 }}>
@@ -440,14 +451,18 @@ function PerformQuery(props) {
 
 						{ // Only Download data component
 							<DownloadEmailData 
-								service = { props.serviceIP } 
-								checkOnSubmit = { checkOnSubmit } 
+								service ={props.serviceIP} 
+								checkOnSubmit={checkOnSubmit}
 							/>
 						}
 
 					</Stack>
 				</div>
-					<MainStoreQuery />
+					<MainStoreQuery 
+						convertToUnix={convertToUnix}
+						constructURL={constructURL}
+						searchForm={{beginDate: beginDateValue, endDate: endDateValue, sampling: samplingValue}}
+					/>
 			</div>
 		</>
     );

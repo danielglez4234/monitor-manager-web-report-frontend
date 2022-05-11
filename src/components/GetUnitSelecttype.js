@@ -72,7 +72,7 @@ function GetUnitSelecttype({id, unit}) {
             disableClearable // --> disabled the posibility to leave the input empty
             // freeSolo
             id={`Prefix` + id}
-            className="input-limits-grafic-options input-select-prefix"
+            className="input-limits-grafic-options input-select-prefix prefix"
             name="deimnalPattern"
             onOpen={() => {
               // if(compatibleConversion.length < 2)
@@ -87,7 +87,7 @@ function GetUnitSelecttype({id, unit}) {
             renderInput={(params) => (
               <TextField
                 {...params}
-                className={"unit-type"}
+                className={""}
                 InputProps={{
                   ...params.InputProps,
                   endAdornment: (

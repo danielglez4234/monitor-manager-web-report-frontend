@@ -26,6 +26,8 @@ import LoadingButton                from '@mui/lab/LoadingButton';
 import SaveIcon                     from '@mui/icons-material/Save';
 import PopUpMessage                 from '../../components/handleErrors/PopUpMessage';
 import {makeStyles}					from '@material-ui/core';
+import getGraphicoptions            from '../getGraphicoptions'
+
 
 
 const usesTyles = makeStyles({
@@ -37,62 +39,77 @@ const usesTyles = makeStyles({
 })
 
 
-function SaveQuery({open, handleClose, monitorsSelected, beginDate, endDate}) {
+function SaveQuery({open, handleClose, monitorsSelected, searchForm, constructURL}) {
+
+    console.log("searchForm?.sampling", searchForm.sampling)
+
     const classes = usesTyles()
+    const monitorOptions = getGraphicoptions()
     const [msg, handleMessage] = PopUpMessage()
     const [queryName, setQueryName] = useState("")
     const [queryDescription, setQueryDescription] = useState("")
-    // const [checked, setChecked] = useState([0])
     const [openBackDrop, setOpenBackDrop] = useState(false)
 
     const backDropLoadOpen = () => { setOpenBackDrop(true) }
     const backDropLoadClose = () => { setOpenBackDrop(false) }
 
+
     /*
-     * handle toggle checkecd checkboxes
+     * Show Warning message snackbar
      */
-    // const handleToggle = (value) => () => {
-    //     const currentIndex = checked.indexOf(value);
-    //     const newChecked = [...checked];
-    
-    //     if (currentIndex === -1) {
-    //       newChecked.push(value);
-    //     } else {
-    //       newChecked.splice(currentIndex, 1);
-    //     }
-    
-    //     setChecked(newChecked);
-    //     console.log("Checked", checked);
-    // };
+    const showWarningMessage = (message) => { 
+        handleMessage({
+            message: message,
+            type: "warning",
+            persist: false,
+            preventDuplicate: false
+        })
+    }
+
 
     /*
      * save query on data base
      */
-    const saveQuery = (data) => {
-		Promise.resolve( insertQuery(data) )
-		.then(() =>{
+    const onSubmit = () => {
+        if(queryName === "" || queryName === undefined){
+            showWarningMessage("Name field cannot be empty")
+        }
+        else{
+            backDropLoadOpen()
+            const params = constructURL(searchForm)
+            saveQuery(params)
+        }
+	}
+    
+    /*
+     * save query on data base 
+     */
+    const saveQuery = (payload) => { 
+        Promise.resolve( insertQuery(payload) )
+        .then(() =>{
             setQueryName("")
             setQueryDescription("")
-			handleMessage({
-				message: "Query save successfully!",
-				type: "success",
-				persist: false,
-				preventDuplicate: false
-			})
-		})
-		.catch((error) =>{
-			console.error(error)
-			handleMessage({
-				// message: "Error: " + error.reponse.message.toSring(),
-                message: "Error",
-				type: "error",
-				persist: true,
-				preventDuplicate: false
-			})
-		}).finally(() => {
+            handleMessage({
+                message: "Query save successfully!",
+                type: "success",
+                persist: false,
+                preventDuplicate: false
+            })
+        })
+        .catch((error) =>{
+            console.error(error)
+            const error_message = (error?.response?.message) ? error.response.message : "Unsupported Error"
+            const error_status = (error?.status) ? error.status : "Unkwon"
+            handleMessage({
+                message: "Error: " + error_message + " - Code " + error_status,
+                type: "error",
+                persist: true,
+                preventDuplicate: false
+            })
+        }).finally(() => {
             backDropLoadClose()
         })
-	}
+    }
     
     return (
         <>
@@ -165,60 +182,45 @@ function SaveQuery({open, handleClose, monitorsSelected, beginDate, endDate}) {
                                 className="save-query-input-title-name save-query-title-date"
                             >
                                 <Grid item md={2} className="save-query-input-title-name">
-                                    <i>Begin date: { beginDate } </i>
+                                    <i>Begin date: { searchForm?.beginDate } </i>
                                 </Grid>
                                 <Grid item md={10}>
-                                    <i>End Date: { endDate } </i>
+                                    <i>End date: { searchForm?.endDate } </i>
+                                </Grid>
+                                <Grid item md={10}>
+                                    <i>Sampling: { (searchForm?.sampling !== "" && searchForm?.sampling !== "Default") ? searchForm.sampling  : 0 } </i>
                                 </Grid>
                             </Grid>
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} className="save-query-list-info-label">
                             <Grid container spacing={0} sx={{backgroundColor: "#5a6370", borderBottom: "3px solid #85e1d0", padding: "3px 0px 3px 15px"}}>
-                                <Grid item md={12}>monitors selected</Grid>
-                                {/* <Grid item md={1}>{ checked.length-1 } -</Grid>
-                                <Grid item md={1}>{ monitorsSelected.length }</Grid> */}
+                                <Grid item md={12}>Monitors Settings</Grid>
                             </Grid>
                         </Grid>
                         <Grid container spacing={0} className="save-query-list-box">
                             <Grid item xs={12} sm={12} md={12}>
-                                <List className="save-query-list-list">
-                                    {monitorsSelected.map((value) => {
-                                        const labelId = `checkbox-list-label-${value}`;
-                                        return (
-                                            <ListItem
-                                                key={value}
-                                                // secondaryAction={
-                                                // <IconButton edge="end" aria-label="comments">
-                                                //     <CommentIcon />
-                                                // </IconButton>
-                                                // }
-                                                disablePadding
-                                            >
-                                                <ListItemButton 
-                                                    role={undefined} 
-                                                    // onClick={handleToggle(value)} 
-                                                    dense
-                                                >
-                                                {/* <ListItemIcon>
-                                                    <Checkbox
-                                                        edge="start"
-                                                        defaultChecked={true}
-                                                        checked={checked.indexOf(value) !== -1}
-                                                        tabIndex={-1}
-                                                        disableRipple
-                                                        inputProps={{ 'aria-labelledby': labelId }}
-                                                    />
-                                                </ListItemIcon> */}
-                                                    <ListItemText 
-                                                        id={labelId} 
-                                                        primary={value.monitorData.magnitude} 
-                                                        secondary={value.component}
-                                                    />
-                                                </ListItemButton>
-                                            </ListItem>
-                                        );
-                                    })}
-                                </List>
+                                <table id="drop-area" className="save-query-table-monitor-list">
+                                    <tbody>
+                                        {monitorsSelected.map((value) => {
+                                            return (
+                                                <tr key={value.monitorData.id} className="save-query-table-tr">
+                                                    <td>
+                                                        {value.monitorData.magnitude}
+                                                    </td>
+                                                    <td>
+                                                        {value.component}
+                                                    </td>
+                                                    <td>
+                                                        {monitorOptions.unitType}
+                                                    </td>
+                                                    <td>
+                                                        {monitorOptions?.prefix}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
                             </Grid>
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} className="save-query-saveButton-box">
@@ -227,8 +229,7 @@ function SaveQuery({open, handleClose, monitorsSelected, beginDate, endDate}) {
                                 sx={{backgroundColor: '#569d90'}}
                                 className={classes.saveQueryButton}
                                 onClick={() => { 
-                                    backDropLoadOpen()
-                                    saveQuery() 
+                                    onSubmit() 
                                 }}
                                 loadingPosition="start"
                                 startIcon={<SaveIcon />}
