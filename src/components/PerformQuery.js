@@ -44,7 +44,8 @@ import ArrowLeftIcon             from '@mui/icons-material/ArrowLeft';
 
 import DownloadEmailData from './DownloadEmailData';
 // import AdvancedOptions from './AdvancedOptions';
-import MainStoreQuery     from './stroreQuerys/MainStoreQuery';
+import SaveQuery     	 from './stroreQuerys/SaveQuery';
+import ViewHandleQuery 	 from './stroreQuerys/handleQuerys/ViewHandleQuery';
 import PopUpMessage      from './handleErrors/PopUpMessage';
 
 
@@ -59,11 +60,14 @@ function PerformQuery(props) {
 	const pagination       = useSelector(state => state.pagination);
 
 	const [loadingSearch, setLoadingSearch] = useState(false);
-	const [beginDateValue, setBeginDateValue] = useState("");
 	const [beginDateInput, setBeginDateInput] = useState("");
-	const [endDateValue, setEndDateValue] = useState("");
 	const [endDateInput, setEndDateInput] = useState("");
-	const [samplingValue, setSamplingValue] = useState('');
+	
+	const [timeQuery, setTimeQuery] = useState({
+		beginDate: "",
+		endDate: "",
+		sampling: ""
+	});
 	
 	/*
 	 * 'loadWhileGetData' will be set to true when the data has arrive, and then buttons will be active again
@@ -77,8 +81,7 @@ function PerformQuery(props) {
   	/*
 	 * Build url with monitors and place index if necessary
 	 */
-	const constructURL = (searchFrom) =>{
-		console.log("???> ", JSON.stringify(searchFrom["donwload"]))
+	const constructURL = (qs) =>{
 		let queryRest = "";
 		for (let i = 0; i < monitor.length; i++)
 		{
@@ -127,21 +130,16 @@ function PerformQuery(props) {
 				let prefixType = $("#Prefix" + infoMonitor.id).val();
 				let decimalPattern = $("#Pattern" + infoMonitor.id).val();
 
-				if ((unitType !== "Default" && unitType !== "No Matches") || (decimalPattern !== "Default"))
-				{
+				if ((unitType !== "Default" && unitType !== "No Matches") || (decimalPattern !== "Default")){
 					queryRest += "{"
-					if(unitType !== "Default" && unitType !== "No Matches")
-					{
+					if(unitType !== "Default" && unitType !== "No Matches"){
 						queryRest += "unit:" + unitType
-						if(prefixType !== "Default" && prefixType !== "No Matches")
-						{
+						if(prefixType !== "Default" && prefixType !== "No Matches"){
 							queryRest += ",prefix:" + prefixType
 						}
 					}
-					if(decimalPattern !== "Default")
-					{
-						if(unitType !== "Default" && unitType !== "No Matches")
-						{
+					if(decimalPattern !== "Default"){
+						if(unitType !== "Default" && unitType !== "No Matches"){
 							queryRest += ","
 						}
 						queryRest += "decimal:" + decimalPattern
@@ -155,26 +153,22 @@ function PerformQuery(props) {
 			}
 		}
 
-		// TODO: change iDisplayStart to page 
-		// let page = 0
-		let iDisplayStart = 0;
-		// TODO: change urliDisplayLength to limit 
-		// let limit  = props.limit
-		let iDisplayLength  = props.urliDisplayLength
-		// if (pagination?.active === true) // pagination.active can be false
-		// { 
-		// 	// iDisplayStart = (pagination.actualPage * iDisplayLength) - iDisplayLength;
-		// 	iDisplayStart = pagination.actualPage-1
-		// }
-		// else
-		// {
-		//	 iDisplayStart = 0
-		// }
 
-		let url = searchFrom.beginDate.replace(/\s{1}/,"@")+".000/"+searchFrom.endDate.replace(/\s{1}/,"@")+".000/"+searchFrom.sampling+"?"+queryRest;
-		url += "&iDisplayStart=" + iDisplayStart + "&iDisplayLength=" + iDisplayLength;
+		let startAt = 0;
+		if (qs?.paginating && pagination?.active === true)
+		{
+			startAt = pagination.actualPage-1
+		}
 
-		const action = (searchFrom?.download) ? "download" : "search"
+		const beginDate = timeQuery.beginDate.replace(/\s{1}/,"@")+".000"
+		const endDate 	= timeQuery.endDate.replace(/\s{1}/,"@")+".000"
+		const sampling  = timeQuery.sampling
+		const page 		= "iDisplayStart=" + startAt
+		const length 	= "iDisplayLength=" + props.urliDisplayLength;
+
+		const url = beginDate+"/"+endDate+"/"+sampling+"?"+queryRest+"&"+page+"&"+length;
+
+		const action = (qs?.download) ? "download" : (qs?.query) ? "query" : "search"; // this is for log purposes
 		console.log(`URL:  ${window.location.href.replace('3006', '8081')}/rest/webreport/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
 
 		return url;
@@ -184,12 +178,12 @@ function PerformQuery(props) {
 	/*
 	 * Get Samples From Server
 	 */
-	const getSamplesFromServer = (timeQuery) => {
-	/*
-	 * we send the data to constructURL because the 'donwload button' uses only the function constructURL 
-	 * to prevent it from being displayed on the graph, and then to be able to pass parameters to the function
-	 */
-		const url = constructURL(timeQuery);
+	const getSamplesFromServer = () => {
+		/*
+		 * we send the data to constructURL because the 'donwload button' uses only the function constructURL 
+		 * to prevent it from being displayed on the graph, and then to be able to pass parameters to the function
+		 */
+		const url = constructURL();
 		dispatch(getUrl(url));
 		// server call
 		Promise.resolve( getDataFromServer({url}) )
@@ -197,11 +191,7 @@ function PerformQuery(props) {
 			const totalArraysRecive  = res.samples.length;
 			const totalRecords       = res.iTotalSamples;
 			const totalPerPage       = props.urliDisplayLength
-			// if (totalArraysRecive === 0) 
-			// {
-			// 	const noData = res.samples    // we do this to simplify it to just one array field and thus avoid modifying the sample reducer
-			// 	dispatch(setSamples(noData)); // noData -> []
-			// }
+
 			dispatch(setSamples(res, timeQuery.sampling));
 			dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage));
 			console.log(
@@ -235,7 +225,10 @@ function PerformQuery(props) {
 	 * get sampling input value
 	 */
 	const handleChange = (event) => {
-		setSamplingValue(event.target.value);
+		setTimeQuery({
+			...timeQuery,
+			sampling: event.target.value
+		})
 	};
    
 	/*
@@ -262,7 +255,7 @@ function PerformQuery(props) {
 	 * Convert Date to unix
 	 */
 	const convertToUnix = (date) => {
-		let format = date.split(" ")
+		let format = date.split(" ") // split date an time
 		format = format[0].split(/[-/]/).reverse().join('/') + " " + format[1] // change format to YYYY/MM/DD
 		return new Date(format).getTime()
 	}
@@ -272,13 +265,6 @@ function PerformQuery(props) {
 	 */
 	const checkOnSubmit = (button_click) => {
 		const perform = true; // initial state use to check searched monitors selected comparation
-
-		// date&sampling model
-		let timeQuery ={
-			beginDate: beginDateValue,
-			endDate: endDateValue,
-			sampling: samplingValue
-		}
 		
 		// convert to unix 
 		// we use this to get a better control over the correct validation of the dates
@@ -290,50 +276,41 @@ function PerformQuery(props) {
 		if (timeQuery.sampling === "" || timeQuery.sampling  === "Default") {
 			timeQuery["sampling"] = 0;
 		}
-		
 		// handle all errors from the date inputs
-		if (timeQuery.beginDate === '' || timeQuery.endDate === '')
-		{
+		if (timeQuery.beginDate === '' || timeQuery.endDate === ''){
 			showWarningMeggage('The Date Fields cannot be empty')
 			return false
 		}
-		else if (unixBeginDate > unixEndDate)
-		{
+		else if (unixBeginDate > unixEndDate){
 			showWarningMeggage('The begin Date cannot be greater than end Date')
 			return false
 		}
-		else if (timeQuery.beginDate === timeQuery.endDate)
-		{
+		else if (timeQuery.beginDate === timeQuery.endDate){
 			showWarningMeggage('The begin and end Date cannot be the same')
 			return false
 		}
-		else if (monitor[0] === undefined)
-		{
+		else if (monitor[0] === undefined){
 			showWarningMeggage('There are no monitors selected')
 			return false
 		}
-		else
-		{
-			if(button_click !== "download")
-			{
-				let searchedMonitors = monitor.map(e => e.monitorData["id"]) // save the monitors id's that where choosen for the search
+		else{
+			if(button_click !== "download"){
 				setLoadingSearch(true)
 				dispatch(setActualPage(false, 0, 0)) // reset pagination if it is already display
+				let searchedMonitors = monitor.map(e => e.monitorData["id"]) // save the monitors id's that where choosen for the search
 				dispatch(hadleSearch(perform, timeQuery.beginDate, timeQuery.endDate, timeQuery.sampling, searchedMonitors))
 				dispatch(setloadingButton(false))
 				dispatch(loadGraphic(true))
 				/*
-				* construct the url and call the server data 
-				*/
-				getSamplesFromServer(timeQuery);
+				 * construct the url and call the server data 
+				 */
+				getSamplesFromServer()
 			}
-			else
-			{
+			else{
 				/*
 				 * construct the url for download
 				 */
-				timeQuery["download"] = true
-				return constructURL(timeQuery)
+				return constructURL({download: true})
 			}
 			return true
 		}
@@ -341,12 +318,19 @@ function PerformQuery(props) {
 
 
 	const onChangeBeginDate = (date, dateString) => {
-		setBeginDateValue(dateString)
-		setBeginDateInput(date)
+		setTimeQuery({
+			...timeQuery,
+			beginDate: dateString // string format
+		})
+		setBeginDateInput(date) // antDesign input format date
 	}
+
 	const onChangeEndDate = (date, dateString) => {
-		setEndDateValue(dateString)
-		setEndDateInput(date)
+		setTimeQuery({
+			...timeQuery,
+			endDate: dateString // string format
+		})
+		setEndDateInput(date) // antDesign input format date
 	}
 
     return(
@@ -380,7 +364,7 @@ function PerformQuery(props) {
 					<FormControl sx={{ m: 1, minWidth: 120 }}>
 						<Select
 							className="select-sampling-perform-query"
-							value={samplingValue}
+							value={timeQuery.sampling}
 							onChange={handleChange}
 							displayEmpty
 							inputProps={{ 'aria-label': 'Without label' }}
@@ -458,11 +442,21 @@ function PerformQuery(props) {
 
 					</Stack>
 				</div>
-					<MainStoreQuery 
-						convertToUnix={convertToUnix}
-						constructURL={constructURL}
-						searchForm={{beginDate: beginDateValue, endDate: endDateValue, sampling: samplingValue}}
-					/>
+				<div className="store-query-section">
+					<div className="sample-header-store-query">
+						<Stack direction="column" spacing={1}>
+							Store Querys
+								<SaveQuery 
+									convertToUnix={convertToUnix}
+									constructURL={constructURL}
+									timeQuery={timeQuery}
+								/>
+								<ViewHandleQuery 
+									constructURL={constructURL}
+								/>
+						</Stack>
+					</div>
+				</div>
 			</div>
 		</>
     );
