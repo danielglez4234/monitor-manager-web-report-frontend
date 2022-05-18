@@ -44,8 +44,8 @@ import ArrowLeftIcon             from '@mui/icons-material/ArrowLeft';
 
 import DownloadEmailData from './DownloadData/DownloadEmailData';
 // import AdvancedOptions from './AdvancedOptions';
-import SaveQuery     	 from './stroreQuerys/SaveQuery';
-import ViewHandleQuery 	 from './stroreQuerys/handleQuerys/ViewHandleQuery';
+import SaveQuery     	 from './StroreQuerys/SaveQuery';
+import ViewHandleQuery 	 from './StroreQuerys/handleQuerys/ViewHandleQuery';
 import PopUpMessage      from '../../handleErrors/PopUpMessage';
 
 
