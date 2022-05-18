@@ -21,8 +21,8 @@ import {
 	getUrl
 } from '../actions';
 
-import loadingSls    from '../img/loadingSls.svg';
-import blockMonitors from '../img/blockMonitors.svg';
+import loadingSls    from '../commons/img/loadingSls.svg';
+// import blockMonitors from '../img/blockMonitors.svg';
 
 // --- Model Component elements
 import {

@@ -1,5 +1,5 @@
 import React          from 'react';
-import folder         from '../img/folderIcon.png';
+import folder         from '../commons/img/folderIcon.png';
 
 const ComponentElement = ({ title, getMonitors }) => {
   // <p className="componentItem-title"> { title } </p>

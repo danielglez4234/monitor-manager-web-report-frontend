@@ -15,7 +15,7 @@ import {
 
 // --- Icons
 import AnalyticsIcon  from '@mui/icons-material/Analytics';
-import logoSrc        from '../img/logo.png';
+import logoSrc        from '../commons/img/logo.png';
 
 
 function Header() {
