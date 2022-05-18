@@ -137,28 +137,31 @@ function ListSelectedMonitor(props) {
    * Update reload button when 'loadingbutton' and 'responseData'states changes
    */
 	useEffect(() => {
-		if (getResponse?.responseData?.samples && getResponse.responseData.samples.length > 0)
+		if(graphicStillLoading)
 		{
-			const totalPages   = getResponse.responseData.iTotalPages
-			const totalSamples = getResponse.responseData.iTotalSamples
-			const totalDisplay = getResponse.responseData.iTotalDisplaySamplesByPage
-			const totalPerPage = totalResponseData.totalPerPage 
-			// info display
-			setInfoSamplesByPage(totalDisplay)
-			setInfoTotalSamples(totalSamples)
-			// set pagination
-			setTotalPages(totalPages)
-			setTotalPerPages(totalPerPage)
-			setPage(1) // default page
-			setDisabled(false)
-			setActivatePagination((totalPages <= 1) ? false : true)
-		}
-		else 
-		{
-			setDisabled(true)
-			setTotalPages(0)
-			setInfoSamplesByPage(0)
-			setInfoTotalSamples(0)
+			if (getResponse?.responseData?.samples.length > 0)
+			{
+				const totalPages   = getResponse.responseData.iTotalPages
+				const totalSamples = getResponse.responseData.iTotalSamples
+				const totalDisplay = getResponse.responseData.iTotalDisplaySamplesByPage
+				const totalPerPage = totalResponseData.totalPerPage 
+				// info display
+				setInfoSamplesByPage(totalDisplay)
+				setInfoTotalSamples(totalSamples)
+				// set pagination
+				setTotalPages(totalPages)
+				setTotalPerPages(totalPerPage)
+				setPage(1) // default page
+				setDisabled(false)
+				setActivatePagination((totalPages <= 1) ? false : true)
+			}
+			else 
+			{
+				setDisabled(true)
+				setTotalPages(0)
+				setInfoSamplesByPage(0)
+				setInfoTotalSamples(0)
+			}
 		}
 	}, [graphicStillLoading])
 
@@ -325,13 +328,12 @@ function ListSelectedMonitor(props) {
 
 			dispatch(setloadingButton(true))
 			setLoadingPage(true)
-			setDisabled(true)
 
 			url = url.split('&iDisplayStart')
 			url[0] += "&iDisplayStart="+ start +"&iDisplayLength="+ iDisplayLength
 			url = url[0]
 
-			console.log("url: " + props.serviceName + url)
+			console.log("url: " + props.serviceName + "WebReport/rest/webreport/search/" + url)
 			dispatch(getUrl(url))
 
 			Promise.resolve( getDataFromServer({url}) )
@@ -343,9 +345,6 @@ function ListSelectedMonitor(props) {
 				dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
 					if (totalArraysRecive === 0) 
 					{
-						// const prevPage = page - 1;
-						// setTotalPages(prevPage);
-						// setPage(prevPage);
 						handleMessage({
 							message: 'No data was collected on this page, this may happen if the monitor goes into FAULT state.', 
 							type: 'default', 
