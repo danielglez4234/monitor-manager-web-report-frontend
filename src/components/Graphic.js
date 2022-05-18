@@ -174,26 +174,8 @@ useEffect(() => {
 						};
             info.push(monitorinfo);         
         }
-
-            // FIXME: ordenar la variable info en función de la variable colunms del backend
-            // ^FIXME: <==> NOTE: hacer la ordenación aquí
-            // let arrangeItems = info.map(orden => {
-            //   let removeArrayNumber = orden.title.split("[")
-            //   removeArrayNumber = removeArrayNumber[0]
-            //   let removeBarName = removeArrayNumber.split("/")
-            //   removeBarName = removeBarName[removeBarName.length -1]
-            //   console.log("name", removeBarName)
-            //   return graphicOptions.name.find(x => x.name === removeBarName)
-            // })
-            // console.log(graphicOptions.name)
-            // console.log("backend_items", arrangeItems)
-  
-            // let items = graphicOptions.name.map(order => {
-            //   return info.find(x => x.title === order)
-            // })
-
-		generateGraphic(info, graphicOptions, sampling_period);
-		$('.no-data-error-message').addClass('display-none');
+			generateGraphic(info, graphicOptions, sampling_period);
+			$('.no-data-error-message').addClass('display-none');
         }
         else
         {

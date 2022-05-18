@@ -55,7 +55,6 @@ export const getMonitorsFromComponent = ({componentName}) => {
  */
 export const getDataFromServer = ({url}) => {
     const replacePad = fnReplacePad(encodeURI(url));
-    console.log("urkmm", url)
     return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/webreport/search/" + replacePad, {header: httpHeaderOptions})
             .then(res => res.data)
 }

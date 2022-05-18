@@ -1434,7 +1434,7 @@ outline: none;
   outline: none !important;
 }
 
-.css-1kpdewa-MuiAutocomplete-root .MuiOutlinedInput-root {
+.input-limits-grafic-options .MuiOutlinedInput-root {
   padding: 0px !important;
   box-shadow: 1px 1px 2px inset #404354 !important;
   background-color: #5b697b !important;
@@ -1443,10 +1443,8 @@ outline: none;
   color: #fff !important;
 }
 
-.css-1kpdewa-MuiAutocomplete-root .MuiOutlinedInput-root .MuiAutocomplete-input{
+.input-limits-grafic-options .MuiOutlinedInput-root .MuiAutocomplete-input{
   padding: 4px !important;
-  padding-right: 2px !important;
-  padding-left: 2px !important;
   padding-right: 5px !important;
   padding-left: 5px !important;
   color: #e3e6ea !important;
@@ -2287,7 +2285,7 @@ font-size: 13px !important;
 /*--------------------*/
 
 .save-query-modal{
-  background-color: #414853;
+  background-color: #333a44;
   position: absolute;
   top:50%;
   height:605px;
@@ -2330,7 +2328,7 @@ font-size: 13px !important;
 }
 
 .save-query-input::placeholder{
-  color: #f4f4f5;
+  color: #fff;
   font-style: italic;
 }
 
@@ -2354,6 +2352,7 @@ font-size: 13px !important;
   overflow-y: scroll;
   margin: 0px 30px 2px 30px;
   background-color: #929aa6;
+  box-shadow: 0px 0px 3px inset #474b51;
 }
 
 /* .save-query-list-list{
@@ -2369,7 +2368,7 @@ font-size: 13px !important;
   padding-right: 60px;
 }
 .save-query-title-date{
-  background-color: #787e88 !important;
+  background-color: #5a6370 !important;
   padding-left: 15px;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2382,10 +2381,11 @@ font-size: 13px !important;
   width: 100%;
   height: 0px;
   font-family: "RobotoMono-SemiBold";
+  
 }
 
 table.save-query-table-monitor-list tr:nth-child(even)
-{ background-color:rgb(90, 99, 112);
+{ background-color:#49878e;
   color: white;
 }
       table.save-query-table-monitor-list tr:nth-child(even) .monitor-seleted-item
@@ -2393,7 +2393,7 @@ table.save-query-table-monitor-list tr:nth-child(even)
         color: white;
       }
 table.save-query-table-monitor-list tr:nth-child(odd)
-{ background-color: #515760;
+{ background-color: rgb(90, 99, 112);
   color: white;
 }
       table.save-query-table-monitor-list tr:nth-child(odd) .monitor-seleted-item
@@ -2401,9 +2401,58 @@ table.save-query-table-monitor-list tr:nth-child(odd)
         color: white;
       }
 
+.save-query-table-item-header{
+  display: flex;
+  position: relative;
+  top: -1px;
+  padding-left:10px;
+  padding-right: 5px;
+  font-family: "RobotoMono-Regular";
+  font-size: 13px;
+  height: 21px;
+  color: #eee;
+  background-color: #282e39;
+}
+
+.save-query-table-item-title{
+  padding-left:10px;
+  padding: 10px;
+}
+.sv-component{
+  flex: 1;
+}
+
+.sv-unit{
+  margin-left:10px;
+}
+
 
 /*---------------------------------*/
 /* END *** SAVE QUERY MODAL *** */
+/*---------------------------------*/
+
+/*----------------------------------*/
+/* VIEW QUERY MODAL */
+/*----------------------------------*/
+.view-query-modal{
+  background-color: #333a44;
+  position: absolute;
+  /* top:50%; */
+  height:80%;
+  margin-top:80px;
+  left:50%;
+  width:800px;
+  margin-left:-400px;
+  color: rgb(230, 233, 238);
+  font-family: "RobotoMono-Bold";
+}
+
+/* .{
+
+} */
+
+/*---------------------------------*/
+/* END *** VIEW QUERY MODAL *** */
 /*---------------------------------*/
 
 
