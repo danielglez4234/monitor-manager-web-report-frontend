@@ -3,8 +3,8 @@ import {
   fnIsSimpleArray,
   fnIsDoubleArray
 }
-from './standarFunctions';
-import { LtTooltip } from './uiStyles';
+from '../../../standarFunctions';
+import { LtTooltip } from '../../../../commons/uiStyles';
 
 import HelpIcon                   from '@mui/icons-material/Help';
 import SettingsBackupRestoreIcon  from '@mui/icons-material/SettingsBackupRestore';

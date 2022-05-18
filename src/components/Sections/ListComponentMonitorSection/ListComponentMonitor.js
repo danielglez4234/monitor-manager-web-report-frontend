@@ -3,19 +3,19 @@ import React, { useState, useEffect } from 'react';
 
 // --- Dependencies
 import $                              from "jquery";
-import { fnIsState }                  from './standarFunctions';
+import { fnIsState }                  from '../../standarFunctions';
 
 import { 
   getComponents, 
   getMonitorsFromComponent 
-} from '../services/services'
+} from '../../../services/services'
 
 import { useDispatch, useSelector }   from 'react-redux';
 import {
   selectMonitor,
   setloadingButton
 }
-from '../actions';
+from '../../../actions';
 import Fuse                           from 'fuse.js';
 
 // --- Model Component elements
@@ -24,7 +24,7 @@ import {
   Search,
   SearchIconWrapper,
   StyledInputBase 
-} from './uiStyles';
+} from '../../../commons/uiStyles';
 
 // --- Icons
 import CachedIcon 					  from '@mui/icons-material/Cached';
@@ -38,7 +38,7 @@ import ReportGmailerrorredRoundedIcon from '@mui/icons-material/ReportGmailerror
 // --- React Components link
 import ComponentElement               from './ComponentElement';
 import MonitorElement                 from './MonitorElement';
-import PopUpMessage                   from './handleErrors/PopUpMessage';
+import PopUpMessage                   from '../../handleErrors/PopUpMessage';
 
 
 

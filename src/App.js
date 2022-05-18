@@ -14,10 +14,10 @@ import { SnackbarProvider } from 'notistack';
 import Button               from '@mui/material/Button';
 
 // --- React Components link
-import Header               from './components/Header';
-import ListComponentMonitor from './components/ListComponentMonitor';
-import ListSelectedMonitor  from './components/ListSelectedMonitor';
-import PerformQuery         from './components/PerformQuery';
+import Header               from './components/Sections/Header';
+import ListComponentMonitor from './components/Sections/ListComponentMonitorSection/ListComponentMonitor';
+import ListSelectedMonitor  from './components/Sections/SelectDisplaySection/ListSelectedMonitor';
+import PerformQuery         from './components/Sections/PerformSearchSection/PerformQuery';
 import PageNotFound         from './components/handleErrors/PageNotFound';
 
 

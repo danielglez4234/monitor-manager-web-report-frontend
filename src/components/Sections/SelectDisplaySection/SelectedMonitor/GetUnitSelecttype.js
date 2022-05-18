@@ -4,9 +4,9 @@
 //  en caso de que no se bloquearía el input 
 
 import { useState, Fragment } from 'react';
-import { getUnitConversion } from '../services/services';
+import { getUnitConversion } from '../../../../services/services';
 import { TextField, Autocomplete, CircularProgress } from '@mui/material';
-import PopUpMessage                   from './handleErrors/PopUpMessage';
+import PopUpMessage from '../../../handleErrors/PopUpMessage';
 
 function GetUnitSelecttype({id, unit}) {
   const defaultUnitOpt = "Default";  

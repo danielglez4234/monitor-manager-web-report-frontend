@@ -3,7 +3,7 @@ import React, { useState, useEffect }  from 'react';
 
 // --- Dependencies
 import * as $                from 'jquery';
-import { getDataFromServer } from '../services/services';
+import { getDataFromServer } from '../../../services/services';
 
 import moment                 from 'moment';
 import { DatePicker }         from 'antd';
@@ -20,7 +20,7 @@ import {
 	getUrl,
 	setActualPage
 }
-from '../actions';
+from '../../../actions';
 import {
 	fnIsState,
 	fnIsScalar,
@@ -28,7 +28,7 @@ import {
 	fnIsMagnitude,
 	getCategory
 }
-from './standarFunctions'
+from '../../standarFunctions'
 
 
 // --- Model Component elements
@@ -42,11 +42,11 @@ import ArrowLeftIcon             from '@mui/icons-material/ArrowLeft';
 // import StopCircleIcon            from '@mui/icons-material/StopCircle';
 
 
-import DownloadEmailData from './DownloadEmailData';
+import DownloadEmailData from './DownloadData/DownloadEmailData';
 // import AdvancedOptions from './AdvancedOptions';
 import SaveQuery     	 from './stroreQuerys/SaveQuery';
 import ViewHandleQuery 	 from './stroreQuerys/handleQuerys/ViewHandleQuery';
-import PopUpMessage      from './handleErrors/PopUpMessage';
+import PopUpMessage      from '../../handleErrors/PopUpMessage';
 
 
 

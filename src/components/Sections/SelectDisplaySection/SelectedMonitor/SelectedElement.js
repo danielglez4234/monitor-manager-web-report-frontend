@@ -6,8 +6,8 @@ import {
   fnIsArray,
   fnIsMagnitude
 }
-from './standarFunctions';
-import { LtTooltip } from './uiStyles';
+from '../../../standarFunctions';
+import { LtTooltip } from '../../../../commons/uiStyles';
 // --- Model Component elements
 import {Stack, IconButton, Box, TextField, Autocomplete } from '@mui/material';
 

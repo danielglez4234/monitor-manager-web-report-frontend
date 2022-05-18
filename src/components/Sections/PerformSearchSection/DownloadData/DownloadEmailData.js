@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import { useSelector } from 'react-redux';
-import { getDownloadData } from '../services/services';
+import { getDownloadData } from '../../../../services/services';
 import * as $          from 'jquery';
 // import emailjs         from '@emailjs/browser';
 
@@ -23,7 +23,7 @@ import { useTheme }      from '@mui/material/styles';
 
 // import EmailIcon    from '@mui/icons-material/Email';
 import DownloadIcon from '@mui/icons-material/Download';
-import PopUpMessage from './handleErrors/PopUpMessage';
+import PopUpMessage from '../../../handleErrors/PopUpMessage';
 
 
 function DownloadEmailData(props){

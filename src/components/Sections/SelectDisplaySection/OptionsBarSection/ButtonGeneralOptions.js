@@ -3,7 +3,7 @@ import React from 'react';
 
 // --- Dependencies
 import * as $         from 'jquery';
-import { LtTooltip }  from './uiStyles';
+import { LtTooltip }  from '../../../../commons/uiStyles';
 
 // --- Model Component elements
 // import Popover        from '@mui/material/Popover';

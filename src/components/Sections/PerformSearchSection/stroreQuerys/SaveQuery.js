@@ -3,7 +3,7 @@ import * as $ 						from 'jquery'
 import { useSelector } 				from 'react-redux';
 import {
 	insertQuery
-} from '../../services/services'
+} from '../../../../services/services'
 
 import {makeStyles}					from '@material-ui/core';
 import {
@@ -20,8 +20,8 @@ import ArchiveIcon 					from '@mui/icons-material/Archive';
 import SaveIcon                     from '@mui/icons-material/Save';
 import LoadingButton                from '@mui/lab/LoadingButton';
 
-import PopUpMessage                 from '../../components/handleErrors/PopUpMessage';
-import getGraphicoptions            from '../getGraphicoptions'
+import PopUpMessage                 from '../../../handleErrors/PopUpMessage';
+import getGraphicoptions            from '../../SelectDisplaySection/Graphic/getGraphicoptions'
 
 
 const usesTyles = makeStyles({

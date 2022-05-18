@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 // --- Dependencies
 import * as $  from 'jquery';
-import { getDataFromServer } from '../services/services';
+import { getDataFromServer } from '../../../services/services';
 
 import {
 	useDispatch,
@@ -19,10 +19,10 @@ import {
 	setActualPage,
 	setSamples,
 	getUrl
-} from '../actions';
+} from '../../../actions';
 
-import loadingSls    from '../img/loadingSls.svg';
-import blockMonitors from '../img/blockMonitors.svg';
+import loadingSls    from '../../../commons/img/loadingSls.svg';
+import blockMonitors from '../../../commons/img/blockMonitors.svg';
 
 // --- Model Component elements
 import {
@@ -32,7 +32,7 @@ import {
 	LinearProgress,
 	Popover
 } from '@mui/material';
-import { LtTooltip } from './uiStyles';
+import { LtTooltip } from '../../../commons/uiStyles';
 
 
 // --- Icons
@@ -49,12 +49,12 @@ import ArrowDropUpIcon              from '@mui/icons-material/ArrowDropUp';
 
 // --- React Components
 //import MenuGraficOrTable from './MenuGraficOrTable';
-import Graphic              from './Graphic';
-import SelectedElement      from './SelectedElement';
-import ButtonGeneralOptions from './ButtonGeneralOptions';
-import PopUpMessage         from './handleErrors/PopUpMessage';
-import ButtonMagnitudeReference from './ButtonMagnitudeReference'
-// import RangeThresholdsOptions from './RangeThresholdsOptions';
+import Graphic              from './Graphic/Graphic';
+import SelectedElement      from './SelectedMonitor/SelectedElement';
+import ButtonGeneralOptions from './OptionsBarSection/ButtonGeneralOptions';
+import PopUpMessage         from '../../handleErrors/PopUpMessage';
+import ButtonMagnitudeReference from './OptionsBarSection/ButtonMagnitudeReference'
+// import RangeThresholdsOptions from './OptionsBarSection/RangeThresholdsOptions';
 
 
 

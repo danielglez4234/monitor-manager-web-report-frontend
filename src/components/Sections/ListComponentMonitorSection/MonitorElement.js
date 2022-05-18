@@ -1,5 +1,5 @@
 // --- Get other Components
-import GetMonitordIconType       from './GetMonitordIconType';
+import GetMonitordIconType       from '../SelectDisplaySection/SelectedMonitor/GetMonitordIconType';
 
 const MonitorElement = ({monitorData, component, select, diActivateReload }) => {
 	/*

@@ -18,7 +18,7 @@ import LiveHelpIcon       from '@mui/icons-material/LiveHelp';
 import MoreHorizIcon      from '@mui/icons-material/MoreHoriz';
 import NearbyErrorIcon from '@mui/icons-material/NearbyError';
 
-import PopUpMessage from './handleErrors/PopUpMessage';
+import PopUpMessage from '../../../handleErrors/PopUpMessage';
 
 
 

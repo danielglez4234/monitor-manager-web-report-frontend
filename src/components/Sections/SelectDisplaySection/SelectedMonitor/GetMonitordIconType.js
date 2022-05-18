@@ -7,7 +7,7 @@ import {
   fnIsSimpleArray,
   fnIsDoubleArray
 }
-from './standarFunctions'
+from '../../../standarFunctions'
 
 
 const GetMonitordIconType = ({type}) => {

@@ -226,7 +226,7 @@
 import React, {useState, useEffect} from 'react';
 import {
 	getAllQuerys
-} from '../../../services/services'
+} from '../../../../../services/services'
 import Box from '@mui/material/Box';
 import { 
 	DataGrid,
@@ -239,7 +239,7 @@ import { useDemoData } from '@mui/x-data-grid-generator';
 import { styled } from '@mui/material/styles';
 import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
-import PopUpMessage from '../../../components/handleErrors/PopUpMessage';
+import PopUpMessage from '../../../../handleErrors/PopUpMessage';
 
 const StyledGridOverlay = styled('div')(({ theme }) => ({
 	display: 'flex',
