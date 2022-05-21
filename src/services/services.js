@@ -17,7 +17,7 @@ const httpHeaderOptions = {
  * calling /components to get all components
  */
 export const getComponents = () => {
-    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/webreport/components", {header: httpHeaderOptions})
+    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/components", {header: httpHeaderOptions})
             .then(res => res.data)
 }
 
@@ -26,13 +26,13 @@ export const getComponents = () => {
  */
 export const getMonitorsFromComponent = ({componentName}) => {
     // console.log(componentName);
-    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/webreport/components/" + componentName, {header: httpHeaderOptions})
+    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/components/" + componentName, {header: httpHeaderOptions})
         .then(res => {
             const enumList  = res.data.magnitudeDescriptions;
             const escalList = res.data.monitorDescription;
             if (enumList.length > 0 || escalList.length > 0) 
             {
-                return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/webreport/state_definition", {header: httpHeaderOptions})
+                return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/state_definition", {header: httpHeaderOptions})
                     .then(res =>  {           
                     const stateInfo = {
                         magnitude: 'STATE',
@@ -55,7 +55,7 @@ export const getMonitorsFromComponent = ({componentName}) => {
  */
 export const getDataFromServer = ({url}) => {
     const replacePad = fnReplacePad(encodeURI(url));
-    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/webreport/search/" + replacePad, {header: httpHeaderOptions})
+    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/search/" + replacePad, {header: httpHeaderOptions})
             .then(res => res.data)
 }
 
@@ -64,7 +64,7 @@ export const getDataFromServer = ({url}) => {
  */
 export const getDownloadData = ({url}) => {
     const replacePad = fnReplacePad(encodeURI(url));
-    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/webreport/download/" + replacePad, {header: httpHeaderOptions})
+    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/download/" + replacePad, {header: httpHeaderOptions})
             .then(res => res.data)
 }
 
@@ -72,7 +72,7 @@ export const getDownloadData = ({url}) => {
  * calling compatible conversion for a Unit type
  */
 export const getUnitConversion = (unitType) => {
-    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/webreport/units/" + encodeURI(unitType), {header: httpHeaderOptions})
+    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/units/" + encodeURI(unitType), {header: httpHeaderOptions})
             .then(res => res.data)
 }
 
@@ -93,7 +93,7 @@ const fnReplacePad = (url) => { return url.replace(/#/g, '%23') }
  * GET all querys
  */
 export const getAllQuerys = () => {
-    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/query/", {header: httpHeaderOptions})
+    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/query/", {header: httpHeaderOptions})
             .then(res => res.data)
 }
 
@@ -101,7 +101,7 @@ export const getAllQuerys = () => {
  *  GET specific query
  */
 export const getQuery = (id) => {
-    return axios.get(REACT_APP_SERVICES_IP + `/WebReport/query/${id}`, {header: httpHeaderOptions})
+    return axios.get(REACT_APP_SERVICES_IP + `/WebReport/rest/query/${id}`, {header: httpHeaderOptions})
             .then(res => res.data)
 }
 
@@ -109,7 +109,7 @@ export const getQuery = (id) => {
  * POST a new query
  */
 export const insertQuery = (payload) => {
-    return axios.post(REACT_APP_SERVICES_IP + "/WebReport/query/", payload, {header: httpHeaderOptions})
+    return axios.post(REACT_APP_SERVICES_IP + "/WebReport/rest/query/", payload, {header: httpHeaderOptions})
             .then(res => res.data)
 }
 
@@ -118,7 +118,7 @@ export const insertQuery = (payload) => {
  * UPDATE a new query
  */
 export const updateQuery = (id, payload) => {
-    return axios.post(REACT_APP_SERVICES_IP + `/WebReport/query/${id}`, payload, {header: httpHeaderOptions})
+    return axios.post(REACT_APP_SERVICES_IP + `/WebReport/rest/query/${id}`, payload, {header: httpHeaderOptions})
             .then(res => res.data)
 }
 
@@ -126,6 +126,6 @@ export const updateQuery = (id, payload) => {
  * Remove query
  */
 export const deleteQuery = (id, payload) => {
-    return axios.delete(REACT_APP_SERVICES_IP + `/WebReport/query/${id}`, payload, {header: httpHeaderOptions})
+    return axios.delete(REACT_APP_SERVICES_IP + `/WebReport/rest/query/${id}`, payload, {header: httpHeaderOptions})
             .then(res => res.data)
 }

@@ -201,14 +201,20 @@ code {
 }
 
 
+.try-reconnect-button-box{
+  width: 28px;
+  height: 28px;
+  margin-top: 11px !important;
+  color: #c8d2d2 !important;
+}
+
+
 .try-reconnect-button{
   position: relative;
   width: 20px !important;
   top:-10px;
   cursor: pointer;
 }
-
-
 
 
 

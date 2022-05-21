@@ -76,12 +76,26 @@ function getGraphicoptions(){
 		let min         = $(".yaxisMin").eq(i).val();
 		let max         = $(".yaxisMax").eq(i).val();
 
+		console.log("name", name, "unit", unit, "unitDefult", unitDefult)
 		selectMonitorName.push(name);
-		
-		(unit === "Default") ?  selectUnitType.push(unitDefult) :
-		(unit === undefined) ? selectUnitType.push("None") : selectUnitType.push(unit);
 
-		if(prefix !== "Default" && prefix !== ""){selectPrefix.push(prefix)}
+		if(unit === "Default"){
+			if(unitDefult){
+				selectUnitType.push("None")
+			}else{
+				selectUnitType.push(unitDefult)
+			}
+		}
+		else if(unit === undefined){
+			selectUnitType.push("None")
+		}
+		else{
+			selectUnitType.push(unit)
+		}
+		// (unit === "Default") ?  selectUnitType.push(unitDefult) :
+		// (unit === undefined) ? selectUnitType.push("None") : selectUnitType.push(unit);
+
+		(prefix !== "Default" && prefix !== "") ? selectPrefix.push(prefix) : selectPrefix.push("None")
 		
 
 		selectGraphicType.push(graphType)

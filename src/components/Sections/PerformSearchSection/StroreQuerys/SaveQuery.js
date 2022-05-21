@@ -161,6 +161,7 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 		const name = queryName
 		const description = queryDescription
 		const query = constructURL(timeQuery)
+
 		return {name, description, user, query}
 	}
 
@@ -284,7 +285,7 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 																	{(value.prefix === "None" || value.prefix === "") ? "--" : value.prefix} 
 																</p>
 																<p className="sv-unit"> 
-																	{(value.unit === "None" || value.unit === "") ? "--" : value.unit}
+																	{(value.unit === "Default" || value.unit === "") ? "--" : value.unit}
 																</p>
 															</div>
 															<div className="save-query-table-item-title">

@@ -11,7 +11,6 @@ import {
 } from 'react-redux';
 
 import {
-	menuHandleSelectedMonitors,
 	reloadGrafic,
 	loadGraphic,
 	setloadingButton,
@@ -22,34 +21,23 @@ import {
 } from '../../../actions';
 
 import loadingSls    from '../../../commons/img/loadingSls.svg';
-import blockMonitors from '../../../commons/img/blockMonitors.svg';
 
 // --- Model Component elements
 import {
 	Stack,
 	Button,
 	Pagination,
-	LinearProgress,
-	Popover
+	LinearProgress
 } from '@mui/material';
-import { LtTooltip } from '../../../commons/uiStyles';
-
 
 // --- Icons
-import DataUsageIcon                from '@mui/icons-material/DataUsage';
-import SettingsBackupRestoreIcon    from '@mui/icons-material/SettingsBackupRestore';
 import ReplayIcon                   from '@mui/icons-material/Replay';
-import ClearAllIcon                 from '@mui/icons-material/ClearAll';
-import DetailsIcon                  from '@mui/icons-material/Details';
-import ArrowDropUpSharpIcon         from '@mui/icons-material/ArrowDropUpSharp';
-import ExpandMoreIcon               from '@mui/icons-material/ExpandMore';
-import KeyboardDoubleArrowDownIcon  from '@mui/icons-material/KeyboardDoubleArrowDown';
 import ArrowDropUpIcon              from '@mui/icons-material/ArrowDropUp';
-
 
 // --- React Components
 //import MenuGraficOrTable from './MenuGraficOrTable';
 import Graphic              from './Graphic/Graphic';
+import MonitorList			from './SelectedMonitor/MonitorList';
 import SelectedElement      from './SelectedMonitor/SelectedElement';
 import ButtonGeneralOptions from './OptionsBarSection/ButtonGeneralOptions';
 import PopUpMessage         from '../../handleErrors/PopUpMessage';
@@ -75,13 +63,7 @@ function ListSelectedMonitor(props) {
 	// pagination
 	let url            = useSelector(state => state.url);
 	const pagination   = useSelector(state => state.pagination);
-
-	const [countMonitors, setCountMonitors] = useState(0);
-
-	const [elements, setSelectedElements] = useState([]);
-	const [onSelect, setOnSelect]         = useState(true);
 	const [disabled, setDisabled]         = useState(true);
-	// const [disableWhileSearching, setDisableWhileSearching] = useState(false);
 
 	const [startloadingGraphic, setStartloadingGraphic]   = useState(false);
 
@@ -94,43 +76,6 @@ function ListSelectedMonitor(props) {
 	const [infoSamplesByPage, setInfoSamplesByPage]   = useState(0);
 	const [infoTotalSamples, setInfoTotalSamples]     = useState(0);
 
-
-  /*
-   * Default State of the list
-   */
-	let initialInfoText = <div className="no_monitor_selected">
-								<DataUsageIcon className="img_monitor_selected"/>
-								<p className="no_monitor_selected_message">Select a Monitor from the MonitorList</p>
-						  </div>;
-
-	/*
-	 * Blink animation when a monitor is selected
-	 */
-	const blinkAnimation = () => {
-		const animationListeners = 'webkitAnimationEnd oanimationend msAnimationEnd animationend';
-		$('.selected-monitors-extends-buttons').addClass('blink')
-		$('.selected-monitors-extends-buttons').one(animationListeners, function () {  // when the animation ends remove the class
-			$('.selected-monitors-extends-buttons').removeClass('blink')
-		})
-	}
-
-	/*
-	* Map selected elements
-	*/
-	useEffect(() => {
-		if (monitor.length > 0) 
-		{
-			setOnSelect(false)
-			setCountMonitors(monitor.length)
-			setSelectedElements(monitor)
-				blinkAnimation()
-		}
-		else 
-		{
-			setOnSelect(true)
-			setCountMonitors(0)
-		}
-	}, [monitor])
 
 
   /*
@@ -170,13 +115,9 @@ function ListSelectedMonitor(props) {
 	 */
 	useEffect(() => {
 		setStartloadingGraphic(loadingGraphic)
-		// setDisableWhileSearching(loadingGraphic)
-		if(loadingGraphic){
+		if(loadingGraphic)
+		{
 			setDisabled(true)
-			// $(".selected-monitors-section").prepend(
-			//   "<div class='block-monitor-selected-when-searching'> \
-			//     <img class='bolck-svg-monitors' alt='...' src='"+ blockMonitors +"'/> \
-			//   </div>")
 		}
 	}, [loadingGraphic])
 
@@ -208,51 +149,6 @@ function ListSelectedMonitor(props) {
 	}, [monitor, onSearch, getResponse])
 
 
-	/*
-	 * Hide Component and monitor list handle arrows movement
-	 */
-	const handleExpandSection = (icon, setHeightPX) => {
-		$(".menu-monitorSelected-contain").css('height', setHeightPX + "px")
-		if (setHeightPX === 0) {
-			$(".menu-monitorSelected-contain").addClass('hide-sections')
-			$(".selected-monitors-select-all").addClass('hide-sections')
-		}else {
-			$(".menu-monitorSelected-contain").removeClass('hide-sections')
-			$(".selected-monitors-select-all").removeClass('hide-sections')
-		}
-		$('.rotback').removeClass('rotate180 activeExpandColor')
-		if (icon === "visibilityMiddle-icon") {
-			if (!$('.visibilityMiddle-icon').hasClass('activeExpandColor')) {
-				$('.' + icon).toggleClass('activeExpandColor')
-			}
-		}else if (icon === "visibilityOff-icon") {
-			$('.' + icon).toggleClass('rotate180 activeExpandColor')
-			$('.visibilityMiddle-icon').removeClass('rotate180')
-		}else {
-			$('.' + icon).toggleClass('rotate180 activeExpandColor')
-			$('.visibilityMiddle-icon').toggleClass('rotate180')
-		}
-	}
-
-	/*
-	 * Show Less Details
-	 */
-	const lessDatails = () => {
-		$('.monitor-selected-info_component_id').toggleClass('display-none')
-		$('.lessDetail-icon').toggleClass('color-menu-active')
-	}
-
-	/*
-	 * Reset all options
-	 */
-	const resetOptions = () => {
-		$(".checkboxMo-monitor").prop('checked', false)
-		$('.color-line').prop('disabled', true)
-		$(".monitor-selected-select option").attr('selected', false)
-		$(".monitor-selected-select option[value='1']").attr('selected', true)
-		$(".input-limits-grafic-options").val('')
-	}
-
    	/*
      * Handle graphic Info OPEN popover
      */
@@ -261,48 +157,6 @@ function ListSelectedMonitor(props) {
 		$('.totalRecord-button-Popover ').toggleClass('display-none')
     };
 
-	/*
-	 * Change color when checkbox is disabled 
-	 */
-	const disabledGraficOptions = (menuName) => {
-		var checkbox = $('.' + menuName + '-checkbox')
-		var menuIcon = $('.' + menuName + '-icon');
-
-		if (checkbox.is(":checked")){
-			menuIcon.addClass('color-menu-disabled')
-		}else{
-			menuIcon.removeClass('color-menu-disabled')
-		}
-	}
-
-	/*
-	 * handle all menu global state acions from monitorSelected
-	 */
-	const menuHandle = (id, type) => {
-		dispatch(menuHandleSelectedMonitors(id, type))
-	}
-
-	/*
-	 * Disabled reload when the conditions are not compatible
-	 */
-	const diActivateReload = () => {
-		dispatch(setloadingButton(false))
-		setDisabled(true)
-	}
-
-	/*
-	 * Check all the corresponding checkboxes when you click the selected all 
-	 */
-	const checkAllCheckboxes = (selectedCheckbox) => {
-		var checkboxAll       = $("." + selectedCheckbox + "-all")
-		var checkboxMonitors  = $("." + selectedCheckbox);
-
-		if (checkboxAll.is(":checked")) {
-			checkboxMonitors.prop('checked', true)
-		}else {
-			checkboxMonitors.prop('checked', false)
-		}
-	}
 
 	/*
 	 * Handle pagination input value
@@ -315,6 +169,19 @@ function ListSelectedMonitor(props) {
 	/*
 	 * Handle next page dataSamples
 	 */
+	// TODO: REFACTOR: convert to this NOTE: buscar como setear la variable disabled a true o false con estas condiciones, sin el Promise
+	// useEffect(() => {
+	// 	if(getResponse.length !== 0 && pagination.active)
+	// 	{
+	// 		if(loadingGraphic){
+	// 			setLoadingPage(false)
+	// 			setDisabled(false)
+	// 		}else{
+	// 			setLoadingPage(true)
+	// 		}
+	// 	}
+	// }, [loadingGraphic]);
+
 	useEffect(()=>{
 		if (getResponse.length !== 0 && pagination.active ) 
 		{
@@ -408,86 +275,7 @@ function ListSelectedMonitor(props) {
 
 			{/*<MenuGraficOrTable />*/}
 
-			<div  className="selected-monitors-section">
-			<div className="selected-monitors-select-all">
-			<div className="selected-monitors-select-all-title"> Selected Monitors </div>
-				<label onClick={() =>{ checkAllCheckboxes("logarithm") }} className="label-cont-inputchecbox select-all-checkbox">logarithm
-					<input type="checkbox" className="checkboxMo checkboxMo-monitor logarithm-all" />
-				<span className="checkmark"></span>
-				</label>
-				<label onClick={() =>{ checkAllCheckboxes("curved") }} className="label-cont-inputchecbox select-all-checkbox">curved
-					<input type="checkbox" className="checkboxMo checkboxMo-monitor curved-all" />
-				<span className="checkmark"></span>
-				</label>
-				<label onClick={() =>{ checkAllCheckboxes("filled") }} className="label-cont-inputchecbox select-all-checkbox">filled
-					<input type="checkbox" className="checkboxMo checkboxMo-monitor filled-all" />
-				<span className="checkmark"></span>
-				</label>
-				{/*<label onClick={() =>{ checkAllCheckboxes("dotted") }}  className="label-cont-inputchecbox select-all-checkbox">dotted
-				<input type="checkbox" className="checkboxMo checkboxMo-monitor dotted-all" />
-				<span className="checkmark"></span>
-				</label>*/}
-			</div>
-
-			<div className="menu-monitorSelected-contain">
-				<div className="table-selected-monitors-options">
-					<LtTooltip onClick={() => { resetOptions() }} title="Reset Options" placement="left" className="tool-tip-options">
-						<SettingsBackupRestoreIcon className="table-selected-clearAll-icon reset-menu-icon"/>
-					</LtTooltip>
-					<LtTooltip onClick={() => { menuHandle('', 'diselectALLMonitor'); diActivateReload() }} title="Clear All" placement="left" className="tool-tip-options">
-						<ClearAllIcon className="table-selected-clearAll-icon"/>
-					</LtTooltip>
-					<LtTooltip onClick={() => { lessDatails() }} title="Less Details" placement="left" className="tool-tip-options">
-						<DetailsIcon id="lessDetail-icon" className="table-selected-clearAll-icon lessDetail-icon"/>
-					</LtTooltip>
-				</div>
-				<div id="resizable" data-bottom="true" className="selected-monitors-box">
-					{
-					(onSelect) ? initialInfoText :
-						<table id="drop-area" className="table-selected-monitors">
-							<tbody>
-							{
-								elements.map((element, index) =>
-									<SelectedElement
-										key           = { index }
-										id            = { element.monitorData.id }
-										monitorData   = { element.monitorData }
-										component     = { element.component }
-										menuHandle    = { menuHandle }
-										diActivateReload = { diActivateReload }
-										// onRemove      = { onRemove }
-										// disableWhileSearching = { disableWhileSearching }
-									/>
-								)
-							}
-							</tbody>
-						</table>
-					}
-				</div>
-			</div>
-				<div className="selected-monitors-extends-buttons">
-					<div className="selected-monitor-count">
-						º
-						{
-						countMonitors
-						}
-					</div>
-					<KeyboardDoubleArrowDownIcon 
-						onClick={() => { handleExpandSection("visibilityLarge-icon", 400) }} 
-						className="section-selected-extends-icons rotback visibilityLarge-icon"
-					/>
-					<ExpandMoreIcon 
-						onClick={() => { handleExpandSection("visibilityMiddle-icon", 98) }} 
-						className="section-selected-extends-icons rotback activeExpandColor visibilityMiddle-icon" 
-					/>
-					<ArrowDropUpSharpIcon 
-						onClick={() => { handleExpandSection("visibilityOff-icon", 0) }} 
-						className="section-selected-extends-icons rotback visibilityOff-icon" 
-					/>
-				</div>
-			</div>
-
-
+			<MonitorList />
 			{
 				(startloadingGraphic) ? 
 					<div className="img-load-svg-box">
