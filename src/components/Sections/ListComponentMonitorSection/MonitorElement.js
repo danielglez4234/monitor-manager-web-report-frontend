@@ -5,7 +5,7 @@ const MonitorElement = ({monitorData, component, select, diActivateReload }) => 
 	/*
 	 * Get Icons
 	 */
-	const icontype = <GetMonitordIconType type={ monitorData.type } />;
+	const icontype = <GetMonitordIconType type={ monitorData.type } />
 
 	return(
 		<div id="dropitem" className="drag componentItem-box-container monitor-element">

@@ -19,7 +19,7 @@ from '../../../actions';
 import Fuse                           from 'fuse.js';
 
 // --- Model Component elements
-import { Stack, Skeleton }            from '@mui/material';
+import {Stack, Skeleton, IconButton}  from '@mui/material';
 import { 
   Search,
   SearchIconWrapper,
@@ -39,6 +39,9 @@ import ReportGmailerrorredRoundedIcon from '@mui/icons-material/ReportGmailerror
 import ComponentElement               from './ComponentElement';
 import MonitorElement                 from './MonitorElement';
 import PopUpMessage                   from '../../handleErrors/PopUpMessage';
+
+
+import { useForm, useFieldArray } from "react-hook-form";
 
 
 
@@ -317,20 +320,20 @@ function ListComponentMonitor() {
 							</Search>
 							{
 								(connectionError) ?
-									<CachedIcon 
-										className={"try-reconnect-button"}
-										onClick = {() => {
-											tryReconnect()
-										}}
-									/>
-									// <IconButton color="primary" aria-label="upload picture" component="span">
-									// 	<CachedIcon 
-									// className={"try-reconnect-button"}
-									// 	onClick = {() => {
-									// 		tryReconnect()
-									// 	}}
-									// />
-									// </IconButton>
+	
+									<IconButton 
+										color="primary" 
+										aria-label="upload picture" 
+										component="span"
+										className={"try-reconnect-button-box"}
+									>
+										<CachedIcon 
+											className={"try-reconnect-button"}
+											onClick = {() => {
+												tryReconnect()
+											}}
+										/>
+									</IconButton>
 								: ""
 							}
 						</Stack>
