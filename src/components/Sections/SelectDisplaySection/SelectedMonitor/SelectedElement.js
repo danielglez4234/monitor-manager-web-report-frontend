@@ -27,41 +27,79 @@ import AnnouncementIcon     from '@mui/icons-material/Announcement';
 
 
 function SelectedElement({ id, monitorData, component, menuHandle, diActivateReload}) {
-	// const SelectedElement = ({ id, monitorData, component, menuHandle, diActivateReload }) => {
-	const [max, setMax] = useState("");
-	const [min, setMin] = useState("");
-
-	const onChangeMax = (e) => {setMax(e.target.value)}
-	const onChangeMin = (e) => {setMin(e.target.value)}
-
+		
 	const loadWhileGetData = useSelector(state => state.loadingGraphic);
 	const [disableWhileSearching, setDisableWhileSearching] = useState(false);
 
+	const [booleanValue, setBooleanValue] = useState({
+		logarithm: false,
+		curved: false,
+		filled: false,
+		enabled_color: false
+	});
+	const onChangeBoolean = (e) => {
+		const name = e.target.name
+		const value = e.target.value
+		setBooleanValue({
+			...booleanValue,
+			[name]: value
+		})
+	}
+
+	const [stringValue, setStringValue] = useState({
+		limit_max: "",
+		limit_min: "",
+		color: "",
+		pos: ""
+	});
+	const onChangeString = (e) => {
+		const name = e.target.name
+		const value = e.target.value
+		setStringValue({
+			...stringValue,
+			[name]: value
+		})
+	}
+
+	const [arrayValue, setArrayValue] = useState({
+		graphicType: null,
+		stroke: null,
+		canvas: null,
+		prefix: null,
+		unit: null,
+		decimal_pattern: null,
+	});
+	const onChangeArray = (e, newValue) => {
+		const name = e.target.name
+		setArrayValue({
+			...arrayValue,
+			[name]: newValue
+		})
+	}
+
+
+
+
 	/*
-	* 'loadWhileGetData' will be set to true when the data has arrive, and then buttons will be active again
-	*/
+	 * 'loadWhileGetData' will be set to true when the data has arrive, and then buttons will be active again
+	 */
 	useEffect(() => {
 		setDisableWhileSearching(loadWhileGetData)
 	}, [loadWhileGetData]);
 
-
-
 	/*
 	 * Set oprions 'select' inputs 
 	 */
-	const defaultGraphicOpts = "Line Series";  
 	const graphicOpts = [
 		"Line Series",
 		"Step Line Series"
 	];
-	const defaultStrokeOpts = "Medium";
 	const strokeOpts = [
 		"Light",
 		"Medium",
 		"Bold",
 		"Bolder"
 	];
-	const defaultCanvasOpts = "Default";
 	const canvasOpts = [
 		"Default",
 		"Dotted",
@@ -69,7 +107,6 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 		"Large Dashed",
 		"Dotted Dashed"
 	];
-	const defaultPatternOpts = "Default";
 	const patternOpts = [
 		"Default",
 		"0.#",
@@ -86,7 +123,6 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 	 * Handle remove item from list 
 	 */
 	const onRemove = (id) => {
-		// $(".tr-monMag" + id).empty(); // NOT_WORKING:
 		menuHandle(id, 'diselectMonitor');
 		diActivateReload();
 	}
@@ -111,25 +147,6 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 	 */
 	const icontype = <GetMonitordIconType type={ monitorData.type } />;
 
-	/*
-	 * Get unit conversion options
-	 */
-	const unitOptions = <GetUnitSelecttype 
-							id={id} 
-							unit={(monitorData.unit === undefined) ? "None" : monitorData.unit} 
-							applyChangesWarning={ applyChangesWarning }
-						/>; 
-
-	/*
-	 * Get index array modal
-	 */
-	const indexArrayModal = <GetIndexArrayModal
-								id={ id }
-								type={ monitorData.type } 
-								applyChangesWarning={ applyChangesWarning }
-								dimension_x={ monitorData.dimension_x }
-								dimension_y={ monitorData.dimension_y }
-							/>
 
 	/*
 	 * If the button is alredy active when a new monitor is selected, apply the changes
@@ -244,18 +261,22 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 							<label className="label-cont-inputchecbox settings-checkbox-presnetation">
 								logarithm
 								<input
-								type="checkbox"
-								name="logarithm"
-								className="checkboxMo checkboxMo-monitor logarithm"
+									type="checkbox"
+									name="logarithm"
+									onChange={onChangeBoolean}
+									value={booleanValue.logarithm}
+									className="checkboxMo checkboxMo-monitor logarithm"
 								/>
 								<span className="checkmark"></span>
 							</label>
 								<label className="label-cont-inputchecbox settings-checkbox-presnetation">
 								curved
 								<input
-								type="checkbox"
-								name="curved"
-								className="checkboxMo checkboxMo-monitor curved"
+									type="checkbox"
+									name="curved"
+									onChange={onChangeBoolean}
+									value={booleanValue.curved}
+									className="checkboxMo checkboxMo-monitor curved"
 								/>
 							<span className="checkmark"></span>
 							</label>
@@ -264,6 +285,8 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 								<input
 								type="checkbox"
 								name="filled"
+								onChange={onChangeBoolean}
+								value={booleanValue.filled}
 								className="checkboxMo checkboxMo-monitor filled"
 								/>
 							<span className="checkmark"></span>
@@ -285,9 +308,9 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 								max="9999999"
 								min="-9999999"
 								placeholder="0.."
-								name="max"
-								onChange={onChangeMax}
-								value={max}
+								name="limit_max"
+								onChange={onChangeString}
+								value={stringValue.limit_max}
 								className="input-limits-grafic-options yaxisMax"
 							/>
 							<label className="monitor-limits-label"> Min: </label>
@@ -296,9 +319,9 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 								max="9999999"
 								min="-9999999"
 								placeholder="0.."
-								name="min"
-								onChange={onChangeMin}
-								value={min}
+								name="limit_min"
+								onChange={onChangeString}
+								value={stringValue.limit_min}
 								className="input-limits-grafic-options yaxisMin"
 							/>
 							</div>
@@ -314,10 +337,12 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 								// freeSolo
 								disableClearable
 								id={`grafic-type` + id}
-								name="grafic-type"
+								name={"graphicType"}
 								className="input-limits-grafic-options input-select-graphic grafic-type"
 								options={graphicOpts}
-								defaultValue={defaultGraphicOpts}
+								defaultValue={graphicOpts[0]}
+								onChange={(e, newValue) => {onChangeArray(e, newValue)}}
+								value={arrayValue.graphicType}
 								renderInput={(params) => <TextField {...params} />}
 							/>
 
@@ -329,10 +354,12 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 								// freeSolo
 								disableClearable
 								id={`strokeWidth` + id}
-								name="strokeWidth"
+								name="stroke"
 								className="input-limits-grafic-options input-select-graphic stroke-width"
 								options={strokeOpts}
-								defaultValue={defaultStrokeOpts}
+								defaultValue={strokeOpts[0]}
+								onChange={(e, newValue) => {onChangeArray(e, newValue)}}
+								value={arrayValue.stroke}
 								renderInput={(params) => <TextField {...params} />}
 							/>
 							<span className="monitor-selected-input-label-selects">Canvas:</span>
@@ -341,17 +368,30 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 								// freeSolo
 								disableClearable
 								id={`canvas` + id}
-								name="canvas-width"
+								name="canvas"
 								className="input-limits-grafic-options input-select-graphic canvas-width"
 								options={canvasOpts}
-								defaultValue={defaultCanvasOpts}
+								defaultValue={canvasOpts[0]}
+								onChange={(e, newValue) => {onChangeArray(e, newValue)}}
+								value={arrayValue.canvas}
 								renderInput={(params) => <TextField {...params} />}
 							/>
 							<span className="monitor-selected-input-label-selects">Color:</span>
 							<div className="monitor-selected-checkbox-color">
-								<input disabled className={`monitor-selected-input-color color-line selectColorInput` + id} type="color" />
+								<input 
+									disabled={booleanValue.enabled_color}
+									onChange={onChangeString}
+									value={stringValue.color}
+									className={`monitor-selected-input-color color-line selectColorInput` + id} 
+									type="color"
+								/>
 								<label onClick={() => { handleClickDisabledColor(id)} } className="label-cont-inputchecbox settings-checkbox-presnetation set-color-settings-checkbox">
-								<input type="checkbox" className={`checkboxMo checkboxMo-monitor checkbox-color colorInput` + id} />
+								<input 
+									type="checkbox"
+									onChange={onChangeBoolean}
+									value={booleanValue.enabled_color}
+									className={`checkboxMo checkboxMo-monitor checkbox-color colorInput` + id} 
+								/>
 								<span className="checkmark"></span>
 								</label>
 							</div>
@@ -369,9 +409,14 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 									}
 								</div>
 
-								{ // get unit options from component GetUnitType
-									unitOptions
-								}
+								<GetUnitSelecttype 
+									id={id} 
+									unit={(monitorData.unit === undefined) ? "None" : monitorData.unit} 
+									applyChangesWarning={ applyChangesWarning }
+									prefixValue={arrayValue.prefix}
+									unitValue={arrayValue.unit}
+									valueOnChange={setArrayValue}
+								/>
 
 								<div className="label-monitor-settings-pattern">Decimal Pattern:</div>
 								<div>
@@ -399,7 +444,9 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 									name="deimnalPattern"
 									className="input-limits-grafic-options input-select-pattern deimnalPattern"
 									options={patternOpts}
-									defaultValue={defaultPatternOpts}
+									defaultValue={patternOpts[0]}
+									onChange={(e, newValue) => {onChangeArray(e, newValue)}}
+									value={arrayValue.decimal_pattern}
 									renderInput={(params) => <TextField {...params} />}
 								/>
 							</div> 
@@ -409,10 +456,17 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 						</div>
 						<div className="indexInput-tooltip-contain">
 						{
-						(!fnIsArray(monitorData.type)) ? '' 
-							
-						: indexArrayModal
-
+						(!fnIsArray(monitorData.type)) 
+						? 
+							'' 
+						: 
+							<GetIndexArrayModal
+								id={ id }
+								type={ monitorData.type } 
+								applyChangesWarning={ applyChangesWarning }
+								dimension_x={ monitorData.dimension_x }
+								dimension_y={ monitorData.dimension_y }
+							/>
 						}
 						</div>
 					</Box>
