@@ -125,7 +125,7 @@ export const updateQuery = (id, payload) => {
 /*
  * Remove query
  */
-export const deleteQuery = (id, payload) => {
-    return axios.delete(REACT_APP_SERVICES_IP + `/WebReport/rest/query/${id}`, payload, {header: httpHeaderOptions})
+export const deleteQuery = (id) => {
+    return axios.delete(REACT_APP_SERVICES_IP + `/WebReport/rest/query/${id}`, {header: httpHeaderOptions})
             .then(res => res.data)
 }

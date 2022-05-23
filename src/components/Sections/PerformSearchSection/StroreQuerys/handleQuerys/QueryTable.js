@@ -1,245 +1,35 @@
-// import React, {useEffect, useState, Fragment} from 'react';
-// import {
-// 	getAllQuerys
-// } from '../../../services/services'
-// import PropTypes from 'prop-types';
-// import Box from '@mui/material/Box';
-// import Collapse from '@mui/material/Collapse';
-// import IconButton from '@mui/material/IconButton';
-// import Table from '@mui/material/Table';
-// import TableBody from '@mui/material/TableBody';
-// import TableCell from '@mui/material/TableCell';
-// import TableContainer from '@mui/material/TableContainer';
-// import TableHead from '@mui/material/TableHead';
-// import TableRow from '@mui/material/TableRow';
-// import Typography from '@mui/material/Typography';
-// import Paper from '@mui/material/Paper';
-// import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-// import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-
-// import PopUpMessage from '../../../components/handleErrors/PopUpMessage';
-
-// 	/*
-// 	 * Construct Row Data
-// 	 */
-// 	function Row(props) {
-// 	const { row } = props;
-// 	const [open, setOpen] = useState(false);
-
-// 		return (
-// 			<Fragment>
-// 				<TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-// 					<TableCell>
-// 						<IconButton
-// 							aria-label="expand row"
-// 							size="small"
-// 							onClick={() => setOpen(!open)}
-// 						>
-// 							{open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-// 						</IconButton>
-// 					</TableCell>
-// 					<TableCell component="th" scope="row">{row?.id}</TableCell>
-// 					<TableCell align="right">{row?.name}</TableCell>
-// 					<TableCell align="right">{row?.description}</TableCell>
-// 					<TableCell align="right">{row?.created_by}</TableCell>
-// 					<TableCell align="right">{row?.creation_time}</TableCell>
-// 					<TableCell align="right">{row?.update_time}</TableCell>
-// 				</TableRow>
-
-// 				<TableRow>
-// 					<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-// 					<Collapse in={open} timeout="auto" unmountOnExit>
-// 						<Box sx={{ margin: 1 }}>
-// 						<Typography variant="h6" gutterBottom component="div">
-// 							History
-// 						</Typography>
-// 						<Table size="small" aria-label="purchases">
-
-// 							<TableHead>
-// 							<TableRow>
-// 								<TableCell>Date</TableCell>
-// 								<TableCell>Customer</TableCell>
-// 								<TableCell align="right">Amount</TableCell>
-// 								<TableCell align="right">Total price ($)</TableCell>
-// 							</TableRow>
-// 							</TableHead>
-							
-// 							<TableBody>
-// 							{/* {row.history.map((historyRow) => (
-// 								<TableRow key={historyRow.date}>
-// 								<TableCell component="th" scope="row">
-// 									{historyRow.date}
-// 								</TableCell>
-// 								<TableCell>{historyRow.customerId}</TableCell>
-// 								<TableCell align="right">{historyRow.amount}</TableCell>
-// 								<TableCell align="right">
-// 									{Math.round(historyRow.amount * row.price * 100) / 100}
-// 								</TableCell>
-// 								</TableRow>
-// 							))} */}
-// 							</TableBody>
-
-// 						</Table>
-// 						</Box>
-// 					</Collapse>
-// 					</TableCell>
-// 				</TableRow>
-// 			</Fragment>
-// 		);
-// 	}
-
-// 	/*
-// 	 * Set Table Cell Props
-// 	 */
-// 	Row.propTypes = {
-// 		row: PropTypes.shape({
-// 			calories: PropTypes.number.isRequired,
-// 			carbs: PropTypes.number.isRequired,
-// 			fat: PropTypes.number.isRequired,
-// 			history: PropTypes.arrayOf(
-// 			PropTypes.shape({
-// 				amount: PropTypes.number.isRequired,
-// 				customerId: PropTypes.string.isRequired,
-// 				date: PropTypes.string.isRequired,
-// 			}),
-// 			).isRequired,
-// 			name: PropTypes.string.isRequired,
-// 			price: PropTypes.number.isRequired,
-// 			protein: PropTypes.number.isRequired,
-// 		}).isRequired,
-// 	};
-
-// 	/*
-// 	 * Create Table Data and Headers
-// 	 */
-// 	const createData = (id, name, description, created_by, creation_time, update_time) => {
-// 		return {
-// 				id,
-// 				name,
-// 				description,
-// 				created_by,
-// 				creation_time,
-// 				update_time
-// 			}
-// 	}
-
-// 	export default function QueryTable({openViewQuery}) {
-// 		const [msg, handleMessage] = PopUpMessage()
-// 		const [queryList, setQueryList] = useState([])
-// 		const [loadingQuerys, setLoadingQuerys] = useState(true)
-
-// 		const tableCells = Object.keys(createData())
-
-// 		useEffect(() => {
-// 			if(openViewQuery){
-// 				getQueryFromServer()
-// 			}
-// 		}, [openViewQuery])
-
-// 		/*
-// 		 * Create Table row data
-// 		 */
-// 		const createRows = (query) => {
-// 			try {
-// 				let rows = []
-
-// 				// query.map(val => {rows.push(createData(val))}) // TODO: probar si funciona
-// 				// for (let i = 0; i < query.length; i++) { // TODO: se puede acortar¿?
-// 				// 	rows.push(createData(query[i]))
-// 				// }
-	
-// 				for (let i = 0; i < query.length; i++) {
-// 					rows.push(
-// 						createData(
-// 							query.id, 
-// 							query.name, 
-// 							query.description, 
-// 							query.created_by,
-// 							query.creation_time, 
-// 							query.update_time
-// 						)
-// 					)
-// 				}
-// 				return rows
-// 			} catch (error) {
-// 				console.error(error)
-// 			}
-// 		}
-
-// 		/*
-// 		 * get querys from server
-// 		 */
-// 		const getQueryFromServer = () => {
-// 			Promise.resolve(getAllQuerys())
-// 			.then((res) => {
-// 				const rows = createRows(res)
-// 				setQueryList(rows)
-// 			})
-// 			.catch((error) => {
-// 				console.error(error)
-// 				const error_message = (error.response?.data) ? error.response.data.toString() : "Unsupported error";
-// 				const error_status = (error.response?.status) ? error.response.status : "Unknown"
-// 				showErrorMessage('Error: ' + error_message + " - Code " + error_status,)
-// 			})
-// 			.finally(() => {
-// 				setLoadingQuerys(false)
-// 			})
-// 		}
-
-// 		/*
-// 		 * Show Warning message snackbar
-// 		 */
-// 		const showErrorMessage = (message) => { 
-// 			handleMessage({
-// 				message: message,
-// 				type: "error",
-// 				persist: true,
-// 				preventDuplicate: true
-// 			})
-// 		}
-
-// 		return (
-// 			<TableContainer component={Paper}>
-// 				<Table aria-label="collapsible table">
-// 					<TableHead>
-// 						<TableRow>
-// 							<TableCell />
-// 							{
-// 								tableCells.map((cell, index) => (
-// 									<TableCell key={index}>{cell}</TableCell>
-// 								))
-// 							}
-// 						</TableRow>
-// 					</TableHead>
-// 					<TableBody>
-// 						{
-// 							queryList.map((row) => (
-// 								<Row key={row.name} row={row} />
-// 							))
-// 						}
-// 					</TableBody>
-// 				</Table>
-// 			</TableContainer>
-// 		);
-// 	}
-
 import React, {useState, useEffect} from 'react';
 import {
-	getAllQuerys
+	getAllQuerys,
+	deleteQuery
 } from '../../../../../services/services'
-import Box from '@mui/material/Box';
 import { 
 	DataGrid,
 	GridToolbarContainer,
   	GridToolbarColumnsButton,
   	GridToolbarFilterButton,
   	GridToolbarDensitySelector,
+	GridColumnMenuContainer, 
+    GridFilterMenuItem,  
+    SortGridMenuItems
  } from '@mui/x-data-grid';
-import { useDemoData } from '@mui/x-data-grid-generator';
 import { styled } from '@mui/material/styles';
-import Popover from '@mui/material/Popover';
-import Typography from '@mui/material/Typography';
+import {
+	Box, 
+	Button,
+	Popover, 
+	Typography,  
+	IconButton,
+	Dialog,
+	DialogTitle,
+	DialogActions
+} from '@mui/material';
+
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+
 import PopUpMessage from '../../../../handleErrors/PopUpMessage';
+import { ConstructionOutlined, ContactSupportOutlined } from '@mui/icons-material';
 
 const StyledGridOverlay = styled('div')(({ theme }) => ({
 	display: 'flex',
@@ -268,32 +58,33 @@ const StyledGridOverlay = styled('div')(({ theme }) => ({
 function CustomToolbar() {
 	return (
 	  <GridToolbarContainer>
-		<GridToolbarColumnsButton />
+		{/* <GridToolbarColumnsButton /> */}
 		<GridToolbarFilterButton />
 		<GridToolbarDensitySelector />
 	  </GridToolbarContainer>
 	);
-  }
+}
+
+function CustomColumnMenu(props){
+    const { hideMenu, currentColumn } = props;
+    return (
+        <GridColumnMenuContainer
+            hideMenu={hideMenu}
+            currentColumn={currentColumn}
+        >
+            <SortGridMenuItems onClick={hideMenu} column={currentColumn} />
+            <GridFilterMenuItem onClick={hideMenu} column={currentColumn} />
+        </GridColumnMenuContainer>
+    );
+};
 
 function CustomNoRowsOverlay() {
 	return (
 		<StyledGridOverlay>
-		<svg
-			width="120"
-			height="100"
-			viewBox="0 0 184 152"
-			aria-hidden
-			focusable="false"
-		>
+		<svg width="120" height="100" viewBox="0 0 184 152" aria-hidden focusable="false">
 			<g fill="none" fillRule="evenodd">
 				<g transform="translate(24 31.67)">
-					<ellipse
-						className="ant-empty-img-5"
-						cx="67.797"
-						cy="106.89"
-						rx="67.797"
-						ry="12.668"
-					/>
+					<ellipse className="ant-empty-img-5" cx="67.797" cy="106.89" rx="67.797" ry="12.668" />
 					<path
 						className="ant-empty-img-1"
 						d="M122.034 69.674L98.109 40.229c-1.148-1.386-2.826-2.225-4.593-2.225h-51.44c-1.766 0-3.444.839-4.592 2.225L13.56 69.674v15.383h108.475V69.674z"
@@ -323,50 +114,186 @@ function CustomNoRowsOverlay() {
 }
 
 
-const createRows = ({id, name, description, created_by, creation_time, update_time}) => {
-	return {
-		id,
-		name,
-		description,
-		created_by,
-		creation_time,
-		update_time
-	}
-}
-
-const createTableHeads = (field, editable, width, type) => {
-	return {
-			field,
-			editable,
-			width, 
-			type
-		}
-}
-
 export default function QueryTable({openViewQuery}) {
 	const [msg, handleMessage] = PopUpMessage()
-	const [queryList, setQueryList] = useState([])
+	const [rows, setRows] = useState([])
+	const [anchorEl, setAnchorEl] = useState(null)
+	const [rowPopOverValue, setRowPopOverValue] = useState("")
 	const [loadingQuerys, setLoadingQuerys] = useState(true)
-	// const [rows, setRows] = useState([]);
+	const [queryId, setQueryId] = useState(null)
+	const [openConfirm, setOpenConfirm] = useState(false)
 
-	const rows = [
-		{id: 123, name: "hola?", description: "loco"},
-		{id: 124, name: "hola?", description: "loco"},
-		{id: 125, name: "hola?", description: "loco"},
-		{id: 126, name: "hola?", description: "loco"},
-		{id: 127, name: "hola?", description: "loco"}
-	]
+    const handleOpenConfirmDelete = (id) => {
+		console.log("id", id);
+		setQueryId(id)
+		setOpenConfirm(true)
+	}
+    const handleCloseConfirmDelete = () => setOpenConfirm(false);
 
-	// total with for heads 785
-	const columnHeads = [
-			createTableHeads("id", 			  false, 70, "Number"),
-			createTableHeads("name", 		  false, 120, "Text"),
-			createTableHeads("description",   false, 190, "Text"),
-			createTableHeads("created_by", 	  false, 105, "Text"),
-			createTableHeads("creation_time", false, 150, "Text"),
-			createTableHeads("update_time",   false, 150, "Text")
-	]
+	/*
+	 * show popover value on the cell 
+	 */
+	const handlePopoverOpen = (event) => {
+		try {
+			const field = event.currentTarget.dataset.field
+			const id = Number(event.currentTarget.parentElement.dataset.id)
+			const data = rows.find((r) => r.id === id)
+			if(field === "name" || field === "description"){
+				setRowPopOverValue(data[field])
+				setAnchorEl(event.currentTarget)
+			}
+		} catch (error) {
+			console.error(error)
+		}
+	}
+	const handlePopoverClose = () => {
+		setAnchorEl(null)
+	}
+	const open = Boolean(anchorEl)
+
+	/*
+	 * get querys from server
+	 */
+	const getQueryFromServer = () => {
+		setLoadingQuerys(true)
+		Promise.resolve(getAllQuerys())
+		.then((res) => {
+			if(res.length > 0){
+				const fillrow = res.map(val => createRows(val))
+				setRows(fillrow)
+			}
+		})
+		.catch((error) => {
+			console.error(error)
+			showErrorMessage("Error obtaining querys on the server.")
+		})
+		.finally(() => {
+			setLoadingQuerys(false)
+		})
+	}
+
+	/*
+	 * delete query
+	 */
+	const deleteQueryFromServer = (id) => {
+		setLoadingQuerys(true)
+		Promise.resolve(deleteQuery(id))
+		.then((res) => {
+			getQueryFromServer()
+			console.log("borrado correctamente")
+		})
+		.catch((error) => {
+			console.error(error)
+			showErrorMessage("Error obtaining querys on the server.")
+		})
+		.finally(() => {
+			setLoadingQuerys(false)
+		})
+	}
 	
+	/*
+	 * get cell row value id
+	 */
+	const getQueryId = (val) => {
+		if(val?.row?.name){
+			return val.row.name
+		}
+		else{
+			showErrorMessage("name is undefined")
+		}
+	}
+	
+	/*
+	 * set action iconButtons
+	 */
+	const editButton = (cellValues) => {
+		return (
+			<IconButton 
+				color="primary" 
+				aria-label="edit"
+				onClick={(event) => {
+					getQueryId(cellValues);
+				}}
+			>
+				<EditIcon />
+			  </IconButton>
+		  );
+	}
+	const deleteButton = (cellValues) => {
+		return (
+			<IconButton 
+				color="error" 
+				aria-label="delete"
+				onClick={(event) => {
+					handleOpenConfirmDelete(getQueryId(cellValues))
+				}}
+			>
+				<DeleteIcon />
+			  </IconButton>
+		  );
+	}
+	
+	/*
+	 * create table data
+	 */
+	const createTableHeads = (field, type, width, sortable, hideable, disableColumnMenu, actionCell, cellType) => {
+		try {
+			const renderCell = (actionCell) ? {
+				renderCell: (cellValues) => {
+					if(cellType === "edit")
+						return editButton(cellValues)
+					else
+						return deleteButton(cellValues)
+				}
+			} : undefined;
+			return {
+					field,
+					type,
+					width,
+					sortable,
+					hideable,
+					disableColumnMenu,
+					...renderCell
+				}
+		} catch (error) {
+			console.error(error)
+		}
+	}
+	const createRows = (rows) => {
+		try {
+			const id = rows?.id
+			const name = rows?.name
+			const description = rows?.description
+			const created_by = rows?.created_by
+			const creation_time = rows?.creation_time
+			const update_time = rows?.update_time
+			return { 
+				id,
+				name,
+				description,
+				created_by,
+				creation_time,
+				update_time,
+			}
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	/*
+	 * columns heads
+	 */
+	const columnHeads = [
+		createTableHeads("id", 			  "number", 50,  true,  false, false, false, null),
+		createTableHeads("name", 		  "text", 	150, true,  false, false, false, null),
+		createTableHeads("description",   "text", 	150, true,  false, false, false, null),
+		createTableHeads("created_by", 	  "text", 	105, true,  false, false, false, null),
+		createTableHeads("creation_time", "date", 	105, true,  false, false, false, null),
+		createTableHeads("update_time",   "date", 	100, true,  false, false, false, null),
+		createTableHeads("edit", 		  null, 	60,  false, false, true,  true,  "edit"),
+		createTableHeads("delete", 		  null, 	60,  false, false, true,  true,  "delete")
+	]
+
 	/*
 	 * search when the modal opens
 	 */
@@ -377,8 +304,8 @@ export default function QueryTable({openViewQuery}) {
 	}, [openViewQuery])
 	
 	/*
-	* Show Warning message snackbar
-	*/
+	 * Show Warning message snackbar
+	 */
 	const showErrorMessage = (message) => { 
 		handleMessage({
 			message: message,
@@ -387,38 +314,63 @@ export default function QueryTable({openViewQuery}) {
 			preventDuplicate: true
 		})
 	}
-	
-	/*
-	 * get querys from server
-	 */
-	const getQueryFromServer = () => {
-		// createRows(rows)
-		// Promise.resolve(getAllQuerys())
-		// .then((res) => {
-		// 	const tableHeads = getTableHeads()
-
-		// 	// const rows = createRows(res)
-		// 	// setQueryList(rows)
-		// })
-		// .catch((error) => {
-		// 	console.error(error)
-		// })
-		// .finally(() => {
-		// 	setLoadingQuerys(false)
-		// })
-	}
 
 	return (
-		<div style={{ height: 400, width: '100%' }}>
+		<>
+		<Dialog
+			open={openConfirm}
+			onClose={handleCloseConfirmDelete}
+			aria-labelledby="alert-dialog-title"
+			aria-describedby="alert-dialog-description"
+		>
+			<DialogTitle id="alert-dialog-title">
+				{`Are you sure you want to delete this query?`}
+			</DialogTitle>
+			<DialogActions>
+			<Button onClick={handleCloseConfirmDelete}>Cancel</Button>
+			<Button onClick={e => {deleteQueryFromServer(queryId); handleCloseConfirmDelete();}} autoFocus color="error">
+				Delete
+			</Button>
+			</DialogActions>
+		</Dialog>
+		<div style={{ height: '100%', width: '100%' }}>
 			<DataGrid
+				className="store-querys-table"
 				components={{
+					ColumnMenu: CustomColumnMenu,
 					NoRowsOverlay: CustomNoRowsOverlay,
 					Toolbar: CustomToolbar,
 				}}
-				loading={false}
-				rows={rows}
+				componentsProps={{
+					cell: {
+					  onMouseEnter: handlePopoverOpen,
+					  onMouseLeave: handlePopoverClose,
+					},
+				  }}
+				loading={loadingQuerys}
+				rows={[]}
 				columns={columnHeads}
 			/>
+			<Popover
+				sx={{
+					pointerEvents: 'none',
+				}}
+				open={open}
+				anchorEl={anchorEl}
+				anchorOrigin={{
+					vertical: 'bottom',
+					horizontal: 'left',
+				}}
+				transformOrigin={{
+					vertical: 'top',
+					horizontal: 'left',
+				}}
+				onClose={handlePopoverClose}
+				disableRestoreFocus
+			>
+				<Typography sx={{ p: 1 }}>{`${rowPopOverValue}`}</Typography>
+			</Popover>
 		</div>
+		</>
 	);
 }

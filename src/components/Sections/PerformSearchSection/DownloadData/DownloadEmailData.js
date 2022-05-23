@@ -152,8 +152,11 @@ function DownloadEmailData(props){
       console.log("** Downloaded successfully **");
     })
     .catch(error => {
-      handleMessage({ 
-        message: 'Error: Something went wrong when downloading', 
+      console.error(error)
+			const error_message = (error?.response?.message) ? error.response.message : "Unsupported Error"
+			const error_status = (error?.status) ? error.status : "Unkwon"
+			handleMessage({
+				message: "Error: " + error_message + " - Code " + error_status,
         type: 'error', 
         persist: false,
         preventDuplicate: false

@@ -4,22 +4,13 @@ import { useSelector } 				from 'react-redux';
 import {
 	insertQuery
 } from '../../../../services/services'
-
+import { getCategory } from '../../../standarFunctions'
 import {makeStyles}					from '@material-ui/core';
-import {
-    Modal,
-    Box,
-    Grid,
-	Stack,
-	Button,
-    Typography,
-    Backdrop,
-    CircularProgress
-} from '@mui/material';
+import { Modal, Box, Grid, Button, Backdrop, CircularProgress } from '@mui/material';
+
 import ArchiveIcon 					from '@mui/icons-material/Archive';
 import SaveIcon                     from '@mui/icons-material/Save';
 import LoadingButton                from '@mui/lab/LoadingButton';
-
 import PopUpMessage                 from '../../../handleErrors/PopUpMessage';
 import getGraphicoptions            from '../../SelectDisplaySection/Graphic/getGraphicoptions'
 
@@ -79,9 +70,10 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 
 
 	useEffect(() => {
-		const unixBeginDate = convertToUnix(timeQuery.beginDate)
-		const unixEndDate = convertToUnix(timeQuery.endDate)
-		if(monitor.length > 0 && timeQuery.beginDate !== "" && timeQuery.endDate !== "" && unixBeginDate < unixEndDate){
+		// const unixBeginDate = convertToUnix(timeQuery.beginDate)
+		// const unixEndDate = convertToUnix(timeQuery.endDate)
+		// if(monitor.length > 0 && timeQuery.beginDate !== "" && timeQuery.endDate !== "" && unixBeginDate < unixEndDate){
+		if(monitor.length > 0){
 			setDisabled(false)
 		}else{
 			setDisabled(true)
@@ -111,6 +103,7 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 	 */
 	const saveQuery = () => {
 		const payload = createPayload()
+		console.log("payload", payload)
 		Promise.resolve(insertQuery(payload))
 		.then(() =>{
 			setQueryName("")
@@ -156,13 +149,44 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 		setMonitorList(list)
 	}
 
+	/*
+	 * divide monitors by type
+	 */
+	const getMonitorListSeparator = () => {
+		try {
+			let [list_monitor, list_magnitude, list_state] = [[],[],[]]
+			monitor.map(val => {
+				let [id, options] = ["", ""];
+				if(getCategory(val.monitorData.type) === "monitor"){
+					id = val?.monitorData.id
+					options = (val?.options) ? val.options : null
+					list_monitor.push({id, options})
+				}
+				else if(getCategory(val.monitorData.type) === "magnitud"){
+					id = val?.monitorData.id
+					options = (val?.options) ? val.options : null
+					list_magnitude.push({id, options})
+				}
+				else if(getCategory(val.monitorData.type) === "state"){
+					id = val?.monitorData.id
+					options = (val?.options) ? val.options : null
+					list_state.push({id, options})
+				}
+			})
+			return {list_monitor, list_magnitude, list_state}
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+
 	const createPayload = () => {
-		const user = null
 		const name = queryName
 		const description = queryDescription
-		const query = constructURL(timeQuery)
-
-		return {name, description, user, query}
+		const created_by = "daniel"
+		const monitorList = getMonitorListSeparator()
+		const sampling = timeQuery.sampling
+		return {name, description, created_by, ...monitorList, sampling}
 	}
 
 
@@ -182,7 +206,6 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 		{/*
 			Modals
 		*/}
-
 			<Modal
 				open={openSaveQuery}
 				onClose={handleCloseSaveQuery}
@@ -252,12 +275,12 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 								alignItems="left"
 								className="save-query-input-title-name save-query-title-date"
 							>
-								<Grid item md={2} className="save-query-input-title-name">
+								{/* <Grid item md={2} className="save-query-input-title-name">
 									<i>Begin date: { timeQuery?.beginDate } </i>
 								</Grid>
 								<Grid item md={10}>
 									<i>End date: { timeQuery?.endDate } </i>
-								</Grid>
+								</Grid> */}
 								<Grid item md={10}>
 									<i>Sampling: { (timeQuery?.sampling !== "" && timeQuery?.sampling !== "Default") ? timeQuery.sampling  : 0 } microseconds</i>
 								</Grid>
