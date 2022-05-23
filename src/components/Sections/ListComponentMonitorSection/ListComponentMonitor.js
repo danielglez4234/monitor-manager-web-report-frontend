@@ -43,6 +43,33 @@ import PopUpMessage                   from '../../handleErrors/PopUpMessage';
 
 import { useForm, useFieldArray } from "react-hook-form";
 
+/*
+ * Declare condition html variables
+ */
+const noSelectedComponent = <div className="noComponentSelected-box">
+								<SnippetFolderIcon className="noComponentSelected-icon" />
+								<p className="noComponentSelected-title">No Component Selected From Component Item List</p>
+							</div>;
+const skeleton            = <div>
+								<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
+								<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
+								<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
+								<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
+								<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
+							</div>;
+const noResultFound       = <div className="noComponentSelected-box">
+								<HelpOutlineIcon className="noComponentSelected-icon" />
+								<p className="noComponentSelected-title">No Results Found</p>
+							</div>;
+const noMonitorElements   = <div className="noComponentSelected-box">
+								<HelpOutlineIcon className="noComponentSelected-icon" />
+								<p className="noComponentSelected-title">No Monitors Found</p>
+							</div>;
+const error               = <div className="noComponentSelected-box">
+								<ReportGmailerrorredRoundedIcon className="noComponentSelected-icon" />
+								<p className="noComponentSelected-title">Connection Error</p>
+							</div>;
+
 
 
 function ListComponentMonitor() {
@@ -66,34 +93,6 @@ function ListComponentMonitor() {
 	const [monitorsAvailable, setNoMonitorsAvailable]      = useState(true)
 
 	const [connectionError, setConnectionError] = useState(false)
-
-
-  /*
-   * Declare condition html variables
-   */
-	const noSelectedComponent = <div className="noComponentSelected-box">
-									<SnippetFolderIcon className="noComponentSelected-icon" />
-									<p className="noComponentSelected-title">No Component Selected From Component Item List</p>
-								</div>;
-	const skeleton            = <div>
-									<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
-									<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
-									<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
-									<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
-									<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
-								</div>;
-	const noResultFound       = <div className="noComponentSelected-box">
-									<HelpOutlineIcon className="noComponentSelected-icon" />
-									<p className="noComponentSelected-title">No Results Found</p>
-								</div>;
-	const noMonitorElements    = <div className="noComponentSelected-box">
-									<HelpOutlineIcon className="noComponentSelected-icon" />
-									<p className="noComponentSelected-title">No Monitors Found</p>
-								</div>;
-	const error               = <div className="noComponentSelected-box">
-									<ReportGmailerrorredRoundedIcon className="noComponentSelected-icon" />
-									<p className="noComponentSelected-title">Connection Error</p>
-								</div>;
 
 
 
@@ -188,7 +187,17 @@ function ListComponentMonitor() {
 				console.error(error);
 			})
 		}
-		// var monirr = [{magnitude:'aldebran' ,type:'D', id:123},{magnitude:'cofin' ,type:'e',id:789}, {magnitude:'alpapn' ,type:'s', id:567}, {magnitude:'doble' ,type:'7', id:78}];
+		// var monirr = [
+		// 	{magnitude:'aldebran' ,type:'D', id:123},
+		// 	{magnitude:'cofin' ,type:'e',id:789}, 
+		// 	{magnitude:'alpapn' ,type:'s', id:567}, 
+		// 	{magnitude:'doble' ,type:'7', id:7824},
+		// 	{magnitude:'doble1' ,type:'9', id:734},
+		// 	{magnitude:'doble2' ,type:'6', id:879},
+		// 	{magnitude:'dobl3e' ,type:'b', id:154},
+		// 	{magnitude:'doble4' ,type:'e', id:756},
+		// 	{magnitude:'doble56' ,type:'s', id:246},
+		// ];
 		// setData_monitors(monirr);
 		// setResultQueryMonitor(monirr);
 		// setComponent_clicked(title);

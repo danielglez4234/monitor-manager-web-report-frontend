@@ -2294,7 +2294,7 @@ font-size: 13px !important;
   background-color: #333a44;
   position: absolute;
   top:50%;
-  height:605px;
+  height:557px;
   margin-top:-290px;
   left:50%;
   width:500px;
@@ -2452,10 +2452,25 @@ table.save-query-table-monitor-list tr:nth-child(odd)
   color: rgb(230, 233, 238);
   font-family: "RobotoMono-Bold";
 }
+.view-query-modal-cont{
+  height: 100%;
+}
 
-/* .{
+.store-query-title{
+  background-color: rgb(51, 58, 68);
+  border-bottom: 2px solid rgb(198, 215, 232);
+  color: rgb(230, 233, 238);
+  padding: 3px 0px 3px 10px;
+  font-style: italic;
+  font-size: 13px;
+}
 
-} */
+.store-query-title-table-box{
+  height: 96%;
+  background-color: white;
+}
+
+
 
 /*---------------------------------*/
 /* END *** VIEW QUERY MODAL *** */

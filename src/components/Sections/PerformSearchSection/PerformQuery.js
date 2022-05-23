@@ -49,7 +49,7 @@ import ViewHandleQuery 	 from './StroreQuerys/handleQuerys/ViewHandleQuery';
 import PopUpMessage      from '../../handleErrors/PopUpMessage';
 
 
-
+const { REACT_APP_SERVER_PORT } = process.env
 
 function PerformQuery(props) {
 	const dispatch             = useDispatch();
@@ -82,96 +82,96 @@ function PerformQuery(props) {
 	 * Build url with monitors and place index if necessary
 	 */
 	const constructURL = (qs) =>{
-		let queryRest = "";
-		for (let i = 0; i < monitor.length; i++)
-		{
-			const infoMonitor = monitor[i].monitorData;
-			/* 
-			 * magnitud("b","e"); scalar("d","f","l","s","o"); arrays("D","F","L","S","O"); doubleArrays("9","8","7","6","5");
-			 * state("state");
-			 */
-			queryRest += "id" + getCategory(infoMonitor.type) + "=";
-			if (fnIsScalar(infoMonitor.type))
+		try {			
+			let queryRest = "";
+			for (let i = 0; i < monitor.length; i++)
 			{
-				queryRest += infoMonitor.id;
-			}
-			else if (fnIsArray(infoMonitor.type))
-			{
-				// Get Inex
-				let index = $(".Index" + infoMonitor.id).text();
-				if (index === '/') 
+				const infoMonitor = monitor[i].monitorData;
+				/* 
+				* magnitud("b","e"); scalar("d","f","l","s","o"); arrays("D","F","L","S","O"); doubleArrays("9","8","7","6","5");
+				* state("state");
+				*/
+				queryRest += "id" + getCategory(infoMonitor.type) + "=";
+				if (fnIsScalar(infoMonitor.type))
 				{
-					index = "[[-1]]";
-					queryRest += infoMonitor.id + index;
+					queryRest += infoMonitor.id;
 				}
-				else 
+				else if (fnIsArray(infoMonitor.type))
 				{
-					index = "[" + index + "]";
-					queryRest += infoMonitor.id + index;
-				}
-			}
-			else if (fnIsState(infoMonitor.type))
-			{
-				console.log(infoMonitor.component);
-				queryRest += infoMonitor.component;
-			}
-			else
-			{
-				handleMessage({ 
-					message: 'Error: Type is not supported. \n Please contact the system administrator.', 
-					type: 'error',
-					persist: true,
-					preventDuplicate: false
-				})
-			}
-			if(!fnIsMagnitude(infoMonitor.type))
-			{
-				let unitType = $("#Unit" + infoMonitor.id).val();
-				let prefixType = $("#Prefix" + infoMonitor.id).val();
-				let decimalPattern = $("#Pattern" + infoMonitor.id).val();
-
-				if ((unitType !== "Default" && unitType !== "No Matches") || (decimalPattern !== "Default")){
-					queryRest += "{"
-					if(unitType !== "Default" && unitType !== "No Matches"){
-						queryRest += "unit:" + unitType
-						if(prefixType !== "Default" && prefixType !== "No Matches"){
-							queryRest += ",prefix:" + prefixType
-						}
+					// Get Inex
+					let index = $(".Index" + infoMonitor.id).text();
+					if (index === '/') 
+					{
+						index = "[[-1]]";
+						queryRest += infoMonitor.id + index;
 					}
-					if(decimalPattern !== "Default"){
+					else 
+					{
+						index = "[" + index + "]";
+						queryRest += infoMonitor.id + index;
+					}
+				}
+				else if (fnIsState(infoMonitor.type))
+				{
+					console.log(infoMonitor.component);
+					queryRest += infoMonitor.component;
+				}
+				else
+				{
+					handleMessage({ 
+						message: 'Error: Type is not supported. \n Please contact the system administrator.', 
+						type: 'error',
+						persist: true,
+						preventDuplicate: false
+					})
+				}
+				if(!fnIsMagnitude(infoMonitor.type))
+				{
+					let unitType = $("#Unit" + infoMonitor.id).val();
+					let prefixType = $("#Prefix" + infoMonitor.id).val();
+					let decimalPattern = $("#Pattern" + infoMonitor.id).val();
+
+					if ((unitType !== "Default" && unitType !== "No Matches") || (decimalPattern !== "Default")){
+						queryRest += "{"
 						if(unitType !== "Default" && unitType !== "No Matches"){
-							queryRest += ","
+							queryRest += "unit:" + unitType
+							if(prefixType !== "Default" && prefixType !== "No Matches"){
+								queryRest += ",prefix:" + prefixType
+							}
 						}
-						queryRest += "decimal:" + decimalPattern
+						if(decimalPattern !== "Default"){
+							if(unitType !== "Default" && unitType !== "No Matches"){
+								queryRest += ","
+							}
+							queryRest += "decimal:" + decimalPattern
+						}
+						queryRest += "}"
 					}
-					queryRest += "}"
+				}
+				if ((i + 1) < monitor.length)
+				{
+					queryRest += "&";
 				}
 			}
-			if ((i + 1) < monitor.length)
+			let startAt = 0;
+			if (qs?.paginating && pagination?.active === true)
 			{
-				queryRest += "&";
+				startAt = pagination.actualPage-1
 			}
+			const beginDate = timeQuery.beginDate.replace(/\s{1}/,"@")+".000"
+			const endDate 	= timeQuery.endDate.replace(/\s{1}/,"@")+".000"
+			const sampling  = timeQuery.sampling
+			const page 		= "page=" + startAt
+			const length 	= "length=" + props.urliDisplayLength;
+
+			const url = beginDate+"/"+endDate+"/"+sampling+"?"+queryRest+"&"+page+"&"+length;
+
+			const action = (qs?.download) ? "download" : (qs?.query) ? "query" : "search"; // this is for log purposes
+			console.log(`URL:  ${window.location.href.replace('3006', '')}:${REACT_APP_SERVER_PORT}/rest/webreport/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
+			return url
+		} catch (error) {
+			console.error(error)
 		}
-
-
-		let startAt = 0;
-		if (qs?.paginating && pagination?.active === true)
-		{
-			startAt = pagination.actualPage-1
-		}
-
-		const beginDate = timeQuery.beginDate.replace(/\s{1}/,"@")+".000"
-		const endDate 	= timeQuery.endDate.replace(/\s{1}/,"@")+".000"
-		const sampling  = timeQuery.sampling
-		const page 		= "iDisplayStart=" + startAt
-		const length 	= "iDisplayLength=" + props.urliDisplayLength;
-
-		const url = beginDate+"/"+endDate+"/"+sampling+"?"+queryRest+"&"+page+"&"+length;
-
-		const action = (qs?.download) ? "download" : (qs?.query) ? "query" : "search"; // this is for log purposes
-		console.log(`URL:  ${window.location.href.replace('3006', '8081')}/rest/webreport/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
-
-		return url;
 	};
 
 

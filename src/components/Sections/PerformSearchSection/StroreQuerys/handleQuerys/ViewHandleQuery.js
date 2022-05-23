@@ -9,6 +9,7 @@ import {
 	Button,
     Typography,
 } from '@mui/material';
+
 import ArchiveIcon 					from '@mui/icons-material/Archive';
 import SaveIcon                     from '@mui/icons-material/Save';
 import InventoryIcon				from '@mui/icons-material/Inventory';
@@ -67,13 +68,13 @@ function ViewHandleQuery({constructURL}) {
 				aria-describedby="modal-modal-description"
 			>
 				<Box className="view-query-modal">
-					<Grid container spacing={0}>
-						<Grid item xs={12} sm={12} md={12} className="save-query-title">
+					<Grid container spacing={0} className="view-query-modal-cont">
+						<Grid item xs={12} sm={12} md={12} className="store-query-title">
 							View Store Querys
 						</Grid>
 
 						{/* <Grid container spacing={0}> */}
-							<Grid item xs={12} sm={12} md={12} className="save-query-title">
+							<Grid item xs={12} sm={12} md={12} className="store-query-title-table-box">
 								{
 									<QueryTable
 										openViewQuery={openViewQuery}
