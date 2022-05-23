@@ -29,15 +29,7 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 import SelectedElement      from './SelectedElement'
 
-function MonitorList({disabled}) {
-    const dispatch = useDispatch();
-    const monitor = useSelector(state => state.monitor)
 
-    const [countMonitors, setCountMonitors] = useState(0);
-	const [elements, setSelectedElements] = useState([]);
-	const [onSelect, setOnSelect] = useState(true);
-
-   
     /*
      * Default State of the list
      */
@@ -103,6 +95,29 @@ function MonitorList({disabled}) {
 	}
 
 	/*
+		* Check all the corresponding checkboxes when you click the selected all 
+		*/
+	const checkAllCheckboxes = (selectedCheckbox) => {
+		var checkboxAll       = $("." + selectedCheckbox + "-all")
+		var checkboxMonitors  = $("." + selectedCheckbox);
+
+		if (checkboxAll.is(":checked")) {
+			checkboxMonitors.prop('checked', true)
+		}else {
+			checkboxMonitors.prop('checked', false)
+		}
+	}
+
+
+function MonitorList({disabled}) {
+    const dispatch = useDispatch();
+    const monitor = useSelector(state => state.monitor)
+
+    const [countMonitors, setCountMonitors] = useState(0);
+	const [elements, setSelectedElements] = useState([]);
+	const [onSelect, setOnSelect] = useState(true);
+
+	/*
 	 * Map selected elements
 	 */
 	useEffect(() => {
@@ -120,35 +135,21 @@ function MonitorList({disabled}) {
 		}
 	}, [monitor])
 
-    /*
+
+	/*
 	 * handle all menu global state acions from monitorSelected
 	 */
-	const menuHandle = (id, type) => {
-		dispatch(menuHandleSelectedMonitors(id, type))
+	const menuHandle = (id, options, type) => {
+		dispatch(menuHandleSelectedMonitors(id, options, type))
 	}
 
-    /*
+	/*
 	 * Disabled reload when the conditions are not compatible
 	 */
 	const diActivateReload = () => {
 		dispatch(setloadingButton(false))
 		// setDisabled(true) // TODO: REFACTOR:
 	}
-
-    /*
-	 * Check all the corresponding checkboxes when you click the selected all 
-	 */
-	const checkAllCheckboxes = (selectedCheckbox) => {
-		var checkboxAll       = $("." + selectedCheckbox + "-all")
-		var checkboxMonitors  = $("." + selectedCheckbox);
-
-		if (checkboxAll.is(":checked")) {
-			checkboxMonitors.prop('checked', true)
-		}else {
-			checkboxMonitors.prop('checked', false)
-		}
-	}
-
 
 
     return ( 
@@ -180,7 +181,7 @@ function MonitorList({disabled}) {
 					<LtTooltip onClick={() => { resetOptions() }} title="Reset Options" placement="left" className="tool-tip-options">
 						<SettingsBackupRestoreIcon className="table-selected-clearAll-icon reset-menu-icon"/>
 					</LtTooltip>
-					<LtTooltip onClick={() => { menuHandle('', 'diselectALLMonitor'); diActivateReload() }} title="Clear All" placement="left" className="tool-tip-options">
+					<LtTooltip onClick={() => { menuHandle(null, null, 'diselectALLMonitor'); diActivateReload() }} title="Clear All" placement="left" className="tool-tip-options">
 						<ClearAllIcon className="table-selected-clearAll-icon"/>
 					</LtTooltip>
 					<LtTooltip onClick={() => { lessDatails() }} title="Less Details" placement="left" className="tool-tip-options">

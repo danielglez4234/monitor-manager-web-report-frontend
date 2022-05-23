@@ -23,62 +23,124 @@ import GetUnitSelecttype    from './GetUnitSelecttype';
 import TuneIcon             from '@mui/icons-material/Tune';
 import AnnouncementIcon     from '@mui/icons-material/Announcement';
 
+/*
+ * Set oprions 'select' inputs 
+ */
+const graphicOpts = [
+	"Line Series",
+	"Step Line Series"
+]
+const strokeOpts = [
+	"Light",
+	"Medium",
+	"Bold",
+	"Bolder"
+]
+const canvasOpts = [
+	"Default",
+	"Dotted",
+	"Dashed",
+	"Large Dashed",
+	"Dotted Dashed"
+]
+const patternOpts = [
+	"Default",
+	"0.#",
+	"0.##",
+	"0.###",
+	"0.####",
+	"0.#####",
+	"0.######",
+	"0.#######",
+	"0.########"
+]
+
+/*
+ * Apply changes warning message
+ */
+const applyChangesWarning = <LtTooltip
+								title={
+								<React.Fragment>
+									<b className="label-indHlp-tooltip">{"To apply these changes you have"}</b><br />
+									<b className="label-indHlp-tooltip">{"to press the "}<i>{"'Search & Display'"}</i></b><br />
+									<b className="label-indHlp-tooltip">{"button again."}</b>
+								</React.Fragment>
+								}
+								placement="left" className="tool-tip-options">
+								<AnnouncementIcon className="index-help-icon"/>
+							</LtTooltip>
+
+/*
+ * If the button is alredy active when a new monitor is selected, apply the changes
+ */
+let lessDetailIfActive;
+if ($('#lessDetail-icon').hasClass('color-menu-active')) {
+	lessDetailIfActive = 'display-none'
+}
+
+/*
+ * Handle monitor settings options OPEN popover
+ */
+const handleClickOpenSettings = (id) => {
+	const offset = $('.id-TuneIcon-sett' + id).offset()
+	$('.id-mon-sett' + id).toggleClass('display-none').offset({ top: offset.top, right: offset.right})
+	$('.close-settingsMon' + id).toggleClass('display-none')
+}
 
 
 
 function SelectedElement({ id, monitorData, component, menuHandle, diActivateReload}) {
 		
-	const loadWhileGetData = useSelector(state => state.loadingGraphic);
-	const [disableWhileSearching, setDisableWhileSearching] = useState(false);
+	const loadWhileGetData = useSelector(state => state.loadingGraphic)
+	const [disableWhileSearching, setDisableWhileSearching] = useState(false)
 
-	const [booleanValue, setBooleanValue] = useState({
+	const [graphic_type, setGraphic_type] = useState(graphicOpts[0])
+	const [stroke, setStroke] = useState(strokeOpts[0])
+	const [canvas, setCanvas] = useState(canvasOpts[0])
+	const [decimal, setDecimal] = useState(patternOpts[0])
+	// TODO: pasar a componenete hijo
+	const [prefix, setPrefix] = useState("Default")
+	const [unit, setUnit] = useState("Default")
+
+
+	const [checkOptValue, setCheckOptValue] = useState({
 		logarithm: false,
 		curved: false,
 		filled: false,
 		enabled_color: false
-	});
-	const onChangeBoolean = (e) => {
-		const name = e.target.name
-		const value = e.target.value
-		setBooleanValue({
-			...booleanValue,
-			[name]: value
-		})
-	}
-
-	const [stringValue, setStringValue] = useState({
+	})
+	const [stringOptValue, setStringOptValue] = useState({
 		limit_max: "",
 		limit_min: "",
-		color: "",
+		color: "#000000",
 		pos: ""
-	});
-	const onChangeString = (e) => {
-		const name = e.target.name
-		const value = e.target.value
-		setStringValue({
-			...stringValue,
-			[name]: value
-		})
+	})
+	const onChangeValues = (e) => {
+		const target = e.target
+		if(target.type === "checkbox")
+			setCheckOptValue({ ...checkOptValue, [target.name]: target.checked })
+		else
+			setStringOptValue({ ...stringOptValue, [target.name]: target.value })
 	}
 
-	const [arrayValue, setArrayValue] = useState({
-		graphicType: null,
-		stroke: null,
-		canvas: null,
-		prefix: null,
-		unit: null,
-		decimal_pattern: null,
-	});
-	const onChangeArray = (e, newValue) => {
-		const name = e.target.name
-		setArrayValue({
-			...arrayValue,
-			[name]: newValue
-		})
+	/*
+	 *	call save options  
+	 */
+	const saveOptions = () => {
+		const options = {
+			options: {
+				...checkOptValue,
+				...stringOptValue,
+				graphic_type: graphic_type,
+				stroke: stroke,
+				canvas: canvas,
+				prefix: prefix,
+				unit: unit,
+				decimal: decimal
+			}
+		}
+		menuHandle(id, options, 'saveMonitorOptions')
 	}
-
-
-
 
 	/*
 	 * 'loadWhileGetData' will be set to true when the data has arrive, and then buttons will be active again
@@ -88,93 +150,19 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 	}, [loadWhileGetData]);
 
 	/*
-	 * Set oprions 'select' inputs 
-	 */
-	const graphicOpts = [
-		"Line Series",
-		"Step Line Series"
-	];
-	const strokeOpts = [
-		"Light",
-		"Medium",
-		"Bold",
-		"Bolder"
-	];
-	const canvasOpts = [
-		"Default",
-		"Dotted",
-		"Dashed",
-		"Large Dashed",
-		"Dotted Dashed"
-	];
-	const patternOpts = [
-		"Default",
-		"0.#",
-		"0.##",
-		"0.###",
-		"0.####",
-		"0.#####",
-		"0.######",
-		"0.#######",
-		"0.########"
-	];
-
-	/*
 	 * Handle remove item from list 
 	 */
 	const onRemove = (id) => {
-		menuHandle(id, 'diselectMonitor');
-		diActivateReload();
+		menuHandle(id, null, 'diselectMonitor')
+		diActivateReload()
 	}
 
-	/*
-	 * Apply changes warning message
-	 */
-	const applyChangesWarning = <LtTooltip
-									title={
-									<React.Fragment>
-										<b className="label-indHlp-tooltip">{"To apply these changes you have"}</b><br />
-										<b className="label-indHlp-tooltip">{"to press the "}<i>{"'Search & Display'"}</i></b><br />
-										<b className="label-indHlp-tooltip">{"button again."}</b>
-									</React.Fragment>
-									}
-									placement="left" className="tool-tip-options">
-									<AnnouncementIcon className="index-help-icon"/>
-								</LtTooltip>
 
 	/*
 	 * Get Icons
 	 */
-	const icontype = <GetMonitordIconType type={ monitorData.type } />;
+	const icontype = <GetMonitordIconType type={ monitorData.type } />
 
-
-	/*
-	 * If the button is alredy active when a new monitor is selected, apply the changes
-	 */
-	let lessDetailIfActive;
-	if ($('#lessDetail-icon').hasClass('color-menu-active')) {
-		lessDetailIfActive = 'display-none';
-	}
-
-	/*
-	 * Handle monitor settings options OPEN popover
-	 */
-	const handleClickOpenSettings = (id) => {
-		const offset = $('.id-TuneIcon-sett' + id).offset();
-		$('.id-mon-sett' + id).toggleClass('display-none').offset({ top: offset.top, right: offset.right});
-		$('.close-settingsMon' + id).toggleClass('display-none');
-	};
-
-	/*
-	 * Handle disabled color input
-	 */
-	const handleClickDisabledColor = (id) => {
-		if ($('.colorInput' + id).is(":checked")) {
-		$('.selectColorInput' + id).prop('disabled', false);
-		}else {
-		$('.selectColorInput' + id).prop('disabled', true);
-		}
-	}
   
 	return(
 		<tr className={`tr-monMag${id}`} id={id}>
@@ -246,11 +234,22 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 						</p>
 					</div>
 
-					<IconButton onClick={() => {handleClickOpenSettings(id)}} arai-label="tune-setings" className={`settings-selected-monitor id-TuneIcon-sett` + id}>
+					<IconButton 
+						onClick={() => {
+							handleClickOpenSettings(id);
+						}} 
+						arai-label="tune-setings" 
+						className={`settings-selected-monitor id-TuneIcon-sett` + id}
+					>
 						<TuneIcon />
 					</IconButton>
 
-					<div className={`close_rangeZone-monitor-settings display-none close-settingsMon` + id} onClick={() => {handleClickOpenSettings(id)}}></div>
+					<div 
+						className={`close_rangeZone-monitor-settings display-none close-settingsMon` + id} 
+						onClick={() => {
+							handleClickOpenSettings(id);
+							saveOptions();
+						}}></div>
 					<Box className={`setting-selectd-monitor-options-box display-none id-mon-sett` + id} id="mon-settings-sx" sx={{boxShadow: 3}}>
 					<div className="monitor-selected-select-contain">
 						<div className="monitor-selected-select-box">
@@ -258,44 +257,39 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 						<div className="checkbox-monitor-selected">
 							<div className="label-monitor-settings">Presentation:</div>
 							<div className="input-settings-checkbox">
-							<label className="label-cont-inputchecbox settings-checkbox-presnetation">
-								logarithm
-								<input
-									type="checkbox"
-									name="logarithm"
-									onChange={onChangeBoolean}
-									value={booleanValue.logarithm}
-									className="checkboxMo checkboxMo-monitor logarithm"
-								/>
-								<span className="checkmark"></span>
-							</label>
 								<label className="label-cont-inputchecbox settings-checkbox-presnetation">
-								curved
-								<input
-									type="checkbox"
-									name="curved"
-									onChange={onChangeBoolean}
-									value={booleanValue.curved}
-									className="checkboxMo checkboxMo-monitor curved"
-								/>
-							<span className="checkmark"></span>
-							</label>
-							<label className="label-cont-inputchecbox settings-checkbox-presnetation">
-								filled
-								<input
-								type="checkbox"
-								name="filled"
-								onChange={onChangeBoolean}
-								value={booleanValue.filled}
-								className="checkboxMo checkboxMo-monitor filled"
-								/>
-							<span className="checkmark"></span>
-							</label>
-							{/*<label className="label-cont-inputchecbox settings-checkbox-presnetation">
-								dotted
-								<input type="checkbox" className="checkboxMo checkboxMo-monitor dotted" />
-								<span className="checkmark"></span>
-							</label>*/}
+									logarithm
+									<input
+										className="checkboxMo checkboxMo-monitor logarithm"
+										name="logarithm"
+										type="checkbox"
+										onChange={onChangeValues}
+										value={checkOptValue.logarithm}
+									/>
+									<span className="checkmark"></span>
+								</label>
+								<label className="label-cont-inputchecbox settings-checkbox-presnetation">
+									curved
+									<input
+										className="checkboxMo checkboxMo-monitor curved"
+										name="curved"
+										type="checkbox"
+										onChange={onChangeValues}
+										value={checkOptValue.curved}
+									/>
+									<span className="checkmark"></span>
+								</label>
+								<label className="label-cont-inputchecbox settings-checkbox-presnetation">
+									filled
+									<input
+										className="checkboxMo checkboxMo-monitor filled"
+										name="filled"
+										type="checkbox"
+										onChange={onChangeValues}
+										value={checkOptValue.filled}
+									/>
+									<span className="checkmark"></span>
+								</label>
 							</div>
 						</div>
 
@@ -303,27 +297,27 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 							<div className="label-monitor-settings">Limits:</div>
 							<div className="limtis-monnitor-settings-inputs">
 							<label className="monitor-limits-label "> Max: </label>
-							<input
-								type="text"
-								max="9999999"
-								min="-9999999"
-								placeholder="0.."
-								name="limit_max"
-								onChange={onChangeString}
-								value={stringValue.limit_max}
-								className="input-limits-grafic-options yaxisMax"
-							/>
+								<input
+									className="input-limits-grafic-options yaxisMax"
+									name="limit_max"
+									type="text"
+									max="9999999"
+									min="-9999999"
+									placeholder="0.."
+									onChange={onChangeValues}
+									value={stringOptValue.limit_max}
+								/>
 							<label className="monitor-limits-label"> Min: </label>
-							<input
-								type="text"
-								max="9999999"
-								min="-9999999"
-								placeholder="0.."
-								name="limit_min"
-								onChange={onChangeString}
-								value={stringValue.limit_min}
-								className="input-limits-grafic-options yaxisMin"
-							/>
+								<input
+									className="input-limits-grafic-options yaxisMin"
+									name="limit_min"
+									type="text"
+									max="9999999"
+									min="-9999999"
+									placeholder="0.."
+									onChange={onChangeValues}
+									value={stringOptValue.limit_min}
+								/>
 							</div>
 						</div>
 						</div>
@@ -332,65 +326,66 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 							<div className="label-monitor-settings">Graphic Type:</div>
 
 							<span className="monitor-selected-input-label-selects label-selects-grafic-type">Grafic Type:</span>
-							<Autocomplete
-								disablePortal // --> disabled entrys not related with the select
-								// freeSolo
-								disableClearable
-								id={`grafic-type` + id}
-								name={"graphicType"}
-								className="input-limits-grafic-options input-select-graphic grafic-type"
-								options={graphicOpts}
-								defaultValue={graphicOpts[0]}
-								onChange={(e, newValue) => {onChangeArray(e, newValue)}}
-								value={arrayValue.graphicType}
-								renderInput={(params) => <TextField {...params} />}
-							/>
-
+								<Autocomplete
+									disablePortal
+									disableClearable
+									id={`grafic-type` + id}
+									name={"graphic_type"}
+									className="input-limits-grafic-options input-select-graphic grafic-type"
+									options={graphicOpts}
+									onChange={(e, newValue) => {
+										setGraphic_type(newValue)
+									}}
+									value={graphic_type}
+									renderInput={(params) => <TextField {...params} />}
+								/>
 							<div className="visualization-monitor-settings">
 							<div className="label-monitor-settings label-visualization">Visualization:</div>
 							<span className="monitor-selected-input-label-selects">StrokeWidth:</span>
-							<Autocomplete
-								disablePortal // --> disabled entrys not related with the select
-								// freeSolo
-								disableClearable
-								id={`strokeWidth` + id}
-								name="stroke"
-								className="input-limits-grafic-options input-select-graphic stroke-width"
-								options={strokeOpts}
-								defaultValue={strokeOpts[0]}
-								onChange={(e, newValue) => {onChangeArray(e, newValue)}}
-								value={arrayValue.stroke}
-								renderInput={(params) => <TextField {...params} />}
-							/>
+								<Autocomplete
+									disablePortal
+									disableClearable
+									id={`strokeWidth` + id}
+									name="stroke"
+									className="input-limits-grafic-options input-select-graphic stroke-width"
+									options={strokeOpts}
+									onChange={(e, newValue) => {
+										setStroke(newValue)
+									}}
+									value={stroke}
+									renderInput={(params) => <TextField {...params} />}
+								/>
 							<span className="monitor-selected-input-label-selects">Canvas:</span>
-							<Autocomplete
-								disablePortal // --> disabled entrys not related with the select
-								// freeSolo
-								disableClearable
-								id={`canvas` + id}
-								name="canvas"
-								className="input-limits-grafic-options input-select-graphic canvas-width"
-								options={canvasOpts}
-								defaultValue={canvasOpts[0]}
-								onChange={(e, newValue) => {onChangeArray(e, newValue)}}
-								value={arrayValue.canvas}
-								renderInput={(params) => <TextField {...params} />}
-							/>
+								<Autocomplete
+									disablePortal
+									disableClearable
+									id={`canvas` + id}
+									name="canvas"
+									className="input-limits-grafic-options input-select-graphic canvas-width"
+									options={canvasOpts}
+									onChange={(e, newValue) => {
+										setCanvas(newValue)
+									}}
+									value={canvas}
+									renderInput={(params) => <TextField {...params} />}
+								/>
 							<span className="monitor-selected-input-label-selects">Color:</span>
 							<div className="monitor-selected-checkbox-color">
 								<input 
-									disabled={booleanValue.enabled_color}
-									onChange={onChangeString}
-									value={stringValue.color}
+									disabled={!checkOptValue.enabled_color}
 									className={`monitor-selected-input-color color-line selectColorInput` + id} 
+									name="color"
 									type="color"
+									onChange={onChangeValues}
+									value={stringOptValue.color}
 								/>
-								<label onClick={() => { handleClickDisabledColor(id)} } className="label-cont-inputchecbox settings-checkbox-presnetation set-color-settings-checkbox">
+								<label className="label-cont-inputchecbox settings-checkbox-presnetation set-color-settings-checkbox">
 								<input 
-									type="checkbox"
-									onChange={onChangeBoolean}
-									value={booleanValue.enabled_color}
 									className={`checkboxMo checkboxMo-monitor checkbox-color colorInput` + id} 
+									name="enabled_color"
+									type="checkbox"
+									onChange={onChangeValues}
+									value={checkOptValue.enabled_color}
 								/>
 								<span className="checkmark"></span>
 								</label>
@@ -402,7 +397,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 						(fnIsMagnitude(monitorData.type)) ? "" :
 							<div className="monitor-selected-input-Unit-box">
 								<div>
-								<div className="label-monitor-settings">Unit Conversion:</div>
+									<div className="label-monitor-settings">Unit Conversion:</div>
 									<span className="monitor-selected-input-label-selects label-selects-grafic-type">Conversions:</span>
 									{
 										applyChangesWarning
@@ -410,12 +405,12 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 								</div>
 
 								<GetUnitSelecttype 
-									id={id} 
-									unit={(monitorData.unit === undefined) ? "None" : monitorData.unit} 
+									id={id}
+									unit={monitorData?.unit} 
 									applyChangesWarning={ applyChangesWarning }
-									prefixValue={arrayValue.prefix}
-									unitValue={arrayValue.unit}
-									valueOnChange={setArrayValue}
+									prefixValue={prefix}
+									unitValue={unit}
+									valueOnChange={onChangeValues}
 								/>
 
 								<div className="label-monitor-settings-pattern">Decimal Pattern:</div>
@@ -437,16 +432,16 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 									}
 								</div>
 								<Autocomplete
-									disablePortal // --> disabled entrys not related with the select
-									// freeSolo
+									disablePortal
 									disableClearable
 									id={`Pattern` + id}
 									name="deimnalPattern"
 									className="input-limits-grafic-options input-select-pattern deimnalPattern"
 									options={patternOpts}
-									defaultValue={patternOpts[0]}
-									onChange={(e, newValue) => {onChangeArray(e, newValue)}}
-									value={arrayValue.decimal_pattern}
+									onChange={(e, newValue) => {
+										setDecimal(newValue)
+									}}
+									value={decimal}
 									renderInput={(params) => <TextField {...params} />}
 								/>
 							</div> 

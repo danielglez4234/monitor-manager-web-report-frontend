@@ -6,10 +6,11 @@ export const selectMonitor = (monitorData, componentName) => {
   }
 }
 
-export const menuHandleSelectedMonitors = (id, type) => {
+export const menuHandleSelectedMonitors = (id, options, type) => {
   return{
     type: type,
     idMonitorMagnitude: id,
+    options: options
   }
 }
 
