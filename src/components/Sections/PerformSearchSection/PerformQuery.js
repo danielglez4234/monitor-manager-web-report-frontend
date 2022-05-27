@@ -58,6 +58,7 @@ function PerformQuery(props) {
 	const monitor          = useSelector(state => state.monitor);
 	const loadWhileGetData = useSelector(state => state.loadingButton);
 	const pagination       = useSelector(state => state.pagination);
+	const editing 	   	   = useSelector(state => state.editingQuery);
 
 	const [loadingSearch, setLoadingSearch] = useState(false);
 	const [beginDateInput, setBeginDateInput] = useState("");
@@ -88,9 +89,9 @@ function PerformQuery(props) {
 			{
 				const infoMonitor = monitor[i].monitorData;
 				/* 
-				* magnitud("b","e"); scalar("d","f","l","s","o"); arrays("D","F","L","S","O"); doubleArrays("9","8","7","6","5");
-				* state("state");
-				*/
+				 * magnitud("b","e"); scalar("d","f","l","s","o"); arrays("D","F","L","S","O"); doubleArrays("9","8","7","6","5");
+				 * state("state");
+				 */
 				queryRest += "id" + getCategory(infoMonitor.type) + "=";
 				if (fnIsScalar(infoMonitor.type))
 				{
@@ -98,7 +99,7 @@ function PerformQuery(props) {
 				}
 				else if (fnIsArray(infoMonitor.type))
 				{
-					// Get Inex
+					// Get Index
 					let index = $(".Index" + infoMonitor.id).text();
 					if (index === '/') 
 					{
@@ -113,7 +114,6 @@ function PerformQuery(props) {
 				}
 				else if (fnIsState(infoMonitor.type))
 				{
-					console.log(infoMonitor.component);
 					queryRest += infoMonitor.component;
 				}
 				else
@@ -125,7 +125,7 @@ function PerformQuery(props) {
 						preventDuplicate: false
 					})
 				}
-				if(!fnIsMagnitude(infoMonitor.type))
+				if(!fnIsMagnitude(infoMonitor.type) || !fnIsState(infoMonitor.type))
 				{
 					let unitType = $("#Unit" + infoMonitor.id).val();
 					let prefixType = $("#Prefix" + infoMonitor.id).val();
@@ -167,7 +167,7 @@ function PerformQuery(props) {
 			const url = beginDate+"/"+endDate+"/"+sampling+"?"+queryRest+"&"+page+"&"+length;
 
 			const action = (qs?.download) ? "download" : (qs?.query) ? "query" : "search"; // this is for log purposes
-			console.log(`URL:  ${window.location.href.replace('3006', '')}:${REACT_APP_SERVER_PORT}/rest/webreport/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
+			console.log(`URL:  ${window.location.href.replace('3006', '')}:${REACT_APP_SERVER_PORT}/rest/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
 			return url
 		} catch (error) {
 			console.error(error)
@@ -219,6 +219,30 @@ function PerformQuery(props) {
 			dispatch(loadGraphic(false));
 			$(".block-monitor-selected-when-searching").remove(); // unlock monitor selected section
 		})
+	}
+
+
+	/*
+	 * get BeginDate Value
+	 */
+	const onChangeBeginDate = (date, dateString) => {
+		console.log("date", date)
+		setTimeQuery({
+			...timeQuery,
+			beginDate: dateString // string format
+		})
+		setBeginDateInput(date) // antDesign input format date
+	}
+
+	/*
+	 * get endDate Value
+	 */
+	const onChangeEndDate = (date, dateString) => {
+		setTimeQuery({
+			...timeQuery,
+			endDate: dateString // string format
+		})
+		setEndDateInput(date) // antDesign input format date
 	}
 
 	/*
@@ -314,23 +338,6 @@ function PerformQuery(props) {
 			}
 			return true
 		}
-	}
-
-
-	const onChangeBeginDate = (date, dateString) => {
-		setTimeQuery({
-			...timeQuery,
-			beginDate: dateString // string format
-		})
-		setBeginDateInput(date) // antDesign input format date
-	}
-
-	const onChangeEndDate = (date, dateString) => {
-		setTimeQuery({
-			...timeQuery,
-			endDate: dateString // string format
-		})
-		setEndDateInput(date) // antDesign input format date
 	}
 
     return(
@@ -450,10 +457,15 @@ function PerformQuery(props) {
 									convertToUnix={convertToUnix}
 									constructURL={constructURL}
 									timeQuery={timeQuery}
+									editing={editing}
 								/>
-								<ViewHandleQuery 
-									constructURL={constructURL}
-								/>
+								{
+									(editing?.active) ? "" :
+										<ViewHandleQuery 
+											constructURL={constructURL}
+											editing={editing}
+										/>
+								}
 						</Stack>
 					</div>
 				</div>
