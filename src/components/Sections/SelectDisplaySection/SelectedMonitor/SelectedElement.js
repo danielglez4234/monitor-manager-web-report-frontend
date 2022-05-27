@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as $ from 'jquery';
 import {
   fnIsArray,
-  fnIsMagnitude
+  fnIsMagnitude,
+  fnIsState
 }
 from '../../../standarFunctions';
 import { LtTooltip } from '../../../../commons/uiStyles';
@@ -54,6 +55,12 @@ const patternOpts = [
 	"0.#######",
 	"0.########"
 ]
+const unitOpt = [ // dynamic
+	"Default"
+] 
+const prefixOpt = [ // dynamic
+	"Default"
+]
 
 /*
  * Apply changes warning message
@@ -94,53 +101,63 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 	const loadWhileGetData = useSelector(state => state.loadingGraphic)
 	const [disableWhileSearching, setDisableWhileSearching] = useState(false)
 
+	const [logarithm, setLogarithm] = useState(false);
+	const [curved, setCurved] = useState(false);
+	const [filled, setFilled] = useState(false);
+	const [enabled_color, setEnabled_color] = useState(false);
+
+	const [limit_max, setLimit_max] = useState("");	
+	const [limit_min, setLimit_min] = useState("");
+	const [color, setColor] = useState("");
+	const [pos, setPos] = useState("");
+
 	const [graphic_type, setGraphic_type] = useState(graphicOpts[0])
 	const [stroke, setStroke] = useState(strokeOpts[0])
 	const [canvas, setCanvas] = useState(canvasOpts[0])
+	const [unit, setUnit] = useState(unitOpt[0])
+	const [prefix, setPrefix] = useState(prefixOpt[0])
 	const [decimal, setDecimal] = useState(patternOpts[0])
-	// TODO: pasar a componenete hijo
-	const [prefix, setPrefix] = useState("Default")
-	const [unit, setUnit] = useState("Default")
 
 
-	const [checkOptValue, setCheckOptValue] = useState({
-		logarithm: false,
-		curved: false,
-		filled: false,
-		enabled_color: false
-	})
-	const [stringOptValue, setStringOptValue] = useState({
-		limit_max: "",
-		limit_min: "",
-		color: "#000000",
-		pos: ""
-	})
-	const onChangeValues = (e) => {
-		const target = e.target
-		if(target.type === "checkbox")
-			setCheckOptValue({ ...checkOptValue, [target.name]: target.checked })
-		else
-			setStringOptValue({ ...stringOptValue, [target.name]: target.value })
+	/*
+	 * handle get options  
+	 */
+	const getOptions = () => {
+		return {
+			options: {
+				logarithm,
+				curved,
+				filled,
+				limit_max,
+				limit_min,
+				graphic_type,
+				stroke,
+				canvas,
+				enabled_color,
+				color,
+				pos:	 (fnIsArray(monitorData.type)) ? pos : undefined, // optional field
+				prefix:  (prefix === "Default") ? undefined : prefix,     // optional field
+				unit:  	 (unit === "Default") ? undefined : unit,		  // optional field
+				decimal: (decimal === "Default") ? undefined : decimal	  // optional field
+			}
+		}
 	}
 
 	/*
 	 *	call save options  
 	 */
 	const saveOptions = () => {
-		const options = {
-			options: {
-				...checkOptValue,
-				...stringOptValue,
-				graphic_type: graphic_type,
-				stroke: stroke,
-				canvas: canvas,
-				prefix: prefix,
-				unit: unit,
-				decimal: decimal
-			}
-		}
-		menuHandle(id, options, 'saveMonitorOptions')
+		menuHandle(id, getOptions(), 'saveMonitorOptions')
 	}
+
+	/*
+	 * store monitor selected options on redux variable
+	 */
+	useEffect(() => {
+		if(monitorData){
+			saveOptions()
+		}
+	}, []);
 
 	/*
 	 * 'loadWhileGetData' will be set to true when the data has arrive, and then buttons will be active again
@@ -173,19 +190,22 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 						<span>{ component }</span>
 					</div>
 					<div className="monitor-selected-info">
-						<span>version: { monitorData.version } - </span>
-						{ 
-							(fnIsMagnitude(monitorData.type)) ?
-							<>              
-								<span>MagnitudeType: { (monitorData?.magnitudeType?.name) ? monitorData.magnitudeType.name : ""} - </span>
-							</>
+
+						{
+							(fnIsState(monitorData.type)) ? ""
 							:
-							<>              
-								<span>unit: <span className="default-unit">{ monitorData.unit }</span> - </span>
+							<>
+								<span>version: { monitorData.version } - </span>
+								{
+								(fnIsMagnitude(monitorData.type)) ?              
+									<span>MagnitudeType: { (monitorData?.magnitudeType?.name) ? monitorData.magnitudeType.name : ""} - </span>
+								:             
+									<span>unit: <span className="default-unit">{ monitorData.unit }</span> - </span>
+								}
+								<span>type: { monitorData.type } - </span>
+								<span>id: { id }</span>
 							</>
 						}
-						<span>type: { monitorData.type } - </span>
-						<span>id: { id }</span>
 					</div>
 				</Stack>
 
@@ -263,8 +283,8 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 										className="checkboxMo checkboxMo-monitor logarithm"
 										name="logarithm"
 										type="checkbox"
-										onChange={onChangeValues}
-										value={checkOptValue.logarithm}
+										onChange={(e) => {setLogarithm(e.target.checked)}}
+										value={logarithm}
 									/>
 									<span className="checkmark"></span>
 								</label>
@@ -274,8 +294,8 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 										className="checkboxMo checkboxMo-monitor curved"
 										name="curved"
 										type="checkbox"
-										onChange={onChangeValues}
-										value={checkOptValue.curved}
+										onChange={(e) => {setCurved(e.target.checked)}}
+										value={curved}
 									/>
 									<span className="checkmark"></span>
 								</label>
@@ -285,8 +305,8 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 										className="checkboxMo checkboxMo-monitor filled"
 										name="filled"
 										type="checkbox"
-										onChange={onChangeValues}
-										value={checkOptValue.filled}
+										onChange={(e) => {setFilled(e.target.checked)}}
+										value={filled}
 									/>
 									<span className="checkmark"></span>
 								</label>
@@ -304,8 +324,8 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 									max="9999999"
 									min="-9999999"
 									placeholder="0.."
-									onChange={onChangeValues}
-									value={stringOptValue.limit_max}
+									onChange={(e) => {setLimit_max(e.target.value)}}
+									value={limit_max}
 								/>
 							<label className="monitor-limits-label"> Min: </label>
 								<input
@@ -315,8 +335,8 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 									max="9999999"
 									min="-9999999"
 									placeholder="0.."
-									onChange={onChangeValues}
-									value={stringOptValue.limit_min}
+									onChange={(e) => {setLimit_min(e.target.value)}}
+									value={limit_min}
 								/>
 							</div>
 						</div>
@@ -372,20 +392,20 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 							<span className="monitor-selected-input-label-selects">Color:</span>
 							<div className="monitor-selected-checkbox-color">
 								<input 
-									disabled={!checkOptValue.enabled_color}
+									disabled={!enabled_color}
 									className={`monitor-selected-input-color color-line selectColorInput` + id} 
 									name="color"
 									type="color"
-									onChange={onChangeValues}
-									value={stringOptValue.color}
+									onChange={(e) => {setColor(e.target.value)}}
+									value={color}
 								/>
 								<label className="label-cont-inputchecbox settings-checkbox-presnetation set-color-settings-checkbox">
 								<input 
 									className={`checkboxMo checkboxMo-monitor checkbox-color colorInput` + id} 
 									name="enabled_color"
 									type="checkbox"
-									onChange={onChangeValues}
-									value={checkOptValue.enabled_color}
+									onChange={(e) => {setEnabled_color(e.target.checked)}}
+									value={enabled_color}
 								/>
 								<span className="checkmark"></span>
 								</label>
@@ -394,7 +414,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 						</div>
 
 						{
-						(fnIsMagnitude(monitorData.type)) ? "" :
+						(fnIsMagnitude(monitorData.type) || fnIsState(monitorData.type)) ? "" :
 							<div className="monitor-selected-input-Unit-box">
 								<div>
 									<div className="label-monitor-settings">Unit Conversion:</div>
@@ -406,11 +426,11 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 
 								<GetUnitSelecttype 
 									id={id}
-									unit={monitorData?.unit} 
-									applyChangesWarning={ applyChangesWarning }
-									prefixValue={prefix}
-									unitValue={unit}
-									valueOnChange={onChangeValues}
+									DefaultUnit={monitorData?.unit} 
+									unit={unit}
+									setUnit={setUnit}
+									prefix={prefix}
+									setPrefix={setPrefix}
 								/>
 
 								<div className="label-monitor-settings-pattern">Decimal Pattern:</div>

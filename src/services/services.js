@@ -39,7 +39,7 @@ export const getMonitorsFromComponent = ({componentName}) => {
                         type: 'state',
                         stateValues: res.data
                     };
-                    const concatMonitors  = [...escalList, ...enumList, stateInfo];
+                    const concatMonitors  = [stateInfo, ...escalList, ...enumList];
                     return concatMonitors;
                 })
             }
@@ -101,7 +101,7 @@ export const getAllQuerys = () => {
  *  GET specific query
  */
 export const getQuery = (id) => {
-    return axios.get(REACT_APP_SERVICES_IP + `/WebReport/rest/query/${id}`, {header: httpHeaderOptions})
+    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/query/"+encodeURI(id), {header: httpHeaderOptions})
             .then(res => res.data)
 }
 
@@ -117,8 +117,8 @@ export const insertQuery = (payload) => {
 /*
  * UPDATE a new query
  */
-export const updateQuery = (id, payload) => {
-    return axios.post(REACT_APP_SERVICES_IP + `/WebReport/rest/query/${id}`, payload, {header: httpHeaderOptions})
+export const updateQuery = (name, payload) => {
+    return axios.put(REACT_APP_SERVICES_IP + "/WebReport/rest/query/"+encodeURI(name), payload, {header: httpHeaderOptions})
             .then(res => res.data)
 }
 
@@ -126,6 +126,6 @@ export const updateQuery = (id, payload) => {
  * Remove query
  */
 export const deleteQuery = (id) => {
-    return axios.delete(REACT_APP_SERVICES_IP + `/WebReport/rest/query/${id}`, {header: httpHeaderOptions})
+    return axios.delete(REACT_APP_SERVICES_IP + "/WebReport/rest/query/"+encodeURI(id), {header: httpHeaderOptions})
             .then(res => res.data)
 }

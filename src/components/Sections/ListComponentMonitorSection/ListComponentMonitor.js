@@ -278,30 +278,26 @@ function ListComponentMonitor() {
      * we do it here and no inside the map of 'MonitorElement.js' to avoid duplication
      */
     const select = (monitorData, component) => {
-		if (fnIsState(monitorData.type)){
-			handleMessage({ 
-				message: 'STATE monitors are not available at the moment, they will be added in a future update', 
-				type: 'warning', 
-				persist: false,
-				preventDuplicate: false
-			})
-		}else {
-			if (idMonitorsAlreadySelected.length > 0){
-				if (idMonitorsAlreadySelected.filter(e => e.monitorData["id"] === monitorData.id).length > 0){
-					handleMessage({ 
-						message: 'The monitor ' + monitorData.magnitude + ' is alredy selected', 
-						type: 'info', 
-						persist: false,
-						preventDuplicate: false
-					})
-				}
-				else{
-					dispatch(selectMonitor(monitorData, component));
-				}
-			}else {
+		// if (fnIsState(monitorData.type)){
+		// 	handleMessage({ 
+		// 		message: 'STATE monitors are not available at the moment, they will be added in a future update', 
+		// 		type: 'warning', 
+		// 		persist: false,
+		// 		preventDuplicate: false
+		// 	})
+		// }else {
+			if (idMonitorsAlreadySelected.length > 0 && idMonitorsAlreadySelected.filter(e => e.monitorData["id"] === monitorData.id).length > 0){
+				handleMessage({ 
+					message: 'The monitor ' + monitorData.magnitude + ' is alredy selected', 
+					type: 'info', 
+					persist: false,
+					preventDuplicate: false
+				})
+			}
+			else{
 				dispatch(selectMonitor(monitorData, component));
 			}
-		}
+		// }
     }
 
 
@@ -354,9 +350,9 @@ function ListComponentMonitor() {
 						(connectionError)  ? error :
 						(loadingComponent) ? skeleton :
 						(resultQueryComponent.length === 0) ? noResultFound :
-						resultQueryComponent.map((element, index) =>
+						resultQueryComponent.map((element) =>
 							<ComponentElement
-								key                = { index }
+								key                = { element }
 								title              = { element }
 								getMonitors        = { getMonitors }
 							/>
