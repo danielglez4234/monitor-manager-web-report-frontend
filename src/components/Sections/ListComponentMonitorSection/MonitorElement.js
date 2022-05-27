@@ -8,7 +8,7 @@ const MonitorElement = ({monitorData, component, select, diActivateReload }) => 
 	const icontype = <GetMonitordIconType type={ monitorData.type } />
 
 	return(
-		<div id="dropitem" className="drag componentItem-box-container monitor-element">
+		<div id={monitorData.id} className="drag componentItem-box-container monitor-element">
 			<div 
 				className="componentItem-box" 
 				onClick={() => { 

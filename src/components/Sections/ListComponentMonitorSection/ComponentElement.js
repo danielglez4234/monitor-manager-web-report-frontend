@@ -12,9 +12,6 @@ const ComponentElement = ({ title, getMonitors }) => {
 				<div className="componentItem-title-div">
 					<p className="componentItem-title"> { title } </p>
 				</div>
-		{/*        <div className="componentItem-title-div hover-show-complete-title">
-				<p className="componentItem-title"> { title } </p>
-				</div>*/}
 			</div>
 		</div>
 	);

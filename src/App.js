@@ -27,7 +27,6 @@ const store = createStore(
 );
 
 const { REACT_APP_SERVICES_IP }     = process.env;
-const { REACT_APP_SERVICES_NAME }   = process.env;
 const { REACT_APP_IDISPLAYLENGTH }  = process.env;
 
 function App() {
@@ -58,18 +57,15 @@ function App() {
 								<Header />
 								<div className="content">
 									<ListComponentMonitor 
-										serviceIP={REACT_APP_SERVICES_IP} 
-										serviceName={REACT_APP_SERVICES_NAME} 
+										serviceIP={REACT_APP_SERVICES_IP}
 										urliDisplayLength={REACT_APP_IDISPLAYLENGTH}
 									/>
 									<ListSelectedMonitor  
-										serviceIP={REACT_APP_SERVICES_IP} 
-										serviceName={REACT_APP_SERVICES_NAME} 
+										serviceIP={REACT_APP_SERVICES_IP}
 										urliDisplayLength={REACT_APP_IDISPLAYLENGTH}
 									/>
 									<PerformQuery         
-										serviceIP={REACT_APP_SERVICES_IP} 
-										serviceName={REACT_APP_SERVICES_NAME} 
+										serviceIP={REACT_APP_SERVICES_IP}
 										urliDisplayLength={REACT_APP_IDISPLAYLENGTH}
 									/>
 								</div>
