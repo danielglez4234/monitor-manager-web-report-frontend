@@ -2432,7 +2432,6 @@ table.save-query-table-monitor-list tr:nth-child(odd)
   margin-left:10px;
 }
 
-
 /*---------------------------------*/
 /* END *** SAVE QUERY MODAL *** */
 /*---------------------------------*/
@@ -2447,8 +2446,8 @@ table.save-query-table-monitor-list tr:nth-child(odd)
   height:80%;
   margin-top:80px;
   left:50%;
-  width:800px;
-  margin-left:-400px;
+  width:950px;
+  margin-left:-475px;
   color: rgb(230, 233, 238);
   font-family: "RobotoMono-Bold";
 }

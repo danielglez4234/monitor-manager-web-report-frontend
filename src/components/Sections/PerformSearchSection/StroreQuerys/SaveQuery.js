@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import * as $ 						from 'jquery'
-import { useSelector } 				from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { editingQuery, menuHandleSelectedMonitors } from '../../../../actions';
 import {
-	insertQuery
+	insertQuery,
+	updateQuery
 } from '../../../../services/services'
 import { getCategory } from '../../../standarFunctions'
 import {makeStyles}					from '@material-ui/core';
@@ -11,6 +12,7 @@ import { Modal, Box, Grid, Button, Backdrop, CircularProgress } from '@mui/mater
 import ArchiveIcon 					from '@mui/icons-material/Archive';
 import SaveIcon                     from '@mui/icons-material/Save';
 import LoadingButton                from '@mui/lab/LoadingButton';
+import UploadIcon  			   		from '@mui/icons-material/Upload';
 import PopUpMessage                 from '../../../handleErrors/PopUpMessage';
 import getGraphicoptions            from '../../SelectDisplaySection/Graphic/getGraphicoptions'
 
@@ -34,7 +36,8 @@ const usesTyles = makeStyles({
 })
 
 
-function SaveQuery({convertToUnix, constructURL, timeQuery}) {
+function SaveQuery({convertToUnix, timeQuery, editing}) {
+	const dispatch = useDispatch()
 	const classes = usesTyles()
 	const monitor = useSelector(state => state.monitor)
 	const [msg, handleMessage] = PopUpMessage()
@@ -43,6 +46,7 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 	const [openSaveQuery, setOpenSaveQuery] = useState(false)
 
     const [queryName, setQueryName] = useState("")
+	const [ifSameQueryName, setifSameQueryName] = useState(true)
     const [queryDescription, setQueryDescription] = useState("")
     const [openBackDrop, setOpenBackDrop] = useState(false)
     const [monitorList, setMonitorList] = useState([""]);
@@ -68,7 +72,9 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 		})
 	}
 
-
+	/*
+	 * check active save button
+	 */
 	useEffect(() => {
 		// const unixBeginDate = convertToUnix(timeQuery.beginDate)
 		// const unixEndDate = convertToUnix(timeQuery.endDate)
@@ -80,6 +86,26 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 		}
 	}, [monitor, timeQuery])
 
+	/*
+	 * if editing query
+	 */
+	useEffect(() => {
+		if(editing?.active){
+			setQueryName(editing?.name)
+			setQueryDescription(editing?.description)
+		}
+	}, [editing]);
+
+	/*
+	 * check for changes in queryName when editing
+	 */
+	const checkIfQueryEditing = (newValue) => {
+		setQueryName(newValue)
+		if(newValue === editing.name)
+			setifSameQueryName(true)
+		else
+			setifSameQueryName(false)
+	}
 
 	/*
 	 * save query on data base
@@ -91,7 +117,10 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 			}
 			else{
 				backDropLoadOpen()
-				saveQuery()
+				if(editing?.active && ifSameQueryName){
+					handleUpdateQuery()
+				}else{
+					saveQuery()}
 			}
 		} catch (error) {
 			showWarningMessage(error)
@@ -99,16 +128,59 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 	}
 
 	/*
+	 * dispatch stop editing action
+	 */
+	const stopEditing = () => {
+		dispatch(menuHandleSelectedMonitors(null, null, 'diselectALLMonitor'))
+		dispatch(editingQuery({active: false}))
+	}
+
+	/*
 	 * save query on data base
 	 */
 	const saveQuery = () => {
 		const payload = createPayload()
-		console.log("payload", payload)
+		console.log("payload", JSON.stringify(payload))
 		Promise.resolve(insertQuery(payload))
 		.then(() =>{
-			setQueryName("")
-			setQueryDescription("")
+			if(editing?.active){
+				setQueryName("")
+				setQueryDescription("")
+			}
 			handleCloseSaveQuery()
+			// if (editing?.active) {stopEditing()} // TODO: ??
+			handleMessage({
+				message: "Query save successfully!",
+				type: "success",
+				persist: false,
+				preventDuplicate: false
+			})
+		})
+		.catch((error) =>{
+			console.error(error)
+			const error_message = (error?.response?.message) ? error.response.message : "Unsupported Error"
+			const error_status  = (error?.status) ? error.status : "Unkwon"
+			handleMessage({
+				message: "Error: " + error_message + " - Code " + error_status,
+				type: "error",
+				persist: true,
+				preventDuplicate: false
+			})
+		}).finally(() => {
+			backDropLoadClose()
+		})
+	}
+
+	/*
+	 * update query on data base
+	 */
+	const handleUpdateQuery = () => {
+		const payload = createPayload()
+		console.log("payload", JSON.stringify(payload))
+		Promise.resolve(updateQuery(editing.name, payload))
+		.then(() => {
+			handleCloseSaveQuery()
+			if (editing?.action) {stopEditing()}
 			handleMessage({
 				message: "Query save successfully!",
 				type: "success",
@@ -135,15 +207,16 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 	 * buil monitor data list
 	 */
 	const buildList = () => {
-		const monitorOptions = getGraphicoptions()
+		// const monitorOptions = getGraphicoptions()
+		console.log("monitor", monitor[0].options.prefix)
 		let list = []
 		for (let i = 0; i < monitor.length; i++) {
 			list.push({
 				component: monitor[i]?.component,
 				id: monitor[i]?.monitorData?.id,
 				magnitude: monitor[i]?.monitorData?.magnitude,
-				prefix: (monitorOptions?.prefix[i]) ? monitorOptions?.prefix[i] : "None",
-				unit: monitorOptions?.unitType[i]
+				prefix: monitor?.options?.prefix,
+				unit: monitor[i]?.options?.unit
 			});
 		}
 		setMonitorList(list)
@@ -157,19 +230,23 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 			let [list_monitor, list_magnitude, list_state] = [[],[],[]]
 			monitor.map(val => {
 				let [id, options] = ["", ""];
-				if(getCategory(val.monitorData.type) === "monitor"){
+				const category = getCategory(val.monitorData.type)
+				if(category === "monitor")
+				{
 					id = val?.monitorData.id
-					options = (val?.options) ? val.options : null
+					options = (val?.options) ? val.options : undefined
 					list_monitor.push({id, options})
 				}
-				else if(getCategory(val.monitorData.type) === "magnitud"){
+				else if(category=== "magnitud")
+				{
 					id = val?.monitorData.id
-					options = (val?.options) ? val.options : null
+					options = (val?.options) ? val.options : undefined
 					list_magnitude.push({id, options})
 				}
-				else if(getCategory(val.monitorData.type) === "state"){
+				else if(category === "state")
+				{
 					id = val?.monitorData.id
-					options = (val?.options) ? val.options : null
+					options = (val?.options) ? val.options : undefined
 					list_state.push({id, options})
 				}
 			})
@@ -179,29 +256,56 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 		}
 	}
 
-
+	/*
+	 * generate payload for query
+	 */
 	const createPayload = () => {
+		const id = (editing?.id && ifSameQueryName) ? editing.id : undefined;
 		const name = queryName
 		const description = queryDescription
-		const created_by = "daniel"
+		const created_by = null
 		const monitorList = getMonitorListSeparator()
 		const sampling = timeQuery.sampling
-		return {name, description, created_by, ...monitorList, sampling}
+		return {id, name, description, created_by, ...monitorList, sampling}
 	}
 
 
     return(
 		<>
-			<Button
-				sx={{backgroundColor: '#e57070'}}
-				onClick={handleOpenSaveQuery}
-				className={classes.savebutton}
-				variant="contained"
-				startIcon={<ArchiveIcon />}
-				disabled={disabled}
-			>
-				Save Actual Query
-			</Button>
+			{
+			(editing?.active) ? 
+				<>
+					<Button
+						sx={{backgroundColor: '#e57070'}}
+						onClick={handleOpenSaveQuery}
+						className={classes.savebutton}
+						variant="contained"
+						startIcon={<ArchiveIcon />}
+					>
+							Update Current Query
+					</Button>
+					<Button
+						sx={{backgroundColor: '#e57070'}}
+						onClick={stopEditing}
+						className={classes.savebutton}
+						variant="contained"
+						startIcon={<ArchiveIcon />}
+					>
+							Cancel
+					</Button>
+				</>
+				: 
+				<Button
+					sx={{backgroundColor: '#e57070'}}
+					onClick={handleOpenSaveQuery}
+					className={classes.savebutton}
+					variant="contained"
+					startIcon={<ArchiveIcon />}
+					disabled={disabled}
+				>
+					Save Actual Query
+				</Button>
+			}
 
 		{/*
 			Modals
@@ -215,7 +319,9 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 				<Box className="save-query-modal">
 					<Grid container spacing={0}>
 						<Grid item xs={12} sm={12} md={12} className="save-query-title">
-							Save Actual Query
+						{
+							(editing?.active) ? "Update Query" : "Save Actual Query"
+						}
 						</Grid>
 						<Grid item xs={12} sm={12} md={12} className="save-query-box-title-name">
 							<Grid
@@ -236,7 +342,11 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 										name="name"
 										placeholder="query_name"
 										value={queryName}
-										onChange={(e) => {setQueryName(e.target.value)}}
+										onChange={(e) => {
+											(editing?.active) 
+											? checkIfQueryEditing(e.target.value)
+											: setQueryName(e.target.value)
+										}}
 									/>
 								</Grid>
 							</Grid>
@@ -305,10 +415,10 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 															<div className="save-query-table-item-header">
 																<p className="sv-component">{value.component}</p>
 																<p className="sv-prefix">
-																	{(value.prefix === "None" || value.prefix === "") ? "--" : value.prefix} 
+																	{value?.prefix} 
 																</p>
 																<p className="sv-unit"> 
-																	{(value.unit === "Default" || value.unit === "") ? "--" : value.unit}
+																	{value?.unit}
 																</p>
 															</div>
 															<div className="save-query-table-item-title">
@@ -335,7 +445,9 @@ function SaveQuery({convertToUnix, constructURL, timeQuery}) {
 								startIcon={<SaveIcon />}
 								variant="contained"
 							>
-								Save
+								{
+									(editing?.active && ifSameQueryName) ? "Update" : "Save"
+								}
 							</LoadingButton>
 						</Grid>
 					</Grid>

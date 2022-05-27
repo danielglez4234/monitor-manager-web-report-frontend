@@ -2,11 +2,12 @@ import React, {useState, useEffect} from 'react';
 import {
 	getAllQuerys,
 	deleteQuery
-} from '../../../../../services/services'
+} from '../../../../../services/services';
+import { useDispatch } from 'react-redux';
+import { editingQuery } from '../../../../../actions';
 import { 
 	DataGrid,
 	GridToolbarContainer,
-  	GridToolbarColumnsButton,
   	GridToolbarFilterButton,
   	GridToolbarDensitySelector,
 	GridColumnMenuContainer, 
@@ -14,22 +15,12 @@ import {
     SortGridMenuItems
  } from '@mui/x-data-grid';
 import { styled } from '@mui/material/styles';
-import {
-	Box, 
-	Button,
-	Popover, 
-	Typography,  
-	IconButton,
-	Dialog,
-	DialogTitle,
-	DialogActions
-} from '@mui/material';
+import { Box, Button,Popover, Typography,  IconButton, Dialog, DialogTitle, DialogActions } from '@mui/material';
 
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import UploadIcon from '@mui/icons-material/Upload';
 
 import PopUpMessage from '../../../../handleErrors/PopUpMessage';
-import { ConstructionOutlined, ContactSupportOutlined } from '@mui/icons-material';
 
 const StyledGridOverlay = styled('div')(({ theme }) => ({
 	display: 'flex',
@@ -114,7 +105,8 @@ function CustomNoRowsOverlay() {
 }
 
 
-export default function QueryTable({openViewQuery}) {
+export default function QueryTable({openViewQuery, setEditingQuery}) {
+	const dispatch = useDispatch()
 	const [msg, handleMessage] = PopUpMessage()
 	const [rows, setRows] = useState([])
 	const [anchorEl, setAnchorEl] = useState(null)
@@ -124,7 +116,7 @@ export default function QueryTable({openViewQuery}) {
 	const [openConfirm, setOpenConfirm] = useState(false)
 
     const handleOpenConfirmDelete = (id) => {
-		console.log("id", id);
+		console.log("id", id)
 		setQueryId(id)
 		setOpenConfirm(true)
 	}
@@ -138,9 +130,13 @@ export default function QueryTable({openViewQuery}) {
 			const field = event.currentTarget.dataset.field
 			const id = Number(event.currentTarget.parentElement.dataset.id)
 			const data = rows.find((r) => r.id === id)
-			if(field === "name" || field === "description"){
-				setRowPopOverValue(data[field])
-				setAnchorEl(event.currentTarget)
+			if(field === "name" || field === "description")
+			{
+				if(data[field].length > 17) // if greater than 17 characters aply tooltip
+				{
+					setRowPopOverValue(data[field])
+					setAnchorEl(event.currentTarget)
+				}
 			}
 		} catch (error) {
 			console.error(error)
@@ -165,6 +161,7 @@ export default function QueryTable({openViewQuery}) {
 		})
 		.catch((error) => {
 			console.error(error)
+			setRows([])
 			showErrorMessage("Error obtaining querys on the server.")
 		})
 		.finally(() => {
@@ -190,7 +187,17 @@ export default function QueryTable({openViewQuery}) {
 			setLoadingQuerys(false)
 		})
 	}
-	
+
+	/*
+	 * start editing query
+	 */
+	const handleEditQuery = (query) => {
+		console.log("hola?", query)
+		dispatch(editingQuery({active: true, ...query.row}))
+		// TODO: traer el set del open para cerralo
+		// setOpenViewQuery(false)
+	}
+
 	/*
 	 * get cell row value id
 	 */
@@ -206,16 +213,16 @@ export default function QueryTable({openViewQuery}) {
 	/*
 	 * set action iconButtons
 	 */
-	const editButton = (cellValues) => {
+	const loadButton = (cellValues) => {
 		return (
 			<IconButton 
 				color="primary" 
-				aria-label="edit"
+				aria-label="load"
 				onClick={(event) => {
-					getQueryId(cellValues);
+					handleEditQuery(cellValues);
 				}}
 			>
-				<EditIcon />
+				<UploadIcon className="rotate90"/>
 			  </IconButton>
 		  );
 	}
@@ -232,7 +239,6 @@ export default function QueryTable({openViewQuery}) {
 			  </IconButton>
 		  );
 	}
-	
 	/*
 	 * create table data
 	 */
@@ -240,9 +246,9 @@ export default function QueryTable({openViewQuery}) {
 		try {
 			const renderCell = (actionCell) ? {
 				renderCell: (cellValues) => {
-					if(cellType === "edit")
-						return editButton(cellValues)
-					else
+					if(cellType === "load")
+						return loadButton(cellValues)
+					else if(cellType === "delete")
 						return deleteButton(cellValues)
 				}
 			} : undefined;
@@ -284,13 +290,13 @@ export default function QueryTable({openViewQuery}) {
 	 * columns heads
 	 */
 	const columnHeads = [
-		createTableHeads("id", 			  "number", 50,  true,  false, false, false, null),
+		createTableHeads("id", 			  "number", 70,  true,  false, false, false, null),
 		createTableHeads("name", 		  "text", 	150, true,  false, false, false, null),
 		createTableHeads("description",   "text", 	150, true,  false, false, false, null),
-		createTableHeads("created_by", 	  "text", 	105, true,  false, false, false, null),
-		createTableHeads("creation_time", "date", 	105, true,  false, false, false, null),
-		createTableHeads("update_time",   "date", 	100, true,  false, false, false, null),
-		createTableHeads("edit", 		  null, 	60,  false, false, true,  true,  "edit"),
+		createTableHeads("created_by", 	  "text", 	115, true,  false, false, false, null),
+		createTableHeads("creation_time", "date", 	160, true,  false, false, false, null),
+		createTableHeads("update_time",   "date", 	160, true,  false, false, false, null),
+		createTableHeads("load", 		  null, 	60,  false, false, true,  true,  "load"),
 		createTableHeads("delete", 		  null, 	60,  false, false, true,  true,  "delete")
 	]
 
@@ -348,7 +354,7 @@ export default function QueryTable({openViewQuery}) {
 					},
 				  }}
 				loading={loadingQuerys}
-				rows={[]}
+				rows={(rows.length > 0) ? rows : []} //TODO: sin esta comprobocación de momento el icono de "no Rows" no salta.
 				columns={columnHeads}
 			/>
 			<Popover

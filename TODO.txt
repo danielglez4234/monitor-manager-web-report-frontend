@@ -54,3 +54,157 @@ NOT_WORKING:
             queryRest += "}"
           }
         }
+
+
+
+
+
+        {
+    "created_by": null,
+    "creation_time": 1652902609753,
+    "decimal_format": "00.###",
+    "description": "Esto es una prueba12",
+    "id": 11,
+    "magnitudes": [
+        {
+            "id_magnitude_description": {
+                "default_value": 0,
+                "id": 9,
+                "magnitude": "isHomeComplete",
+                "magnitudeType": {
+                    "id": 3918,
+                    "magnitudeValues": [
+                        {
+                            "id": 548,
+                            "name": "FALSE",
+                            "value": 0
+                        },
+                        {
+                            "id": 547,
+                            "name": "TRUE",
+                            "value": 1
+                        }
+                    ],
+                    "name": "Boolean"
+                },
+                "type": "b",
+                "version": "1.0.0"
+            }
+        }
+    ],
+    "monitors": [
+        {
+            "decimal_format": null,
+            "id_monitor_description": {
+                "description": "Returns the current position of all the CSU bars",
+                "dimension_x": 2,
+                "dimension_y": 56,
+                "id": 9442,
+                "magnitude": "currentPos",
+                "type": "8",
+                "unit": "MilliMeter",
+                "version": "03.07.05"
+            },
+            "pos": null,
+            "unit": "Celsius"
+        }
+    ],
+    "name": "prueba12",
+    "removal_time": null,
+    "sampling": 0,
+    "states": [
+        {
+            "id_monitor_component": {
+                "className": "Cabinet",
+                "id": 99,
+                "magnitudeDescriptions": [],
+                "monitorDescription": [],
+                "name": "CCCS/Cabinets/CSECRF302"
+            }
+        }
+    ],
+    "update_time": 1652902609753
+}
+
+
+
+
+{
+    "id": null,
+    "name": "prueba12",
+    "description": "Esto es una prueba12",
+    "list_monitor": [
+        {
+            "id": 9447,
+            "unit":"Celsius",
+            "decimalFormat": "00.##"
+        }
+    ],
+    "list_magnitude": [
+        {
+        "id": 1
+        }
+    ],
+    "list_state": [
+        {
+        "id": 1
+        }
+    ],
+    "sampling":0,
+    "decimalFormat": "00.###"
+}
+
+// TODO: objectivo es eliminar getGraphicOptions() y obtener 
+// los resultados de esta manera
+// luego manejarlo en Graphic y convertirlo a formato viable <== aquí esta el grueso
+
+[
+    {
+        "monitorData": {
+            "description": " agSFSM1Sector",
+            "dimension_x": 1,
+            "dimension_y": 1,
+            "id": 3875,
+            "magnitude": "agSFSM1Sector",
+            "type": "d",
+            "unit": "Radian",
+            "version": "1.0.0",
+            "component": "OE/ObservingEngine"
+        },
+        "component": "OE/ObservingEngine",
+        "options": {
+            "logarithm": true,
+            "curved": true,
+            "filled": true,
+            "limit_max": 100,
+            "limit_min": 0,
+            "graphicType": "",
+            "stroke": "",
+            "canvas": "",
+            "color": "",
+            "prefix": "",
+            "unit": "",
+            "decimal_pattern": "",
+            "pos": ""
+        }
+    }
+]
+
+fitsheader -k UT $(find scidb/ -name *.fits ) | grep -C 2 '12.4..' --color
+
+# HDU 0 in scidb/framedb/MIRADAS/2022-05-25/always_success/2022-05-24_17_12_19/raw/0000019169-20220525-MIRADAS-always_success.fits:
+
+# HDU 0 in scidb/framedb/MIRADAS/2022-05-25/always_success/2022-05-24_17_12_19/raw/0000019167-20220525-MIRADAS-always_success-raw.fits:
+
+# HDU 0 in scidb/framedb/MIRADAS/2022-05-25/always_success/2022-05-24_17_12_19/raw/0000019168-20220525-MIRADAS-always_success-raw.fits:
+
+12:47
+
+
+
+/home/dgonzalez@grantecan.net/Documents/miradas/incidencia#task#6220/miradas_more_fits/scidb/framedb/MIRADAS/2022-05-25/always_success/2022-05-24_17_12_19/raw/0000019169-20220525-MIRADAS-always_success.fits
+
+/home/dgonzalez@grantecan.net/Documents/miradas/incidencia#task#6220/miradas_more_fits/scidb/framedb/MIRADAS/2022-05-25/always_success/2022-05-24_17_12_19/raw/0000019168-20220525-MIRADAS-always_success-raw.fits
+
+
+/home/dgonzalez@grantecan.net/Documents/miradas/incidencia#task#6220/miradas_more_fits/scidb/framedb/MIRADAS/2022-05-25/always_success/2022-05-24_17_12_19/raw/0000019167-20220525-MIRADAS-always_success-raw.fits

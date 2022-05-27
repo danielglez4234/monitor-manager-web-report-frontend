@@ -86,9 +86,9 @@ function ListSelectedMonitor(props) {
 		{
 			if (getResponse?.responseData?.samples.length > 0)
 			{
-				const totalPages   = getResponse.responseData.iTotalPages
-				const totalSamples = getResponse.responseData.iTotalSamples
-				const totalDisplay = getResponse.responseData.iTotalDisplaySamplesByPage
+				const totalPages   = getResponse.responseData.reportInfo.totalPages
+				const totalSamples = getResponse.responseData.reportInfo.totalSamples
+				const totalDisplay = getResponse.responseData.reportInfo.totalDisplaySamplesByPage
 				const totalPerPage = totalResponseData.totalPerPage 
 				// info display
 				setInfoSamplesByPage(totalDisplay)
@@ -196,17 +196,17 @@ function ListSelectedMonitor(props) {
 			dispatch(setloadingButton(true))
 			setLoadingPage(true)
 
-			url = url.split('&iDisplayStart')
-			url[0] += "&iDisplayStart="+ start +"&iDisplayLength="+ iDisplayLength
+			url = url.split('&page')
+			url[0] += "&page="+ start +"&length="+ iDisplayLength
 			url = url[0]
 
-			console.log("url: " + props.serviceName + "WebReport/rest/webreport/search/" + url)
+			console.log("=> WebReport/rest/search/" + url)
 			dispatch(getUrl(url))
 
 			Promise.resolve( getDataFromServer({url}) )
 			.then(res => {
 				const totalArraysRecive  = res.samples.length
-				const totalRecords       = res.iTotalSamples
+				const totalRecords       = res.reportInfo.iTotalSamples
 				const totalPerPage       = props.urliDisplayLength
 				const sampling_period    = getResponse.sampling_period
 				dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
@@ -222,7 +222,7 @@ function ListSelectedMonitor(props) {
 					else
 					{
 						dispatch(setSamples(res, sampling_period))
-						setInfoSamplesByPage(res.iTotalDisplaySamplesByPage)
+						setInfoSamplesByPage(res.reportInfo.totalDisplaySamplesByPage)
 					}
 					console.log("Data recibe successfully");
 				})
