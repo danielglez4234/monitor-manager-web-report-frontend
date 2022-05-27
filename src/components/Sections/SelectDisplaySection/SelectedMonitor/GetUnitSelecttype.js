@@ -3,34 +3,30 @@ import { getUnitConversion } from '../../../../services/services';
 import { TextField, Autocomplete, CircularProgress } from '@mui/material';
 import PopUpMessage from '../../../handleErrors/PopUpMessage';
 
-function GetUnitSelecttype({id, unit, setInputValue}) {
-	const defaultUnitOpt = "Default"
-	const defaultPrefixOpt = "Default"  
-	const noMatches = "No Matches"
+function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix}) {
 	const [msg, handleMessage] = PopUpMessage()
 	const [loading, setLoading] = useState(false)
-	const [compatibleConversion, setCompatibleConversion] = useState([defaultUnitOpt])
-	const [prefixes, setPrefixes] = useState([])
+	const [unitOptions, setUnitOptions] = useState([unit]);
+	const [prefixesOptions, setPrefixesOptions] = useState([prefix]);
 	
-
     /*
      *  Get units type compatible conversion from server
      */
-    const getcompatibleconversion = (unit) => {
-      Promise.resolve( getUnitConversion(unit) )
+    const getcompatibleconversion = () => {
+      Promise.resolve( getUnitConversion(DefaultUnit) )
       .then(res => {
 			const units    = res.units
-			const prefix   = res.prefixes
-			const fullname = prefix.map(value => value.fullName)
+			const prefixes   = res.prefixes
+			const fullname = prefixes.map(value => value.fullName)
 			if (units.length > 0)
 			{
-				setCompatibleConversion([defaultUnitOpt, ...units])
-				setPrefixes([defaultPrefixOpt, ...fullname])
+				setUnitOptions([unit, ...units]) // unit -> "Default" option
+				setPrefixesOptions([prefix, ...fullname]) // prefix -> "Default" option
 			}
 			else 
 			{
-				setCompatibleConversion([defaultUnitOpt, noMatches])
-				setPrefixes([defaultPrefixOpt, noMatches])
+				setUnitOptions([unit, "No Matches"])
+				setPrefixesOptions([])
 			}
       })
       .catch(error => {
@@ -41,8 +37,8 @@ function GetUnitSelecttype({id, unit, setInputValue}) {
 			persist: true,
 			preventDuplicate: true
         })
-        setCompatibleConversion([defaultUnitOpt, noMatches])
-        setPrefixes([])
+        setUnitOptions([unit, "No Matches"])
+        setPrefixesOptions([])
       })
       .finally(() => {
         	setLoading(false)
@@ -60,15 +56,18 @@ function GetUnitSelecttype({id, unit, setInputValue}) {
 				className="input-limits-grafic-options input-select-prefix prefix"
 				name="deimnalPattern"
 				onOpen={() => {
-					if(compatibleConversion.length < 2)
+					if(unitOptions.length < 2)
 					{
 						setLoading(true);
-						getcompatibleconversion(unit);
+						getcompatibleconversion();
 					}
 				}}
 				loading={loading}
-				options={prefixes}
-				defaultValue={"Default"}
+				options={prefixesOptions}
+				onChange={(e, newValue) => {
+					setPrefix(newValue);
+				}}
+				value={prefix}
 				renderInput={(params) => (
 				<TextField
 					{...params}
@@ -96,15 +95,18 @@ function GetUnitSelecttype({id, unit, setInputValue}) {
 			name="deimnalPattern"
 			disableClearable
 			onOpen={() => {
-				if(compatibleConversion.length < 2)
+				if(unitOptions.length < 2)
 				{
 					setLoading(true);
 					getcompatibleconversion(unit);
 				}
 			}}
 			loading={loading}
-			options={compatibleConversion}
-			defaultValue={"Default"}
+			options={unitOptions}
+			onChange={(e, newValue) => {
+				setUnit(newValue);
+			}}
+			value={unit}
 			renderInput={(params) => (
 			<TextField
 				{...params}

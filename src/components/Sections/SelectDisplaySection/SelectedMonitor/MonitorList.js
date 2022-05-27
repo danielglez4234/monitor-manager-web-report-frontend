@@ -194,7 +194,7 @@ function MonitorList({disabled}) {
 						<table id="drop-area" className="table-selected-monitors">
 							<tbody>
 							{
-								elements.map((element, index) =>
+								elements.map((element) =>
 									<SelectedElement
 										key           = { element.monitorData.id  }
 										id            = { element.monitorData.id }
