@@ -1,5 +1,7 @@
 import axios from "axios";
 
+// apaño temporal hacia el backend --> replace '###' por %23 forzando el cambio de esta forma para evitar errores
+const fnReplacePad = (val) => { return val.replace(/#/g, '%23') }
 /*
  * get server name from .env
  */
@@ -76,8 +78,6 @@ export const getUnitConversion = (unitType) => {
             .then(res => res.data)
 }
 
-// apaño temporal hacia el backend --> replace '###' por %23 forzando el cambio de esta forma para evitar errores
-const fnReplacePad = (url) => { return url.replace(/#/g, '%23') }
 
 
 /*
@@ -118,7 +118,8 @@ export const insertQuery = (payload) => {
  * UPDATE a new query
  */
 export const updateQuery = (name, payload) => {
-    return axios.put(REACT_APP_SERVICES_IP + "/WebReport/rest/query/"+encodeURI(name), payload, {header: httpHeaderOptions})
+    const replacePad = fnReplacePad(encodeURI(name));
+    return axios.put(REACT_APP_SERVICES_IP + "/WebReport/rest/query/"+replacePad, payload, {header: httpHeaderOptions})
             .then(res => res.data)
 }
 
@@ -126,6 +127,7 @@ export const updateQuery = (name, payload) => {
  * Remove query
  */
 export const deleteQuery = (id) => {
-    return axios.delete(REACT_APP_SERVICES_IP + "/WebReport/rest/query/"+encodeURI(id), {header: httpHeaderOptions})
+    const replacePad = fnReplacePad(encodeURI(id));
+    return axios.delete(REACT_APP_SERVICES_IP + "/WebReport/rest/query/"+replacePad, {header: httpHeaderOptions})
             .then(res => res.data)
 }
