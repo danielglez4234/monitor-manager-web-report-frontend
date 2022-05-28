@@ -133,6 +133,8 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	const stopEditing = () => {
 		dispatch(menuHandleSelectedMonitors(null, null, 'diselectALLMonitor'))
 		dispatch(editingQuery({active: false}))
+		setQueryName("")
+		setQueryDescription("")
 	}
 
 	/*
@@ -207,15 +209,13 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	 * buil monitor data list
 	 */
 	const buildList = () => {
-		// const monitorOptions = getGraphicoptions()
-		console.log("monitor", monitor[0].options.prefix)
 		let list = []
 		for (let i = 0; i < monitor.length; i++) {
 			list.push({
 				component: monitor[i]?.component,
 				id: monitor[i]?.monitorData?.id,
 				magnitude: monitor[i]?.monitorData?.magnitude,
-				prefix: monitor?.options?.prefix,
+				prefix: monitor[i]?.options?.prefix,
 				unit: monitor[i]?.options?.unit
 			});
 		}
@@ -406,6 +406,9 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 								<table id="drop-area" className="save-query-table-monitor-list">
 									<tbody>
 										{
+											console.log("monitorList[0]",monitorList[0])
+										}
+										{
 											(monitorList === "") ? <td></td>
 											:
 											monitorList.map((value, index) => {
@@ -415,10 +418,10 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 															<div className="save-query-table-item-header">
 																<p className="sv-component">{value.component}</p>
 																<p className="sv-prefix">
-																	{value?.prefix} 
+																	{(value?.prefix === "Default") ? "--": value.prefix} 
 																</p>
 																<p className="sv-unit"> 
-																	{value?.unit}
+																	{(value?.unit === "Default") ? "--": value.unit}
 																</p>
 															</div>
 															<div className="save-query-table-item-title">

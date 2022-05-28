@@ -154,6 +154,7 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 		setLoadingQuerys(true)
 		Promise.resolve(getAllQuerys())
 		.then((res) => {
+			console.log("res", res)
 			if(res.length > 0){
 				const fillrow = res.map(val => createRows(val))
 				setRows(fillrow)
@@ -242,7 +243,7 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 	/*
 	 * create table data
 	 */
-	const createTableHeads = (field, type, width, sortable, hideable, disableColumnMenu, actionCell, cellType) => {
+	const createTableHeads = (field, type, width, sortable, hide, disableColumnMenu, actionCell, cellType) => {
 		try {
 			const renderCell = (actionCell) ? {
 				renderCell: (cellValues) => {
@@ -256,8 +257,9 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 					field,
 					type,
 					width,
+					hide,
 					sortable,
-					hideable,
+					hideable: false,
 					disableColumnMenu,
 					...renderCell
 				}
@@ -290,6 +292,7 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 	 * columns heads
 	 */
 	const columnHeads = [
+		createTableHeads("monitorInfo",   null,     null,true,  true,  false, false, null),
 		createTableHeads("id", 			  "number", 70,  true,  false, false, false, null),
 		createTableHeads("name", 		  "text", 	150, true,  false, false, false, null),
 		createTableHeads("description",   "text", 	150, true,  false, false, false, null),
