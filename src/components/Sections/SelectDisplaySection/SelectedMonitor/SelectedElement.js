@@ -135,12 +135,19 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 				canvas,
 				enabled_color,
 				color,
-				pos:	 (fnIsArray(monitorData.type)) ? pos : undefined, // optional field
-				prefix:  (prefix === "Default") ? undefined : prefix,     // optional field
-				unit:  	 (unit === "Default") ? undefined : unit,		  // optional field
-				decimal: (decimal === "Default") ? undefined : decimal	  // optional field
+				pos:	 (fnIsArray(monitorData.type)) ? pos : null, // optional field // TODO: meter en fnExits
+				prefix:  fnIfExistDefault(prefix),     		// optional field
+				unit:  	 fnIfExistDefault(unit),		  	// optional field
+				decimal: fnIfExistDefault(decimal)	  		// optional field
 			}
 		}
+	}
+
+	const fnIfExistDefault = (value) => {
+		if(fnIsMagnitude(monitorData.type) || fnIsState(monitorData.type))
+			return null
+		else
+			return value
 	}
 
 	/*
