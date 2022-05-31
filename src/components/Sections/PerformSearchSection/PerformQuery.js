@@ -69,6 +69,18 @@ function PerformQuery(props) {
 		endDate: "",
 		sampling: ""
 	});
+
+	/*
+	 * Show Error
+	 */
+	const showErrorMessage = (mesage) => {
+		handleMessage({ 
+			message: mesage, 
+			type: 'error',
+			persist: true,
+			preventDuplicate: false
+		})
+	}
 	
 	/*
 	 * 'loadWhileGetData' will be set to true when the data has arrive, and then buttons will be active again
@@ -79,6 +91,23 @@ function PerformQuery(props) {
 		}
 	}, [loadWhileGetData]);
 
+
+	useEffect(() => {
+		if(editing?.active){
+			if(editing?.sampling){
+				setTimeQuery({
+					...timeQuery,
+					sampling: editing.sampling
+				})
+			}
+		}else{
+			setTimeQuery({
+				...timeQuery,
+				sampling: 0
+			})
+		}
+	}, [editing]);
+
   	/*
 	 * Build url with monitors and place index if necessary
 	 */
@@ -87,7 +116,7 @@ function PerformQuery(props) {
 			let queryRest = "";
 			for (let i = 0; i < monitor.length; i++)
 			{
-				const infoMonitor = monitor[i].monitorData;
+				const infoMonitor = monitor[i];
 				/* 
 				 * magnitud("b","e"); scalar("d","f","l","s","o"); arrays("D","F","L","S","O"); doubleArrays("9","8","7","6","5");
 				 * state("state");
@@ -118,32 +147,26 @@ function PerformQuery(props) {
 				}
 				else
 				{
-					handleMessage({ 
-						message: 'Error: Type is not supported. \n Please contact the system administrator.', 
-						type: 'error',
-						persist: true,
-						preventDuplicate: false
-					})
+					showErrorMessage('Error: Type is not supported. \n Please contact the system administrator.')
 				}
 				if(!fnIsMagnitude(infoMonitor.type) || !fnIsState(infoMonitor.type))
 				{
-					let unitType = $("#Unit" + infoMonitor.id).val();
-					let prefixType = $("#Prefix" + infoMonitor.id).val();
-					let decimalPattern = $("#Pattern" + infoMonitor.id).val();
-
-					if ((unitType !== "Default" && unitType !== "No Matches") || (decimalPattern !== "Default")){
+					const unit    = (infoMonitor.options.unit    !== "Default") ? infoMonitor.options.unit    : false
+					const prefix  = (infoMonitor.options.prefix  !== "Default") ? infoMonitor.options.prefix  : false
+					const decimal = (infoMonitor.options.decimal !== "Default") ? infoMonitor.options.decimal : false
+					if (unit || decimal){
 						queryRest += "{"
-						if(unitType !== "Default" && unitType !== "No Matches"){
-							queryRest += "unit:" + unitType
-							if(prefixType !== "Default" && prefixType !== "No Matches"){
-								queryRest += ",prefix:" + prefixType
+						if(unit){
+							queryRest += "unit:" + unit
+							if(prefix){
+								queryRest += ",prefix:" + prefix
 							}
 						}
-						if(decimalPattern !== "Default"){
-							if(unitType !== "Default" && unitType !== "No Matches"){
+						if(decimal){
+							if(unit){
 								queryRest += ","
 							}
-							queryRest += "decimal:" + decimalPattern
+							queryRest += "decimal:" + decimal
 						}
 						queryRest += "}"
 					}
@@ -154,7 +177,7 @@ function PerformQuery(props) {
 				}
 			}
 			let startAt = 0;
-			if (qs?.paginating && pagination?.active === true)
+			if (qs?.paginating && pagination?.active)
 			{
 				startAt = pagination.actualPage-1
 			}
@@ -249,6 +272,7 @@ function PerformQuery(props) {
 	 * get sampling input value
 	 */
 	const handleChange = (event) => {
+		console.log("event.target.value", event.target.value)
 		setTimeQuery({
 			...timeQuery,
 			sampling: event.target.value
@@ -321,7 +345,7 @@ function PerformQuery(props) {
 			if(button_click !== "download"){
 				setLoadingSearch(true)
 				dispatch(setActualPage(false, 0, 0)) // reset pagination if it is already display
-				let searchedMonitors = monitor.map(e => e.monitorData["id"]) // save the monitors id's that where choosen for the search
+				let searchedMonitors = monitor.map(e => e["id"]) // save the monitors id's that where choosen for the search
 				dispatch(hadleSearch(perform, timeQuery.beginDate, timeQuery.endDate, timeQuery.sampling, searchedMonitors))
 				dispatch(setloadingButton(false))
 				dispatch(loadGraphic(true))
@@ -347,7 +371,7 @@ function PerformQuery(props) {
 				<div className="sample-header-perform-query">
 					<Stack direction="column" spacing={1}>
 					<Stack className="stack-row-components-title-buttons" direction="row">
-						<p className="components-item-title">Perform Querys</p>
+						<p className="components-item-title">Perform Queries</p>
 						<ArrowRightIcon onClick={() => { hideAndShowSection() }} className="hide_icon_componentList"/>
 					</Stack>
 					<div className="perform-query-date-time-picker">
@@ -452,7 +476,7 @@ function PerformQuery(props) {
 				<div className="store-query-section">
 					<div className="sample-header-store-query">
 						<Stack direction="column" spacing={1}>
-							Store Querys
+							Store Queries
 								<SaveQuery 
 									convertToUnix={convertToUnix}
 									constructURL={constructURL}

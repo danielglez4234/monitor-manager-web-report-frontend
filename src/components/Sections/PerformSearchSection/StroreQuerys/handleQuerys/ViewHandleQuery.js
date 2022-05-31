@@ -54,7 +54,7 @@ function ViewHandleQuery({constructURL}) {
 				startIcon={<InventoryIcon />}
 				onClick={() => {handleOpenViewQuery()}}
 			>
-				View Store Querys
+				View Store Queries
 			</Button>
 
 		{/*
@@ -70,7 +70,7 @@ function ViewHandleQuery({constructURL}) {
 				<Box className="view-query-modal">
 					<Grid container spacing={0} className="view-query-modal-cont">
 						<Grid item xs={12} sm={12} md={12} className="store-query-title">
-							View Store Querys
+							View Store Queries
 						</Grid>
 
 						{/* <Grid container spacing={0}> */}

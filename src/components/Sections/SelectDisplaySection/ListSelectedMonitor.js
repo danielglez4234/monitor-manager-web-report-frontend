@@ -131,7 +131,7 @@ function ListSelectedMonitor(props) {
 		if (getResponse?.responseData && onSearch?.perform && monitor.length > 0)
 		{
 			let monitorLastState    = onSearch.searchedMonitors
-			let monitorsNowSelected = monitor.map(e => e.monitorData["id"])
+			let monitorsNowSelected = monitor.map(e => e["id"])
 			// transform object to array, so we can use the every() and includes() functions
 			let a = Object.values(monitorLastState)
 			let b = Object.values(monitorsNowSelected)

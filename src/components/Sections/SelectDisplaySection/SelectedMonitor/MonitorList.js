@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-	menuHandleSelectedMonitors,
+	handleSelectedElemets,
 	setloadingButton
 } from '../../../../actions';
 import * as $  from 'jquery';
@@ -139,8 +139,8 @@ function MonitorList({disabled}) {
 	/*
 	 * handle all menu global state acions from monitorSelected
 	 */
-	const menuHandle = (id, options, type) => {
-		dispatch(menuHandleSelectedMonitors(id, options, type))
+	const menuHandle = (type, id, options) => {
+		dispatch(handleSelectedElemets(type, id, null, options))
 	}
 
 	/*
@@ -181,7 +181,7 @@ function MonitorList({disabled}) {
 					<LtTooltip onClick={() => { resetOptions() }} title="Reset Options" placement="left" className="tool-tip-options">
 						<SettingsBackupRestoreIcon className="table-selected-clearAll-icon reset-menu-icon"/>
 					</LtTooltip>
-					<LtTooltip onClick={() => { menuHandle(null, null, 'diselectALLMonitor'); diActivateReload() }} title="Clear All" placement="left" className="tool-tip-options">
+					<LtTooltip onClick={() => { menuHandle('removeAll', null, null); diActivateReload() }} title="Clear All" placement="left" className="tool-tip-options">
 						<ClearAllIcon className="table-selected-clearAll-icon"/>
 					</LtTooltip>
 					<LtTooltip onClick={() => { lessDatails() }} title="Less Details" placement="left" className="tool-tip-options">
@@ -196,14 +196,11 @@ function MonitorList({disabled}) {
 							{
 								elements.map((element) =>
 									<SelectedElement
-										key           = { element.monitorData.id  }
-										id            = { element.monitorData.id }
-										monitorData   = { element.monitorData }
-										component     = { element.component }
+										key           = { element.id  }
+										id            = { element.id }
+										monitorData   = { element }
 										menuHandle    = { menuHandle }
 										diActivateReload = { diActivateReload }
-										// onRemove      = { onRemove }
-										// disableWhileSearching = { disableWhileSearching }
 									/>
 								)
 							}

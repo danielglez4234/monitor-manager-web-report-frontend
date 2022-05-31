@@ -4,7 +4,7 @@ import {
 	deleteQuery
 } from '../../../../../services/services';
 import { useDispatch } from 'react-redux';
-import { editingQuery } from '../../../../../actions';
+import { editingQuery, handleSelectedElemets } from '../../../../../actions';
 import { 
 	DataGrid,
 	GridToolbarContainer,
@@ -12,13 +12,19 @@ import {
   	GridToolbarDensitySelector,
 	GridColumnMenuContainer, 
     GridFilterMenuItem,  
-    SortGridMenuItems
+    SortGridMenuItems,
+	gridPageCountSelector,
+  	gridPageSelector,
+  	useGridApiContext,
+  	useGridSelector
  } from '@mui/x-data-grid';
+ import Pagination from '@mui/material/Pagination';
 import { styled } from '@mui/material/styles';
 import { Box, Button,Popover, Typography,  IconButton, Dialog, DialogTitle, DialogActions } from '@mui/material';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import UploadIcon from '@mui/icons-material/Upload';
+
 
 import PopUpMessage from '../../../../handleErrors/PopUpMessage';
 
@@ -45,6 +51,7 @@ const StyledGridOverlay = styled('div')(({ theme }) => ({
 		fill: theme.palette.mode === 'light' ? '#f5f5f5' : '#fff',
 	},
 }));
+
 
 function CustomToolbar() {
 	return (
@@ -104,6 +111,43 @@ function CustomNoRowsOverlay() {
 	);
 }
 
+function CustomPagination() {
+	const apiRef = useGridApiContext();
+	const page = useGridSelector(apiRef, gridPageSelector);
+	const pageCount = useGridSelector(apiRef, gridPageCountSelector);
+  
+	return (
+	  <Pagination
+		color="primary"
+		count={pageCount}
+		page={page + 1}
+		onChange={(event, value) => apiRef.current.setPage(value - 1)}
+	  />
+	);
+  }
+
+
+
+
+//   const row = [
+// 	{monitorInfo: {
+// 		listMagnitudeDescription: [
+// 			{magnitude:'paf' ,type:'e',id:789}
+// 		], 
+// 		listMonitorDescription: [
+// 			{magnitude:'mmm' ,type:'D', id:123},
+// 			{magnitude:'bealive' ,type:'s', id:567},
+// 			{magnitude:'corme' ,type:'7', id:78}
+// 		], 
+// 		listStateDefinition: [
+// 			{magnitude:'STATE' ,type:'state'}
+// 		]
+// 	}, id: "asda1",name: "asda",description: "asda",created_by: "asda",creation_time: "asda",update_time: "asda"},
+// ]
+
+
+
+
 
 export default function QueryTable({openViewQuery, setEditingQuery}) {
 	const dispatch = useDispatch()
@@ -115,8 +159,10 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 	const [queryId, setQueryId] = useState(null)
 	const [openConfirm, setOpenConfirm] = useState(false)
 
+	/*
+	 * Confirm before Delete
+	 */
     const handleOpenConfirmDelete = (id) => {
-		console.log("id", id)
 		setQueryId(id)
 		setOpenConfirm(true)
 	}
@@ -142,22 +188,21 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 			console.error(error)
 		}
 	}
-	const handlePopoverClose = () => {
-		setAnchorEl(null)
-	}
+	const handlePopoverClose = () => {setAnchorEl(null)}
 	const open = Boolean(anchorEl)
 
 	/*
 	 * get querys from server
 	 */
-	const getQueryFromServer = () => {
+	const loadQuerys = () => {
 		setLoadingQuerys(true)
 		Promise.resolve(getAllQuerys())
 		.then((res) => {
-			console.log("res", res)
 			if(res.length > 0){
 				const fillrow = res.map(val => createRows(val))
 				setRows(fillrow)
+			}else{
+				setRows([])
 			}
 		})
 		.catch((error) => {
@@ -177,7 +222,7 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 		setLoadingQuerys(true)
 		Promise.resolve(deleteQuery(id))
 		.then((res) => {
-			getQueryFromServer()
+			loadQuerys()
 			console.log("borrado correctamente")
 		})
 		.catch((error) => {
@@ -190,13 +235,43 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 	}
 
 	/*
+	 * Arrange monitors from stored query
+	 */
+	const getArrageMonitorList = (val) => {
+		const monitorList = []
+		val.map(item => {
+			const component_id = item.id_monitor_component.id
+			const name = item.id_monitor_component.name
+			const options = item.options
+			let monitorData
+			if(item?.id_magnitude_description){
+				monitorData = item.id_magnitude_description
+				monitorList.push({component_id, name, ...monitorData, options})
+			}
+			else if(item?.id_monitor_description){
+				monitorData = item.id_monitor_description
+				item.options["prefix"] = item.prefix
+				item.options["unit"] = item.unit
+				item.options["decimal"] = item.decimal
+				item.options["pos"] = item.pos
+				monitorList.push({component_id, name, ...monitorData, options})
+			}
+			else{
+				monitorList.push({id: component_id, name, magnitude: "STATE", type: "state", options})
+			}	
+							
+		})
+		return monitorList
+	}
+	
+	/*
 	 * start editing query
 	 */
 	const handleEditQuery = (query) => {
-		console.log("hola?", query)
+		const monitors_ = getArrageMonitorList(query.row.monitorInfo)
+		console.log("monitors_", monitors_)
+		dispatch(handleSelectedElemets('addMultiple', null, monitors_, null))
 		dispatch(editingQuery({active: true, ...query.row}))
-		// TODO: traer el set del open para cerralo
-		// setOpenViewQuery(false)
 	}
 
 	/*
@@ -240,10 +315,11 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 			  </IconButton>
 		  );
 	}
+
 	/*
 	 * create table data
 	 */
-	const createTableHeads = (field, type, width, sortable, hide, disableColumnMenu, actionCell, cellType) => {
+	const createTableHeads = (field, type, width, sortable, filterable, hide, disableColumnMenu, actionCell, cellType) => {
 		try {
 			const renderCell = (actionCell) ? {
 				renderCell: (cellValues) => {
@@ -254,11 +330,13 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 				}
 			} : undefined;
 			return {
+					headerClassName: 'store-query-table-headers',
 					field,
 					type,
 					width,
 					hide,
 					sortable,
+					filterable,
 					hideable: false,
 					disableColumnMenu,
 					...renderCell
@@ -269,19 +347,27 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 	}
 	const createRows = (rows) => {
 		try {
+			const monitorInfo = [
+				...rows?.magnitudeDescriptions, 
+				...rows?.monitorDescriptions, 
+				...rows?.states
+			]
 			const id = rows?.id
 			const name = rows?.name
 			const description = rows?.description
 			const created_by = rows?.created_by
 			const creation_time = rows?.creation_time
 			const update_time = rows?.update_time
-			return { 
+			const sampling = rows?.sampling
+			return {
+				sampling,
+				monitorInfo, 
 				id,
 				name,
 				description,
 				created_by,
 				creation_time,
-				update_time,
+				update_time
 			}
 		} catch (error) {
 			console.error(error)
@@ -292,15 +378,16 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 	 * columns heads
 	 */
 	const columnHeads = [
-		createTableHeads("monitorInfo",   null,     null,true,  true,  false, false, null),
-		createTableHeads("id", 			  "number", 70,  true,  false, false, false, null),
-		createTableHeads("name", 		  "text", 	150, true,  false, false, false, null),
-		createTableHeads("description",   "text", 	150, true,  false, false, false, null),
-		createTableHeads("created_by", 	  "text", 	115, true,  false, false, false, null),
-		createTableHeads("creation_time", "date", 	160, true,  false, false, false, null),
-		createTableHeads("update_time",   "date", 	160, true,  false, false, false, null),
-		createTableHeads("load", 		  null, 	60,  false, false, true,  true,  "load"),
-		createTableHeads("delete", 		  null, 	60,  false, false, true,  true,  "delete")
+		createTableHeads("sampling",   	  null,     null,true,  false, true,  false, false, null),
+		createTableHeads("monitorInfo",   null,     null,true,  false, true,  false, false, null),
+		createTableHeads("id", 			  "number", 70,  true,  true,  false, false, false, null),
+		createTableHeads("name", 		  "text", 	153, true,  true,  false, false, false, null),
+		createTableHeads("description",   "text", 	150, true,  true,  false, false, false, null),
+		createTableHeads("created_by", 	  "text", 	115, true,  true,  false, false, false, null),
+		createTableHeads("creation_time", "text", 	160, true,  true,  false, false, false, null),
+		createTableHeads("update_time",   "text", 	160, true,  true,  false, false, false, null),
+		createTableHeads("load", 		  null, 	65,  false, false, false, true,  true,  "load"),
+		createTableHeads("delete", 		  null, 	75,  false, false, false, true,  true,  "delete")
 	]
 
 	/*
@@ -308,7 +395,7 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 	 */
 	useEffect(() => {
 		if(openViewQuery){
-			getQueryFromServer()
+			loadQuerys()
 		}
 	}, [openViewQuery])
 	
@@ -327,28 +414,43 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 	return (
 		<>
 		<Dialog
+			className="store-query-confirm-delete"
 			open={openConfirm}
 			onClose={handleCloseConfirmDelete}
 			aria-labelledby="alert-dialog-title"
 			aria-describedby="alert-dialog-description"
 		>
-			<DialogTitle id="alert-dialog-title">
+			<DialogTitle className="store-query-confirm-delete-text">
 				{`Are you sure you want to delete this query?`}
 			</DialogTitle>
 			<DialogActions>
-			<Button onClick={handleCloseConfirmDelete}>Cancel</Button>
-			<Button onClick={e => {deleteQueryFromServer(queryId); handleCloseConfirmDelete();}} autoFocus color="error">
-				Delete
-			</Button>
+				<Button onClick={handleCloseConfirmDelete}>Cancel</Button>
+				<Button onClick={e => {deleteQueryFromServer(queryId); handleCloseConfirmDelete();}} autoFocus color="error">
+					Delete
+				</Button>
 			</DialogActions>
 		</Dialog>
-		<div style={{ height: '100%', width: '100%' }}>
+
+		<Box
+			sx={{
+				height: '100%',
+				width: '100%',
+				'& .store-query-table-headers': {
+					fontFamily: 'RobotoMono-Regular',
+					fontSize: 14,
+				},
+			}}
+			>
 			<DataGrid
+				pagination
+				pageSize={11}
+				rowsPerPageOptions={[11]}
 				className="store-querys-table"
 				components={{
 					ColumnMenu: CustomColumnMenu,
 					NoRowsOverlay: CustomNoRowsOverlay,
 					Toolbar: CustomToolbar,
+					Pagination: CustomPagination
 				}}
 				componentsProps={{
 					cell: {
@@ -358,8 +460,10 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 				  }}
 				loading={loadingQuerys}
 				rows={(rows.length > 0) ? rows : []} //TODO: sin esta comprobocación de momento el icono de "no Rows" no salta.
+				// rows={row}
 				columns={columnHeads}
 			/>
+		</Box>
 			<Popover
 				sx={{
 					pointerEvents: 'none',
@@ -379,7 +483,6 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 			>
 				<Typography sx={{ p: 1 }}>{`${rowPopOverValue}`}</Typography>
 			</Popover>
-		</div>
 		</>
 	);
 }

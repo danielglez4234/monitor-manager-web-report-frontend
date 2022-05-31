@@ -1,36 +1,62 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { editingQuery, menuHandleSelectedMonitors } from '../../../../actions';
+import { editingQuery, handleSelectedElemets } from '../../../../actions';
 import {
 	insertQuery,
 	updateQuery
 } from '../../../../services/services'
-import { getCategory } from '../../../standarFunctions'
+import { getCategory, fnIsState } from '../../../standarFunctions'
 import {makeStyles}					from '@material-ui/core';
 import { Modal, Box, Grid, Button, Backdrop, CircularProgress } from '@mui/material';
 
 import ArchiveIcon 					from '@mui/icons-material/Archive';
 import SaveIcon                     from '@mui/icons-material/Save';
 import LoadingButton                from '@mui/lab/LoadingButton';
-import UploadIcon  			   		from '@mui/icons-material/Upload';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
+import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
+
 import PopUpMessage                 from '../../../handleErrors/PopUpMessage';
-import getGraphicoptions            from '../../SelectDisplaySection/Graphic/getGraphicoptions'
 
 
 const usesTyles = makeStyles({
 	savebutton: {
+		fontFamily: 'RobotoMono-SemiBold',
+		backgroundColor: '#ac5978',
+		'&:hover': {
+			background: '#ac5978',
+		},
+	},
+	updatebutton:{
+		backgroundColor: '#407b88',
+		height: '60px',
+		fontFamily: 'RobotoMono-SemiBold',
+		'&:hover': {
+			background: '#407b88',
+		},
+	},
+	cancelbutton:{
+		backgroundColor: '#e57070',
 		'&:hover': {
 			background: '#e57070',
 		},
 	},
 	handlebutton: {
+		backgroundColor: '#4b6180',
 		'&:hover': {
 			background: '#4b6180',
 		},
 	},
 	saveQueryButton: {
+		backgroundColor: '#569d90',
 		'&:hover': {
 			background: '#569d90',
+		},
+	},
+	resetQueryButton: {
+		backgroundColor: '#5a6370',
+		'&:hover': {
+			background: '#5a6370',
 		},
 	}
 })
@@ -131,10 +157,25 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	 * dispatch stop editing action
 	 */
 	const stopEditing = () => {
-		dispatch(menuHandleSelectedMonitors(null, null, 'diselectALLMonitor'))
+		dispatch(handleSelectedElemets('removeAll', null, null, null))
 		dispatch(editingQuery({active: false}))
 		setQueryName("")
 		setQueryDescription("")
+	}
+
+	/*
+	 * reset querie monitor
+	 */
+	// const resetMonitor = () => {
+		
+	// }
+	/*
+	 * reset name and description inputs fields if editing 
+	 */
+	const reset = () => {
+		setQueryName(editing?.name)
+		setQueryDescription(editing?.description)
+		setifSameQueryName(true)
 	}
 
 	/*
@@ -142,7 +183,6 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	 */
 	const saveQuery = () => {
 		const payload = createPayload()
-		console.log("payload", JSON.stringify(payload))
 		Promise.resolve(insertQuery(payload))
 		.then(() =>{
 			if(editing?.active){
@@ -178,7 +218,6 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	 */
 	const handleUpdateQuery = () => {
 		const payload = createPayload()
-		console.log("payload", JSON.stringify(payload))
 		Promise.resolve(updateQuery(editing.name, payload))
 		.then(() => {
 			handleCloseSaveQuery()
@@ -212,9 +251,9 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 		let list = []
 		for (let i = 0; i < monitor.length; i++) {
 			list.push({
-				component: monitor[i]?.component,
-				id: monitor[i]?.monitorData?.id,
-				magnitude: monitor[i]?.monitorData?.magnitude,
+				component: monitor[i]?.name,
+				id: monitor[i]?.id,
+				magnitude: monitor[i]?.magnitude,
 				prefix: monitor[i]?.options?.prefix,
 				unit: monitor[i]?.options?.unit
 			});
@@ -222,35 +261,58 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 		setMonitorList(list)
 	}
 
+
+	/*
+	 * monitor separate conf 
+	 */
+	const confOptionsSeparator = (val) => {
+		const options = val.options
+		const unit  = (options.unit === null || options?.unit === "Default") ? undefined : options.unit
+		const prefix = (options.prefix === null || options?.prefix === "Default") ? undefined : options.prefix
+		const decimal = (options.decimal === null || options.decimal === "Default") ? undefined : options.decimal
+		const pos = (options.pos === null || options.pos === "") ? undefined : options.pos
+		delete val.options.prefix
+		delete val.options.unit
+		delete val.options.decimal
+		delete val.options.pos
+		return {
+			unit,
+			prefix,
+			decimal,
+			pos,
+			options
+		}
+	}
+
 	/*
 	 * divide monitors by type
 	 */
 	const getMonitorListSeparator = () => {
 		try {
-			let [list_monitor, list_magnitude, list_state] = [[],[],[]]
+			let [monitorDescriptions, magnitudeDescriptions, states] = [[],[],[]]
 			monitor.map(val => {
-				let [id, options] = ["", ""];
-				const category = getCategory(val.monitorData.type)
+				let [id, conf] = ["", ""];
+				const category = getCategory(val.type)
 				if(category === "monitor")
 				{
-					id = val?.monitorData.id
-					options = (val?.options) ? val.options : undefined
-					list_monitor.push({id, options})
+					id = val?.id
+					conf = confOptionsSeparator(val)
+					monitorDescriptions.push({id, ...conf})
 				}
 				else if(category=== "magnitud")
 				{
-					id = val?.monitorData.id
-					options = (val?.options) ? val.options : undefined
-					list_magnitude.push({id, options})
+					id = val?.id
+					conf = confOptionsSeparator(val)
+					magnitudeDescriptions.push({id, ...conf})
 				}
 				else if(category === "state")
 				{
-					id = val?.monitorData.id
-					options = (val?.options) ? val.options : undefined
-					list_state.push({id, options})
+					id = val?.id
+					conf = confOptionsSeparator(val)
+					states.push({id, ...conf})
 				}
 			})
-			return {list_monitor, list_magnitude, list_state}
+			return {monitorDescriptions, magnitudeDescriptions, states}
 		} catch (error) {
 			console.log(error)
 		}
@@ -276,27 +338,44 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 			(editing?.active) ? 
 				<>
 					<Button
-						sx={{backgroundColor: '#e57070'}}
-						onClick={handleOpenSaveQuery}
-						className={classes.savebutton}
-						variant="contained"
-						startIcon={<ArchiveIcon />}
-					>
-							Update Current Query
-					</Button>
-					<Button
-						sx={{backgroundColor: '#e57070'}}
 						onClick={stopEditing}
-						className={classes.savebutton}
+						className={classes.cancelbutton}
 						variant="contained"
-						startIcon={<ArchiveIcon />}
+						startIcon={<CancelPresentationIcon />}
 					>
 							Cancel
 					</Button>
+					<Button
+						disabled={disabled}
+						onClick={handleOpenSaveQuery}
+						className={classes.updatebutton}
+						variant="contained"
+						startIcon={<SystemUpdateAltIcon />}
+					>
+							Update Current Query 
+					</Button>
+					{/* <Button
+						onClick={() => { 
+							resetMonitor()
+						}}
+						className={classes.updatebutton}
+						variant="contained"
+						startIcon={<SystemUpdateAltIcon />}
+					>
+							Reset Monitors
+					</Button> */}
+					<div>
+						Edit Mode: ACTIVE
+					</div>
+					<div className="save-query-editing-message">
+						Now executing the query: <i>{editing?.name}</i> 
+					</div>
+					<div className="save-query-editing-message">
+						Descirption: <i>{(editing.description === "") ? "No desciption provided" : editing?.description }</i> 
+					</div>
 				</>
-				: 
+				:
 				<Button
-					sx={{backgroundColor: '#e57070'}}
 					onClick={handleOpenSaveQuery}
 					className={classes.savebutton}
 					variant="contained"
@@ -360,11 +439,10 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 								alignItems="center"
 								className="save-query-input-title-name"
 							>
-								{/* TODO: cambiar ed 3 2.5 */}
-								<Grid item md={3} className="save-query-input-title-name">
+								<Grid item md={2.5} className="save-query-input-title-name">
 									description
 								</Grid>
-								<Grid item md={8}>
+								<Grid item md={8.4}>
 									<input
 										className="save-query-input description"
 										type="text"
@@ -406,9 +484,6 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 								<table id="drop-area" className="save-query-table-monitor-list">
 									<tbody>
 										{
-											console.log("monitorList[0]",monitorList[0])
-										}
-										{
 											(monitorList === "") ? <td></td>
 											:
 											monitorList.map((value, index) => {
@@ -436,22 +511,49 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 								</table>
 							</Grid>
 						</Grid>
-						<Grid item xs={12} sm={12} md={12} className="save-query-saveButton-box">
-							<LoadingButton
-								size="small"
-								sx={{backgroundColor: '#569d90'}}
-								className={classes.saveQueryButton}
-								onClick={() => {
-									onSubmit()
-								}}
-								loadingPosition="start"
-								startIcon={<SaveIcon />}
-								variant="contained"
-							>
+						<Grid item xs={12} sm={12} md={12}>
+							<Grid container spacing={0}>
 								{
-									(editing?.active && ifSameQueryName) ? "Update" : "Save"
+									(editing?.active) ? 
+										(ifSameQueryName) ? "" : 
+										<>
+										<Grid item xs={12} md={12} className="save-query-title-warning">
+											Name is the query Id if you change it you will add a new one
+										</Grid>
+										<Grid item md={12} className="save-query-saveButton-box">
+										<Button
+											size="small"
+											className={classes.resetQueryButton}
+											onClick={() => {
+												reset()
+											}}
+											loadingPosition="start"
+											startIcon={<RestartAltIcon />}
+											variant="contained"
+										>
+											Reset Inputs
+										</Button>
+										</Grid>
+										</>
+									: ""
 								}
-							</LoadingButton>
+								<Grid item md={12} className="save-query-saveButton-box">
+									<LoadingButton
+										size="small"
+										className={classes.saveQueryButton}
+										onClick={() => {
+											onSubmit()
+										}}
+										loadingPosition="start"
+										startIcon={<SaveIcon />}
+										variant="contained"
+									>
+										{
+											(editing?.active && ifSameQueryName) ? "Update" : "Save"
+										}
+									</LoadingButton>
+								</Grid>
+							</Grid>
 						</Grid>
 					</Grid>
 				</Box>

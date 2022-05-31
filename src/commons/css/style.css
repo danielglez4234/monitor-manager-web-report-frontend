@@ -589,6 +589,8 @@ code {
   border-radius: 4px;
   right: 55px;
   padding: 7px 15px 21px 7px;
+  font-family: "RobotoMono-SemiBold";
+  color: #d4d8dd;
 }
 
 /* .setting-selectd-monitor-options-box:after{
@@ -1213,9 +1215,9 @@ outline: none;
   padding-left: 10px;
 }
 
-.unit-and-prefix-box{
-  display: flex;
-}
+/* .unit-and-prefix-box{
+   display: flex;
+} */
 
 .cicularProgress-unit{
   color: white !important;
@@ -1461,7 +1463,7 @@ outline: none;
 }
 
 .input-select-pattern{
-  width: 125px !important;
+  width: 140px !important;
 }
 .input-select-graphic{
   width: 180px !important;
@@ -1469,12 +1471,12 @@ outline: none;
 }
 
 .input-select-unit{
-  width: 125px !important;
+  width: 140px !important;
   /* user-select: none; */
 }
 
 .input-select-prefix{
-  width: 80px !important;
+  width: 140px !important;
   /* user-select: none; */
 }
 
@@ -2294,7 +2296,7 @@ font-size: 13px !important;
   background-color: #333a44;
   position: absolute;
   top:50%;
-  height:557px;
+  /* height:577px; */
   margin-top:-290px;
   left:50%;
   width:500px;
@@ -2321,6 +2323,21 @@ font-size: 13px !important;
   margin-left: 30px;
 }
 
+.save-query-title-warning{
+  padding: 3px 30px 0px 30px;
+  font-size: 12.2px;
+}
+
+.save-query-editing-message{
+  border-top: 1px solid #62bfa5;
+  line-height: 18px;
+  margin-top: 15px;
+  padding-top: 5px;
+} 
+.save-query-editing-message i{
+  color: white;
+}
+
 .save-query-input{
   height: 30px;
   width: 96%;
@@ -2331,6 +2348,7 @@ font-size: 13px !important;
   background-color: #5a6370;
   border-radius: 3px;
   box-shadow: 1px 1px 2px inset #404354;
+  font-family: "RobotoMono-Regular";
 }
 
 .save-query-input::placeholder{
@@ -2367,7 +2385,8 @@ font-size: 13px !important;
 
 .save-query-saveButton-box{
   text-align: end;
-  margin: 6px 10px 0px 0px !important;
+  margin: 6px 10px 10px 0px !important;
+
 }
 
 .save-query-box-title-date{
@@ -2467,6 +2486,15 @@ table.save-query-table-monitor-list tr:nth-child(odd)
 .store-query-title-table-box{
   height: 96%;
   background-color: white;
+}
+
+.store-query-confirm-delete .MuiPaper-root{
+  width: 350px !important;
+}
+.store-query-confirm-delete-text{
+  font-family: "RobotoMono-Regular" !important;
+  font-size: 16px !important;
+  color:rgba(0, 0, 0, 0.6);
 }
 
 

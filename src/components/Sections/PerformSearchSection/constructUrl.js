@@ -19,7 +19,7 @@ function getUrl(monitor, op){
         let queryRest = "";
         for (let i = 0; i < monitor.length; i++)
         {
-            const infoMonitor = monitor[i].monitorData;
+            const infoMonitor = monitor[i];
             /* 
              * magnitud("b","e"); scalar("d","f","l","s","o"); arrays("D","F","L","S","O"); doubleArrays("9","8","7","6","5");
              * state("state");
@@ -54,20 +54,23 @@ function getUrl(monitor, op){
             }
             if(!fnIsMagnitude(infoMonitor.type) || !fnIsState(infoMonitor.type))
             {
-                let unitType = $("#Unit" + infoMonitor.id).val();
-                let prefixType = $("#Prefix" + infoMonitor.id).val();
-                let decimalPattern = $("#Pattern" + infoMonitor.id).val();
+                // let unitType = $("#Unit" + infoMonitor.id).val();
+                // let prefixType = $("#Prefix" + infoMonitor.id).val();
+                // let decimalPattern = $("#Pattern" + infoMonitor.id).val();
+                let unitType = infoMonitor.unit
+                let prefixType = infoMonitor.prefix
+                let decimalPattern = infoMonitor.decimal
 
-                if ((unitType !== "Default" && unitType !== "No Matches") || (decimalPattern !== "Default")){
+                if (unitType !== "Default" || decimalPattern !== "Default"){
                     queryRest += "{"
-                    if(unitType !== "Default" && unitType !== "No Matches"){
+                    if(unitType !== "Default"){
                         queryRest += "unit:" + unitType
-                        if(prefixType !== "Default" && prefixType !== "No Matches"){
+                        if(prefixType !== "Default"){
                             queryRest += ",prefix:" + prefixType
                         }
                     }
                     if(decimalPattern !== "Default"){
-                        if(unitType !== "Default" && unitType !== "No Matches"){
+                        if(unitType !== "Default"){
                             queryRest += ","
                         }
                         queryRest += "decimal:" + decimalPattern

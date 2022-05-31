@@ -10,7 +10,7 @@ import HelpIcon                   from '@mui/icons-material/Help';
 import SettingsBackupRestoreIcon  from '@mui/icons-material/SettingsBackupRestore';
 
 
-const GetIndexArrayModal = ({id, type, applyChangesWarning, dimension_x, dimension_y}) => {
+const GetIndexArrayModal = ({id, type, setPos, applyChangesWarning, dimension_x, dimension_y}) => {
   
   const availablePositions = (dimension_x * dimension_y);
   /*
@@ -64,10 +64,12 @@ const GetIndexArrayModal = ({id, type, applyChangesWarning, dimension_x, dimensi
     else {
       if (textIndex === "/") {
         setTextIndex(text);
+        setPos(text);                   // REFACTOR:
         setEnableResetIndex(true);
       }
       else {
         setTextIndex(textIndex + ";" + text);
+        setPos(textIndex + ";" + text); // REFACTOR:
       }
     }
   }
@@ -93,10 +95,12 @@ const GetIndexArrayModal = ({id, type, applyChangesWarning, dimension_x, dimensi
        // $("").removeClass("wrong-set-input");
        if (textIndex === "/") {
          setTextIndex(text);
+         setPos(text);                  // REFACTOR:
          setEnableResetIndex(true)
        }
        else {
          setTextIndex(textIndex + ";" + text);
+         setPos(textIndex + ";" + text); // REFACTOR:
        }
      }
    }

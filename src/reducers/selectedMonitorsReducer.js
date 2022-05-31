@@ -1,44 +1,44 @@
 const selectedMonitorsReducer = (state = [], action) => {
   switch(action.type) {
-    case 'getSelectedMonitor':
-      let reOrderMonitors = [
-        ...state,
-          {
-            monitorData: action.monitorData,
-            component: action.component
-          }
-      ];
-      const sortEnumFirst = (data) => {
-        var first = [];
-        var others = [];
-        for (var i = 0; i < data.length; i++) {
-            if (data[i].monitorData["type"] === "e" || data[i].monitorData["type"] === "b") {
-                first.push(data[i]);
-            } else {
-                others.push(data[i]);
-            }
-        }
-        return [...first, ...others]
+    case 'add':
+      const data = action.data
+      const reOrderMonitors = [
+        ...state, 
+        { 
+          ...data
+        },
+      ]
+      var first = []
+      var others = []
+      for (var i = 0; i < reOrderMonitors.length; i++) {
+          if (reOrderMonitors[i]["type"] === "e" || reOrderMonitors[i]["type"] === "b") 
+              first.push(reOrderMonitors[i])
+          else
+              others.push(reOrderMonitors[i])
       }
-      return sortEnumFirst(reOrderMonitors)
+      return [...first, ...others]
 
 
-    case 'diselectMonitor':
-      return state.filter((item) => item.monitorData.id !== action.idMonitorMagnitude);
+    case 'addMultiple':
+      return state = action.data
+
+
+    case 'remove':
+      return state.filter((item) => item.id !== action.id);
       
 
-    case 'diselectALLMonitor':
+    case 'removeAll':
       return state = [];
 
 
-    case 'sortMonitors':
-      let setB = [...state];
-      return setB.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+    // case 'sort':
+    //   let setB = [...state];
+    //   return setB.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
     
 
-    case 'saveMonitorOptions':
+    case 'saveOptions':
       const newArr = state.map(obj => {
-        if (obj.monitorData.id === action.idMonitorMagnitude) {
+        if (obj.id === action.id) {
           return {...obj, ...action.options}
         }
         return obj
@@ -52,3 +52,4 @@ const selectedMonitorsReducer = (state = [], action) => {
   }
 }
 export default selectedMonitorsReducer;
+

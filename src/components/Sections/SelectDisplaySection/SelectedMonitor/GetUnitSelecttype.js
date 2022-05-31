@@ -3,7 +3,7 @@ import { getUnitConversion } from '../../../../services/services';
 import { TextField, Autocomplete, CircularProgress } from '@mui/material';
 import PopUpMessage from '../../../handleErrors/PopUpMessage';
 
-function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix}) {
+function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix, applyChangesWarning}) {
 	const [msg, handleMessage] = PopUpMessage()
 	const [loading, setLoading] = useState(false)
 	const [unitOptions, setUnitOptions] = useState([unit]);
@@ -25,7 +25,7 @@ function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix}) 
 			}
 			else 
 			{
-				setUnitOptions([unit, "No Matches"])
+				setUnitOptions([unit])
 				setPrefixesOptions([])
 			}
       })
@@ -37,7 +37,7 @@ function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix}) 
 			persist: true,
 			preventDuplicate: true
         })
-        setUnitOptions([unit, "No Matches"])
+        setUnitOptions([unit])
         setPrefixesOptions([])
       })
       .finally(() => {
@@ -46,9 +46,16 @@ function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix}) 
     }
 
 	return (
+		<>
+		<div>
+			<div className="label-monitor-settings">Unit Conversion:</div>
+			<span className="monitor-selected-input-label-selects label-selects-grafic-type">Prefix:</span>
+			{
+				applyChangesWarning
+			}
+		</div>
 		<div className="unit-and-prefix-box">
-		{ 
-			// (prefixes.length > 0) ?
+			
 			<Autocomplete
 				disablePortal // --> disabled entrys not related with the select
 				disableClearable // --> disabled the posibility to leave the input empty
@@ -84,8 +91,13 @@ function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix}) 
 				/>
 				)}
 			/>
-			// : ""
-		}
+
+		<div>
+			<span className="monitor-selected-input-label-selects label-selects-grafic-type">Unit:</span>
+			{
+				applyChangesWarning
+			}
+		</div>
 
 
 		<Autocomplete
@@ -124,6 +136,7 @@ function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix}) 
 			)}
 		/>
 		</div>
+		</>
 	); 
 }
 

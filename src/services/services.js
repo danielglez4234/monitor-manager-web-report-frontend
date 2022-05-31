@@ -16,7 +16,7 @@ const httpHeaderOptions = {
 };
 
 /*
- * calling /components to get all components
+ * GET all components
  */
 export const getComponents = () => {
     return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/components", {header: httpHeaderOptions})
@@ -24,36 +24,16 @@ export const getComponents = () => {
 }
 
 /*
- * calling /ccomponents/<componentName> to get all monitors from a component
+ * GET all monitors from a component
  */
-export const getMonitorsFromComponent = ({componentName}) => {
-    // console.log(componentName);
+export const getMonitorsFromComponent = (componentName) => {
     return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/components/" + componentName, {header: httpHeaderOptions})
-        .then(res => {
-            const enumList  = res.data.magnitudeDescriptions;
-            const escalList = res.data.monitorDescription;
-            if (enumList.length > 0 || escalList.length > 0) 
-            {
-                return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/state_definition", {header: httpHeaderOptions})
-                    .then(res =>  {           
-                    const stateInfo = {
-                        magnitude: 'STATE',
-                        type: 'state',
-                        stateValues: res.data
-                    };
-                    const concatMonitors  = [stateInfo, ...escalList, ...enumList];
-                    return concatMonitors;
-                })
-            }
-            else 
-            {
-                return false;
-            }
-        });
+            .then(res => res.data)
 }
 
+
 /*
- * calling /search to get the data 
+ * GET the data 
  */
 export const getDataFromServer = ({url}) => {
     const replacePad = fnReplacePad(encodeURI(url));
@@ -62,7 +42,7 @@ export const getDataFromServer = ({url}) => {
 }
 
 /*
- * calling /download to get csv transform data
+ * GET csv transform data
  */
 export const getDownloadData = ({url}) => {
     const replacePad = fnReplacePad(encodeURI(url));
@@ -71,7 +51,7 @@ export const getDownloadData = ({url}) => {
 }
 
 /*
- * calling compatible conversion for a Unit type
+ * GET compatible conversion for a Unit type
  */
 export const getUnitConversion = (unitType) => {
     return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/units/" + encodeURI(unitType), {header: httpHeaderOptions})
@@ -124,7 +104,7 @@ export const updateQuery = (name, payload) => {
 }
 
 /*
- * Remove query
+ * DELETE query
  */
 export const deleteQuery = (id) => {
     const replacePad = fnReplacePad(encodeURI(id));

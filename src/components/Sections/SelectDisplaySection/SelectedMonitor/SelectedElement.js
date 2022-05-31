@@ -96,31 +96,41 @@ const handleClickOpenSettings = (id) => {
 
 
 
-function SelectedElement({ id, monitorData, component, menuHandle, diActivateReload}) {
-		
+function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
+
 	const loadWhileGetData = useSelector(state => state.loadingGraphic)
+	//const editing = useSelector(state => state.editingQuery)
+
 	const [disableWhileSearching, setDisableWhileSearching] = useState(false)
 
-	const [logarithm, setLogarithm] = useState(false);
-	const [curved, setCurved] = useState(false);
-	const [filled, setFilled] = useState(false);
-	const [enabled_color, setEnabled_color] = useState(false);
+	const [logarithm, setLogarithm] = useState((monitorData?.options?.logarithm) ? monitorData?.options?.logarithm : false)
+	// REFACTOR:
+	$(".logarithm"+id).prop('checked', (monitorData?.options?.logarithm) ? monitorData?.options?.logarithm : false);
+	const [curved, setCurved] = useState((monitorData?.options?.curved) ? monitorData?.options?.curved : false)
+	// REFACTOR:
+	$(".curved"+id).prop('checked', (monitorData?.options?.curved) ? monitorData?.options?.curved : false);
+	const [filled, setFilled] = useState((monitorData?.options?.filled) ? monitorData?.options?.filled : false)
+	// REFACTOR:
+	$(".filled"+id).prop('checked', (monitorData?.options?.filled) ? monitorData?.options?.filled : false);
+	const [enabled_color, setEnabled_color] = useState((monitorData?.options?.enabled_color) ? monitorData?.options?.enabled_color : false)
+	// REFACTOR:
+	$(".enabled_color"+id).prop('checked', (monitorData?.options?.enabled_color) ? monitorData?.options?.enabled_color : false);
 
-	const [limit_max, setLimit_max] = useState("");	
-	const [limit_min, setLimit_min] = useState("");
-	const [color, setColor] = useState("");
-	const [pos, setPos] = useState("");
+	const [limit_max, setLimit_max] = useState((monitorData?.options?.limit_max) ? monitorData?.options?.limit_max : "")
+	const [limit_min, setLimit_min] = useState((monitorData?.options?.limit_min) ? monitorData?.options?.limit_min : "")
+	const [color, setColor] = useState((monitorData?.options?.color) ? monitorData?.options?.color : "")
+	const [pos, setPos] = useState((monitorData?.options?.pos) ? monitorData?.options?.pos : "")
 
-	const [graphic_type, setGraphic_type] = useState(graphicOpts[0])
-	const [stroke, setStroke] = useState(strokeOpts[0])
-	const [canvas, setCanvas] = useState(canvasOpts[0])
-	const [unit, setUnit] = useState(unitOpt[0])
-	const [prefix, setPrefix] = useState(prefixOpt[0])
-	const [decimal, setDecimal] = useState(patternOpts[0])
-
+	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type) || fnIsState(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0];
+	const [graphic_type, setGraphic_type] = useState((monitorData?.options?.graphic_type) ? monitorData?.options?.graphic_type : isEnumOrMonitor)
+	const [stroke, setStroke] = useState((monitorData?.options?.stroke) ? monitorData?.options?.stroke : strokeOpts[0])
+	const [canvas, setCanvas] = useState((monitorData?.options?.canvas) ? monitorData?.options?.canvas : canvasOpts[0])
+	const [unit, setUnit] = useState((monitorData?.options?.unit) ? monitorData?.options?.unit : unitOpt[0])
+	const [prefix, setPrefix] = useState((monitorData?.options?.prefix) ? monitorData?.options?.prefix : prefixOpt[0])
+	const [decimal, setDecimal] = useState((monitorData?.options?.decimal) ? monitorData?.options?.decimal : patternOpts[0])
 
 	/*
-	 * handle get options  
+	 * handle get options
 	 */
 	const getOptions = () => {
 		return {
@@ -154,7 +164,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 	 *	call save options  
 	 */
 	const saveOptions = () => {
-		menuHandle(id, getOptions(), 'saveMonitorOptions')
+		menuHandle('saveOptions', id, getOptions())
 	}
 
 	/*
@@ -177,7 +187,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 	 * Handle remove item from list 
 	 */
 	const onRemove = (id) => {
-		menuHandle(id, null, 'diselectMonitor')
+		menuHandle('remove', id, null)
 		diActivateReload()
 	}
 
@@ -194,7 +204,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 			<div className="monitor-selected-td-container">
 				<Stack className={`monitor-selected-info_component_id ${lessDetailIfActive}`} direction="row">
 					<div className="monitor-selected-info-component">
-						<span>{ component }</span>
+						<span>{ monitorData?.name }</span>
 					</div>
 					<div className="monitor-selected-info">
 
@@ -209,10 +219,10 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 								:             
 									<span>unit: <span className="default-unit">{ monitorData.unit }</span> - </span>
 								}
-								<span>type: { monitorData.type } - </span>
-								<span>id: { id }</span>
 							</>
 						}
+						<span>type: { monitorData.type } - </span>
+						<span>id: { monitorData.id }</span>
 					</div>
 				</Stack>
 
@@ -287,7 +297,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 								<label className="label-cont-inputchecbox settings-checkbox-presnetation">
 									logarithm
 									<input
-										className="checkboxMo checkboxMo-monitor logarithm"
+										className={"checkboxMo checkboxMo-monitor logarithm logarithm"+id} // REFACTOR:
 										name="logarithm"
 										type="checkbox"
 										onChange={(e) => {setLogarithm(e.target.checked)}}
@@ -298,7 +308,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 								<label className="label-cont-inputchecbox settings-checkbox-presnetation">
 									curved
 									<input
-										className="checkboxMo checkboxMo-monitor curved"
+										className={"checkboxMo checkboxMo-monitor curved curved"+id} // REFACTOR:
 										name="curved"
 										type="checkbox"
 										onChange={(e) => {setCurved(e.target.checked)}}
@@ -309,7 +319,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 								<label className="label-cont-inputchecbox settings-checkbox-presnetation">
 									filled
 									<input
-										className="checkboxMo checkboxMo-monitor filled"
+										className={"checkboxMo checkboxMo-monitor filled filled"+id} // REFACTOR:
 										name="filled"
 										type="checkbox"
 										onChange={(e) => {setFilled(e.target.checked)}}
@@ -400,7 +410,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 							<div className="monitor-selected-checkbox-color">
 								<input 
 									disabled={!enabled_color}
-									className={`monitor-selected-input-color color-line selectColorInput` + id} 
+									className={`monitor-selected-input-color color-line selectColorInput` + id}
 									name="color"
 									type="color"
 									onChange={(e) => {setColor(e.target.value)}}
@@ -408,7 +418,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 								/>
 								<label className="label-cont-inputchecbox settings-checkbox-presnetation set-color-settings-checkbox">
 								<input 
-									className={`checkboxMo checkboxMo-monitor checkbox-color colorInput` + id} 
+									className={`checkboxMo checkboxMo-monitor checkbox-color colorInput` + id + " enabled_color"+id}
 									name="enabled_color"
 									type="checkbox"
 									onChange={(e) => {setEnabled_color(e.target.checked)}}
@@ -423,13 +433,6 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 						{
 						(fnIsMagnitude(monitorData.type) || fnIsState(monitorData.type)) ? "" :
 							<div className="monitor-selected-input-Unit-box">
-								<div>
-									<div className="label-monitor-settings">Unit Conversion:</div>
-									<span className="monitor-selected-input-label-selects label-selects-grafic-type">Conversions:</span>
-									{
-										applyChangesWarning
-									}
-								</div>
 
 								<GetUnitSelecttype 
 									id={id}
@@ -438,6 +441,7 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 									setUnit={setUnit}
 									prefix={prefix}
 									setPrefix={setPrefix}
+									applyChangesWarning={applyChangesWarning}
 								/>
 
 								<div className="label-monitor-settings-pattern">Decimal Pattern:</div>
@@ -474,17 +478,18 @@ function SelectedElement({ id, monitorData, component, menuHandle, diActivateRel
 							</div> 
 						}
 
-								
+
 						</div>
 						<div className="indexInput-tooltip-contain">
 						{
-						(!fnIsArray(monitorData.type)) 
-						? 
-							'' 
-						: 
+						(!fnIsArray(monitorData.type))
+						?
+							''
+						:
 							<GetIndexArrayModal
 								id={ id }
 								type={ monitorData.type } 
+								setPos={setPos}
 								applyChangesWarning={ applyChangesWarning }
 								dimension_x={ monitorData.dimension_x }
 								dimension_y={ monitorData.dimension_y }
