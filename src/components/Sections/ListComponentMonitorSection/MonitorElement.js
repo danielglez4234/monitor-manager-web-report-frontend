@@ -1,7 +1,7 @@
 // --- Get other Components
 import GetMonitordIconType       from '../SelectDisplaySection/SelectedMonitor/GetMonitordIconType';
 
-const MonitorElement = ({monitorData, component, select, diActivateReload }) => {
+const MonitorElement = ({monitorData, select, diActivateReload }) => {
 	/*
 	 * Get Icons
 	 */
@@ -12,7 +12,7 @@ const MonitorElement = ({monitorData, component, select, diActivateReload }) => 
 			<div 
 				className="componentItem-box" 
 				onClick={() => { 
-					select(monitorData, component); 
+					select(monitorData); 
 					diActivateReload(); 
 				}}
 			>

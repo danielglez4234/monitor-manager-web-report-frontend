@@ -13,6 +13,7 @@ import {
 import { useDispatch, useSelector }   from 'react-redux';
 import {
   selectMonitor,
+  handleSelectedElemets,
   setloadingButton
 }
 from '../../../actions';
@@ -99,7 +100,7 @@ function ListComponentMonitor() {
 	/*
 	 * Get All Components
 	 */
-	const getAllComponents = () => {
+	const loadComponents = () => {
 		Promise.resolve( getComponents() )
 		.then(res => {
 			setConnectionError(false)
@@ -131,50 +132,51 @@ function ListComponentMonitor() {
 	 * Init load
 	 */
 	useEffect(() => {
-		$("#initialImg").removeClass('display-none'); // return to default state
-		getAllComponents()
-	}, []);
+		$("#initialImg").removeClass('display-none') // return to default state
+		loadComponents()
+	}, [])
 
 	/*
 	 * Try reconnecting components
 	 */
 	const tryReconnect = () => {
 		setLoadingComponent(true)
-		getAllComponents()
+		loadComponents()
 	}
 
 	/*
-	* Check if monitor is alredy selected
-	*/
+	 * Check if monitor is alredy selected
+	 */
 	useEffect(() => {
 		setIdMonitorsAlreadySelected(monitorAlreadySelected)
-	}, [monitorAlreadySelected]);
+	}, [monitorAlreadySelected])
 
 
-  /*
-   * Get All MonitorsMagnitude and state from a Component
-   */
+	/*
+	 * Get All MonitorsMagnitude and state from a Component
+	 */
 	const getMonitors = (title) =>{
-		document.getElementById('searchInputCompMon').value = ''; // reset the value of the input search when a component is clicked
+		document.getElementById('searchInputCompMon').value = '' // reset the value of the input search when a component is clicked
 		if (component_clicked !== title)
 		{
-			setInitialStateMonitors(false); // initial monitors section state to false
-			setComponent_clicked(title);
-			setLoadingMonitors(true);
-			Promise.resolve( getMonitorsFromComponent({componentName: title}) )
+			setInitialStateMonitors(false) // initial monitors section state to false
+			setComponent_clicked(title)
+			setLoadingMonitors(true)
+			Promise.resolve( getMonitorsFromComponent(title) )
 			.then(res => {
-				if (res) 
+				if (res.magnitudeDescriptions.length > 0 || res.monitorDescription.length > 0) 
 				{
-					setNoMonitorsAvailable(false);
-					setData_monitors(res);
-					setResultQueryMonitor(res);
-					console.log("Get monitors from component successfully");
+					setNoMonitorsAvailable(false)
+					const dataist = buildDataElementsList(res)
+					setData_monitors(dataist)
+					setResultQueryMonitor(dataist)
+					console.log("Get monitors from component successfully")
 				}
 				else 
 				{
-					setNoMonitorsAvailable(true);
+					setNoMonitorsAvailable(true)
 				}
-				setLoadingMonitors(false);
+				setLoadingMonitors(false)
 			})
 			.catch(error => {
 
@@ -184,7 +186,7 @@ function ListComponentMonitor() {
 					persist: true,
 					preventDuplicate: true
 				})
-				console.error(error);
+				console.error(error)
 			})
 		}
 		// var monirr = [
@@ -207,19 +209,48 @@ function ListComponentMonitor() {
 	}
 
 	/*
-	* Handle Search For Components
-	*/
+	 * arrange monitors from server
+	 */
+	const buildDataElementsList = (data) => {
+		const component_id = data.id
+		const name = data.name
+
+		const magnitudeDescriptions = data.magnitudeDescriptions
+		for (let i = 0; i < magnitudeDescriptions.length; i++) {
+			magnitudeDescriptions[i]["component_id"] = component_id
+			magnitudeDescriptions[i]["name"] = name
+		}
+
+		const monitorDescription = data.monitorDescription
+		for (let i = 0; i < monitorDescription.length; i++) {
+			monitorDescription[i]["component_id"] = component_id
+			monitorDescription[i]["name"] = name
+		}
+
+		const stateDescriptions = {
+			id: component_id, 
+			name: name,
+			magnitude: 'STATE',
+			type: 'state'
+		}
+
+		return [stateDescriptions, ...monitorDescription, ...magnitudeDescriptions]
+	}
+
+	/*
+	 * Handle Search For Components
+	 */
 	const handleSearchComponent = value => {
-		$('.component-list-items').scrollTop(0);
-		const fuse = new Fuse(data_components);
-		const results = fuse.search(value);
-		const searchResult = results.map(result => result.item);
+		$('.component-list-items').scrollTop(0)
+		const fuse = new Fuse(data_components)
+		const results = fuse.search(value)
+		const searchResult = results.map(result => result.item)
 		if (value === '')
 		{
-			setResultQueryComponent(data_components);
+			setResultQueryComponent(data_components)
 		}else
 		{
-			setResultQueryComponent(searchResult);
+			setResultQueryComponent(searchResult)
 		}
 	}
 
@@ -227,26 +258,26 @@ function ListComponentMonitor() {
      * Get current value of the input search from Components
      */
     const handleOnSeacrhComponent = ({ currentTarget = [] }) => {
-		const { value } = currentTarget;
-		handleSearchComponent(value);
+		const { value } = currentTarget
+		handleSearchComponent(value)
     }
 
 	/*
-	* Handle Search For Monitors
-	*/
+	 * Handle Search For Monitors
+	 */
 	const handleSearchMonitors = value => {
-		$('.monitors-list-items').scrollTop(0);
+		$('.monitors-list-items').scrollTop(0)
 		const fuse = new Fuse(data_monitors, {
 			keys: ['magnitude']
 		});
-		const results = fuse.search(value);
-		const searchResult = results.map(result => result.item);
+		const results = fuse.search(value)
+		const searchResult = results.map(result => result.item)
 		if (value === '')
 		{
-			setResultQueryMonitor(data_monitors);
+			setResultQueryMonitor(data_monitors)
 		}else
 		{
-			setResultQueryMonitor(searchResult);
+			setResultQueryMonitor(searchResult)
 		}
 	}
 
@@ -254,50 +285,41 @@ function ListComponentMonitor() {
      * Get current value of the input search from Monitors
      */
     const handleOnSeacrhMonitors = ({ currentTarget = [] }) => {
-		const { value } = currentTarget;
-		handleSearchMonitors(value);
+		const { value } = currentTarget
+		handleSearchMonitors(value)
     }
 
     /*
      * Hide or Show Component and monitor list
      */
     const hideAndShowSection = () => {
-		$('.SampleMonitorList-section').toggleClass('hide-sections');
-		$('.arrow-showListSection').toggleClass('hide-sections');
+		$('.SampleMonitorList-section').toggleClass('hide-sections')
+		$('.arrow-showListSection').toggleClass('hide-sections')
     }
 
     /*
      * diActivate the reload button when a new component is selected
      */
     const diActivateReload = () => {
-      	dispatch(setloadingButton(false));	
+      	dispatch(setloadingButton(false))
     }
 
     /*
      * dispatch variables to the global state action selectMonitor
      * we do it here and no inside the map of 'MonitorElement.js' to avoid duplication
      */
-    const select = (monitorData, component) => {
-		// if (fnIsState(monitorData.type)){
-		// 	handleMessage({ 
-		// 		message: 'STATE monitors are not available at the moment, they will be added in a future update', 
-		// 		type: 'warning', 
-		// 		persist: false,
-		// 		preventDuplicate: false
-		// 	})
-		// }else {
-			if (idMonitorsAlreadySelected.length > 0 && idMonitorsAlreadySelected.filter(e => e.monitorData["id"] === monitorData.id).length > 0){
-				handleMessage({ 
-					message: 'The monitor ' + monitorData.magnitude + ' is alredy selected', 
-					type: 'info', 
-					persist: false,
-					preventDuplicate: false
-				})
-			}
-			else{
-				dispatch(selectMonitor(monitorData, component));
-			}
-		// }
+    const select = (monitorData) => {
+		if (idMonitorsAlreadySelected.length > 0 && idMonitorsAlreadySelected.filter(e => e["id"] === monitorData.id).length > 0){
+			handleMessage({ 
+				message: 'The monitor ' + monitorData.magnitude + ' is alredy selected', 
+				type: 'info', 
+				persist: false,
+				preventDuplicate: false
+			})
+		}
+		else{
+			dispatch(handleSelectedElemets('add', null, monitorData, null))
+		}
     }
 
 
@@ -397,7 +419,6 @@ function ListComponentMonitor() {
 							<MonitorElement
 								key                = { index }
 								monitorData        = { element }
-								component          = { component_clicked }
 								select             = { select }
 								diActivateReload   = { diActivateReload }
 							/>
