@@ -138,20 +138,20 @@ function PerformQuery(props) {
 				let prefixType = $("#Prefix" + infoMonitor.id).val();
 				let decimalPattern = $("#Pattern" + infoMonitor.id).val();
 
-				if ((unitType !== "Default" && unitType !== "No Matches") || (decimalPattern !== "Default"))
+				if (unitType !== "Default" || (decimalPattern !== "Default"))
 				{
 					queryRest += "{"
-					if(unitType !== "Default" && unitType !== "No Matches")
+					if(unitType !== "Default")
 					{
 						queryRest += "unit:" + unitType
-						if(prefixType !== "Default" && prefixType !== "No Matches")
+						if(prefixType !== "Default")
 						{
 							queryRest += ",prefix:" + prefixType
 						}
 					}
 					if(decimalPattern !== "Default")
 					{
-						if(unitType !== "Default" && unitType !== "No Matches")
+						if(unitType !== "Default")
 						{
 							queryRest += ","
 						}

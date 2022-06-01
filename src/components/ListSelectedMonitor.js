@@ -156,13 +156,6 @@ function ListSelectedMonitor(props) {
 				setPage(1) 								// default page
 				setDisabled(false)
 				setActivatePagination((totalPages <= 1) ? false : true)
-				// if (totalPages <= 1)
-				// {
-				// 	setActivatePagination(false);
-				// }else
-				// {
-				// 	setActivatePagination(true);
-				// }
 			}
 			else 
 			{
@@ -467,7 +460,7 @@ function ListSelectedMonitor(props) {
                    {
                       elements.map((element, index) =>
                         <SelectedElement
-                          key           = { index }
+                          key           = { element.monitorData.id }
                           id            = { element.monitorData.id }
                           monitorData   = { element.monitorData }
                           component     = { element.component }
