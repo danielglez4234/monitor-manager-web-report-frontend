@@ -105,10 +105,11 @@ const handleClickOpenSettings = (id) => {
 function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 
 	const loadWhileGetData = useSelector(state => state.loadingGraphic)
-	const editing = useSelector(state => state.editingQuery)
+	const editing = useSelector(state => state.editingQuery) // FIXME: eliminar editing
 
 	const [disableWhileSearching, setDisableWhileSearching] = useState(false)
 
+	// NOTE: añdir condición encima en una varible a parte
 	const [logarithm, setLogarithm] = useState((monitorData?.options?.logarithm) ? monitorData?.options?.logarithm : false)
 	const [curved, setCurved] = useState((monitorData?.options?.curved) ? monitorData?.options?.curved : false)
 	const [filled, setFilled] = useState((monitorData?.options?.filled) ? monitorData?.options?.filled : false)
@@ -124,6 +125,7 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	const [stroke, setStroke] = useState((monitorData?.options?.stroke) ? monitorData?.options?.stroke : strokeOpts[0])
 	const [canvas, setCanvas] = useState((monitorData?.options?.canvas) ? monitorData?.options?.canvas : canvasOpts[0])
 	const [unit, setUnit] = useState((monitorData?.options?.unit) ? monitorData?.options?.unit : unitOpt[0])
+	// REFACTOR: unidad y prefijo Default text
 	const [prefix, setPrefix] = useState((monitorData?.options?.prefix) ? monitorData?.options?.prefix : prefixOpt[0])
 	const [decimal, setDecimal] = useState((monitorData?.options?.decimal) ? monitorData?.options?.decimal : patternOpts[0])
 
