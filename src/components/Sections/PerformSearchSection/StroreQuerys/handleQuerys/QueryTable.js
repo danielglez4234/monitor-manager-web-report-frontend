@@ -127,28 +127,6 @@ function CustomPagination() {
   }
 
 
-
-
-//   const row = [
-// 	{monitorInfo: {
-// 		listMagnitudeDescription: [
-// 			{magnitude:'paf' ,type:'e',id:789}
-// 		], 
-// 		listMonitorDescription: [
-// 			{magnitude:'mmm' ,type:'D', id:123},
-// 			{magnitude:'bealive' ,type:'s', id:567},
-// 			{magnitude:'corme' ,type:'7', id:78}
-// 		], 
-// 		listStateDefinition: [
-// 			{magnitude:'STATE' ,type:'state'}
-// 		]
-// 	}, id: "asda1",name: "asda",description: "asda",created_by: "asda",creation_time: "asda",update_time: "asda"},
-// ]
-
-
-
-
-
 export default function QueryTable({openViewQuery, setEditingQuery}) {
 	const dispatch = useDispatch()
 	const [msg, handleMessage] = PopUpMessage()

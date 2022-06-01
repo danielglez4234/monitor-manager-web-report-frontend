@@ -6,18 +6,12 @@ import {
 } from '../../../../actions';
 import * as $  from 'jquery';
 import {
-	Stack,
-	Button,
-	Pagination,
-	LinearProgress,
-	Popover,
     IconButton
 } from '@mui/material'
 import { LtTooltip } from '../../../../commons/uiStyles'
 
 import DataUsageIcon                from '@mui/icons-material/DataUsage';
 import SettingsBackupRestoreIcon    from '@mui/icons-material/SettingsBackupRestore';
-import ReplayIcon                   from '@mui/icons-material/Replay';
 import ClearAllIcon                 from '@mui/icons-material/ClearAll';
 import DetailsIcon                  from '@mui/icons-material/Details';
 import ArrowDropUpSharpIcon         from '@mui/icons-material/ArrowDropUpSharp';
@@ -25,7 +19,6 @@ import ExpandMoreIcon               from '@mui/icons-material/ExpandMore';
 import KeyboardDoubleArrowDownIcon  from '@mui/icons-material/KeyboardDoubleArrowDown';
 
 import CachedIcon from '@mui/icons-material/Cached';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 import SelectedElement      from './SelectedElement'
 

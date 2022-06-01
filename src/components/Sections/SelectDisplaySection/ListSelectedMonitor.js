@@ -38,7 +38,6 @@ import ArrowDropUpIcon              from '@mui/icons-material/ArrowDropUp';
 //import MenuGraficOrTable from './MenuGraficOrTable';
 import Graphic              from './Graphic/Graphic';
 import MonitorList			from './SelectedMonitor/MonitorList';
-import SelectedElement      from './SelectedMonitor/SelectedElement';
 import ButtonGeneralOptions from './OptionsBarSection/ButtonGeneralOptions';
 import PopUpMessage         from '../../handleErrors/PopUpMessage';
 import ButtonMagnitudeReference from './OptionsBarSection/ButtonMagnitudeReference'
