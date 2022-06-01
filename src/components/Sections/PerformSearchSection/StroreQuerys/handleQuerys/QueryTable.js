@@ -176,9 +176,9 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 			const field = event.currentTarget.dataset.field
 			const id = Number(event.currentTarget.parentElement.dataset.id)
 			const data = rows.find((r) => r.id === id)
-			if(field === "name" || field === "description")
+			if(field === "name" || field === "description" || field === "creation_time" || field === "update_time")
 			{
-				if(data[field].length > 17) // if greater than 17 characters aply tooltip
+				if(data[field].length > 20) // if greater than 17 characters aply tooltip
 				{
 					setRowPopOverValue(data[field])
 					setAnchorEl(event.currentTarget)
@@ -223,11 +223,11 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 		Promise.resolve(deleteQuery(id))
 		.then((res) => {
 			loadQuerys()
-			console.log("borrado correctamente")
+			console.log("Query Deleted Correctly!!")
 		})
 		.catch((error) => {
 			console.error(error)
-			showErrorMessage("Error obtaining querys on the server.")
+			showErrorMessage("Error deleting the query on the server")
 		})
 		.finally(() => {
 			setLoadingQuerys(false)
@@ -269,7 +269,6 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 	 */
 	const handleEditQuery = (query) => {
 		const monitors_ = getArrageMonitorList(query.row.monitorInfo)
-		console.log("monitors_", monitors_)
 		dispatch(handleSelectedElemets('addMultiple', null, monitors_, null))
 		dispatch(editingQuery({active: true, ...query.row}))
 	}

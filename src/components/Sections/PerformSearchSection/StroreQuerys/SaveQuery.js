@@ -527,7 +527,6 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 											onClick={() => {
 												reset()
 											}}
-											loadingPosition="start"
 											startIcon={<RestartAltIcon />}
 											variant="contained"
 										>
