@@ -104,8 +104,9 @@ function PerformQuery(props) {
 			}
 			else if (fnIsState(infoMonitor.type))
 			{
-				console.log(infoMonitor.component);
-				queryRest += infoMonitor.component;
+				console.log("infoMonitor", infoMonitor)
+				console.log(infoMonitor.name);
+				queryRest += infoMonitor.name;
 			}
 			else
 			{
@@ -182,7 +183,7 @@ function PerformQuery(props) {
 		//	 iDisplayStart = 0
 		// }
 		let url = searchFrom.begin_date.replace(/\s{1}/,"@")+".000/"+searchFrom.end_date.replace(/\s{1}/,"@")+".000/"+searchFrom.sampling+"?"+queryRest;
-		url += "&iDisplayStart=" + iDisplayStart + "&iDisplayLength=" + iDisplayLength;
+		url += "&page=" + iDisplayStart + "&length=" + iDisplayLength;
 
 		// log
 		const action = (searchFrom.download) ? "download" : "search"
@@ -207,7 +208,7 @@ function PerformQuery(props) {
 		Promise.resolve( getDataFromServer({url}) )
 		.then(res => { 
 			const totalArraysRecive  = res.samples.length;
-			const totalRecords       = res.iTotalSamples;
+			const totalRecords       = res.reportInfo.totalSamples;
 			const totalPerPage       = props.urliDisplayLength
 			if (totalArraysRecive === 0) 
 			{

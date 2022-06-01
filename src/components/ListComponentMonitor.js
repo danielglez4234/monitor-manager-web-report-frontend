@@ -142,21 +142,21 @@ function ListComponentMonitor() {
 			setInitialStateMonitors(false); // initial monitors section state to false
 			setComponent_clicked(title);
 			setLoadingMonitors(true);
-			Promise.resolve( getMonitorsFromComponent({componentName: title}) )
+			Promise.resolve( getMonitorsFromComponent(title) )
 			.then(res => {
-				if (res) 
+				if (res.magnitudeDescriptions.length > 0 || res.monitorDescription.length > 0) 
 				{
-					setLoadingMonitors(false);
-					setNoMonitorsAvailable(false);
-					setData_monitors(res);
-					setResultQueryMonitor(res);
-					console.log("Get monitors from component successfully");
+					setNoMonitorsAvailable(false)
+					const dataist = buildDataElementsList(res)
+					setData_monitors(dataist)
+					setResultQueryMonitor(dataist)
+					console.log("Get monitors from component successfully")
 				}
 				else 
 				{
-					setLoadingMonitors(false);
-					setNoMonitorsAvailable(true);
+					setNoMonitorsAvailable(true)
 				}
+				setLoadingMonitors(false)
 			})
 			.catch(error => {
 				handleMessage({ 
@@ -175,6 +175,35 @@ function ListComponentMonitor() {
 		// setNoMonitorsAvailable(false);
 		// setInitialStateMonitors(false);
 		// setLoadingMonitors(false);
+	}
+
+	/*
+	 * arrange monitors from server
+	 */
+	const buildDataElementsList = (data) => {
+		const component_id = data.id
+		const name = data.name
+
+		const magnitudeDescriptions = data.magnitudeDescriptions
+		for (let i = 0; i < magnitudeDescriptions.length; i++) {
+			magnitudeDescriptions[i]["component_id"] = component_id
+			magnitudeDescriptions[i]["name"] = name
+		}
+
+		const monitorDescription = data.monitorDescription
+		for (let i = 0; i < monitorDescription.length; i++) {
+			monitorDescription[i]["component_id"] = component_id
+			monitorDescription[i]["name"] = name
+		}
+
+		const stateDescriptions = {
+			id: component_id, 
+			name: name,
+			magnitude: 'STATE',
+			type: 'state'
+		}
+
+		return [stateDescriptions, ...monitorDescription, ...magnitudeDescriptions]
 	}
 
 	/*
@@ -249,29 +278,16 @@ function ListComponentMonitor() {
      * we do it here and no inside the map of 'MonitorElement.js' to avoid duplication
      */
     const select = (monitorData, component) => {
-		if (fnIsState(monitorData.type)){
+		if (idMonitorsAlreadySelected.length > 0 && idMonitorsAlreadySelected.filter(e => e.monitorData["id"] === monitorData.id).length > 0){
 			handleMessage({ 
-				message: 'STATE monitors are not available at the moment, they will be added in a future update', 
-				type: 'warning', 
+				message: 'The monitor ' + monitorData.magnitude + ' is alredy selected', 
+				type: 'info', 
 				persist: false,
 				preventDuplicate: false
 			})
-		}else {
-			if (idMonitorsAlreadySelected.length > 0){
-				if (idMonitorsAlreadySelected.filter(e => e.monitorData["id"] === monitorData.id).length > 0){
-					handleMessage({ 
-						message: 'The monitor ' + monitorData.magnitude + ' is alredy selected', 
-						type: 'info', 
-						persist: false,
-						preventDuplicate: false
-					})
-				}
-				else{
-					dispatch(selectMonitor(monitorData, component));
-				}
-			}else {
-				dispatch(selectMonitor(monitorData, component));
-			}
+		}
+		else{
+			dispatch(selectMonitor(monitorData, component));
 		}
     }
 
@@ -307,9 +323,9 @@ function ListComponentMonitor() {
 						(connectionError)  ? error :
 						(loadingComponent) ? skeleton :
 						(resultQueryComponent.length === 0) ? noResultFound :
-						resultQueryComponent.map((element, index) =>
+						resultQueryComponent.map((element) =>
 							<ComponentElement
-								key                = { index }
+								key                = { element }
 								title              = { element }
 								getMonitors        = { getMonitors }
 							/>
@@ -350,9 +366,9 @@ function ListComponentMonitor() {
 						(initialStateMonitors) ? noSelectedComponent :
 						(loadingMonitors) ? skeleton :
 						(resultQueryMonitor.length === 0 || monitorsAvailable) ? noMonitorElements :
-						resultQueryMonitor.map((element, index) =>
+						resultQueryMonitor.map((element) =>
 							<MonitorElement
-								key                = { index }
+								key                = { element.id }
 								monitorData        = { element }
 								component          = { component_clicked }
 								select             = { select }

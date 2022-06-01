@@ -11,14 +11,19 @@ const selectedMonitorsReducer = (state = [], action) => {
       const sortEnumFirst = (data) => {
         var first = [];
         var others = [];
+        let last = [];
         for (var i = 0; i < data.length; i++) {
             if (data[i].monitorData["type"] === "e" || data[i].monitorData["type"] === "b") {
                 first.push(data[i]);
-            } else {
+            } 
+            else if(data[i].monitorData["type"] === "state"){
+                last.push(data[i]);
+            }
+            else {
                 others.push(data[i]);
             }
         }
-        return [...first, ...others]
+        return [...first, ...others, ...last]
       }
       return sortEnumFirst(reOrderMonitors)
 
