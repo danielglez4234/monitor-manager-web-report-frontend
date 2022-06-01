@@ -132,7 +132,7 @@ function PerformQuery(props) {
 			//     queryRest += "}"
 			//   }
 			// }
-			if(!fnIsMagnitude(infoMonitor.type))
+			if(!fnIsMagnitude(infoMonitor.type) || !fnIsState(infoMonitor.type))
 			{
 				let unitType = $("#Unit" + infoMonitor.id).val();
 				let prefixType = $("#Prefix" + infoMonitor.id).val();
