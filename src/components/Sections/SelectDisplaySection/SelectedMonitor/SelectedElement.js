@@ -95,32 +95,30 @@ const handleClickOpenSettings = (id) => {
 }
 
 
+	// REFACTOR:
+	const checkLog = (value, id) => {$(".logarithm"+id).prop('checked', value)}
+	const checkCurved = (value, id) => {$(".curved"+id).prop('checked', value)}
+	const checkFilled = (value, id) => {$(".filled"+id).prop('checked', value)}
+	const checkEnableColor = (value, id) => {$(".enabled_color"+id).prop('checked', value)}
+
 
 function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 
 	const loadWhileGetData = useSelector(state => state.loadingGraphic)
-	//const editing = useSelector(state => state.editingQuery)
+	const editing = useSelector(state => state.editingQuery)
 
 	const [disableWhileSearching, setDisableWhileSearching] = useState(false)
 
 	const [logarithm, setLogarithm] = useState((monitorData?.options?.logarithm) ? monitorData?.options?.logarithm : false)
-	// REFACTOR:
-	$(".logarithm"+id).prop('checked', (monitorData?.options?.logarithm) ? monitorData?.options?.logarithm : false);
 	const [curved, setCurved] = useState((monitorData?.options?.curved) ? monitorData?.options?.curved : false)
-	// REFACTOR:
-	$(".curved"+id).prop('checked', (monitorData?.options?.curved) ? monitorData?.options?.curved : false);
 	const [filled, setFilled] = useState((monitorData?.options?.filled) ? monitorData?.options?.filled : false)
-	// REFACTOR:
-	$(".filled"+id).prop('checked', (monitorData?.options?.filled) ? monitorData?.options?.filled : false);
 	const [enabled_color, setEnabled_color] = useState((monitorData?.options?.enabled_color) ? monitorData?.options?.enabled_color : false)
-	// REFACTOR:
-	$(".enabled_color"+id).prop('checked', (monitorData?.options?.enabled_color) ? monitorData?.options?.enabled_color : false);
 
 	const [limit_max, setLimit_max] = useState((monitorData?.options?.limit_max) ? monitorData?.options?.limit_max : "")
 	const [limit_min, setLimit_min] = useState((monitorData?.options?.limit_min) ? monitorData?.options?.limit_min : "")
 	const [color, setColor] = useState((monitorData?.options?.color) ? monitorData?.options?.color : "")
 	const [pos, setPos] = useState((monitorData?.options?.pos) ? monitorData?.options?.pos : "")
-
+	
 	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type) || fnIsState(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0];
 	const [graphic_type, setGraphic_type] = useState((monitorData?.options?.graphic_type) ? monitorData?.options?.graphic_type : isEnumOrMonitor)
 	const [stroke, setStroke] = useState((monitorData?.options?.stroke) ? monitorData?.options?.stroke : strokeOpts[0])
@@ -129,6 +127,15 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	const [prefix, setPrefix] = useState((monitorData?.options?.prefix) ? monitorData?.options?.prefix : prefixOpt[0])
 	const [decimal, setDecimal] = useState((monitorData?.options?.decimal) ? monitorData?.options?.decimal : patternOpts[0])
 
+	// REFACTOR:
+	useEffect(() => {
+		if(editing?.active){
+			checkLog(monitorData?.options?.logarithm , id)
+			checkCurved(monitorData?.options?.curved, id)
+			checkFilled(monitorData?.options?.filled, id)
+			checkEnableColor(monitorData?.options?.enabled_color, id)
+		}
+	}, [editing]);
 	/*
 	 * handle get options
 	 */
@@ -302,6 +309,7 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 										type="checkbox"
 										onChange={(e) => {setLogarithm(e.target.checked)}}
 										value={logarithm}
+										onClick={() => {checkLog(!logarithm, id)}}
 									/>
 									<span className="checkmark"></span>
 								</label>
@@ -313,6 +321,7 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 										type="checkbox"
 										onChange={(e) => {setCurved(e.target.checked)}}
 										value={curved}
+										onClick={() => {checkCurved(!curved, id)}}
 									/>
 									<span className="checkmark"></span>
 								</label>
@@ -324,6 +333,7 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 										type="checkbox"
 										onChange={(e) => {setFilled(e.target.checked)}}
 										value={filled}
+										onClick={() => {checkFilled(!filled, id)}}
 									/>
 									<span className="checkmark"></span>
 								</label>
@@ -423,6 +433,7 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 									type="checkbox"
 									onChange={(e) => {setEnabled_color(e.target.checked)}}
 									value={enabled_color}
+									onClick={() => {checkEnableColor(!enabled_color, id)}}
 								/>
 								<span className="checkmark"></span>
 								</label>
@@ -488,7 +499,8 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 						:
 							<GetIndexArrayModal
 								id={ id }
-								type={ monitorData.type } 
+								type={ monitorData.type }
+								pos={pos}
 								setPos={setPos}
 								applyChangesWarning={ applyChangesWarning }
 								dimension_x={ monitorData.dimension_x }

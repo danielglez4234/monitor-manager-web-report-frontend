@@ -10,7 +10,7 @@ import HelpIcon                   from '@mui/icons-material/Help';
 import SettingsBackupRestoreIcon  from '@mui/icons-material/SettingsBackupRestore';
 
 
-const GetIndexArrayModal = ({id, type, setPos, applyChangesWarning, dimension_x, dimension_y}) => {
+const GetIndexArrayModal = ({id, type, pos, setPos, applyChangesWarning, dimension_x, dimension_y}) => {
   
   const availablePositions = (dimension_x * dimension_y);
   /*
@@ -29,9 +29,9 @@ const GetIndexArrayModal = ({id, type, setPos, applyChangesWarning, dimension_x,
   })
   
   const [openIndexModal, setOpenIndexModal]     = useState(false);
-  const [enableResetIndex, setEnableResetIndex] = useState(false);
+  const [enableResetIndex, setEnableResetIndex] = useState(true);
 
-  const [textIndex, setTextIndex]                   = useState("/");
+  const [textIndex, setTextIndex]                   = useState((pos === "" || pos === null) ? "/" : pos);
   const [indexTypeChoosen, setIndexTypeChoosen]     = useState("range");
   const [indexTypeChoosen2D, setIndexTypeChoosen2D] = useState("range2D");
 
@@ -175,6 +175,7 @@ const GetIndexArrayModal = ({id, type, setPos, applyChangesWarning, dimension_x,
             <div
                 onClick={() => {
                   setEnableResetIndex(false);
+                  setPos(null)
                   setTextIndex("/");
                 }}
                 className="clear-choose-index-box"
