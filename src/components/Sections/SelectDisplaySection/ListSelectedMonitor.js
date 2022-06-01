@@ -205,7 +205,7 @@ function ListSelectedMonitor(props) {
 			Promise.resolve( getDataFromServer({url}) )
 			.then(res => {
 				const totalArraysRecive  = res.samples.length
-				const totalRecords       = res.reportInfo.iTotalSamples
+				const totalRecords       = res.reportInfo.totalSamples
 				const totalPerPage       = props.urliDisplayLength
 				const sampling_period    = getResponse.sampling_period
 				dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
