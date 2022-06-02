@@ -59,7 +59,7 @@ function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix, a
 			<Autocomplete
 				disablePortal // --> disabled entrys not related with the select
 				disableClearable // --> disabled the posibility to leave the input empty
-				id={`Prefix` + id}
+				// id={`Prefix` + id}
 				className="input-limits-grafic-options input-select-prefix prefix"
 				name="deimnalPattern"
 				onOpen={() => {
@@ -102,7 +102,7 @@ function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix, a
 
 		<Autocomplete
 			disablePortal // --> disabled entrys not related with the select
-			id={`Unit` + id}
+			// id={`Unit` + id}
 			className="input-limits-grafic-options input-select-unit"
 			name="deimnalPattern"
 			disableClearable

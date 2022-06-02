@@ -143,7 +143,7 @@ function PerformQuery(props) {
 				}
 				else if (fnIsState(infoMonitor.type))
 				{
-					queryRest += infoMonitor.component;
+					queryRest += infoMonitor.name;
 				}
 				else
 				{
@@ -249,7 +249,6 @@ function PerformQuery(props) {
 	 * get BeginDate Value
 	 */
 	const onChangeBeginDate = (date, dateString) => {
-		console.log("date", date)
 		setTimeQuery({
 			...timeQuery,
 			beginDate: dateString // string format
@@ -272,7 +271,6 @@ function PerformQuery(props) {
 	 * get sampling input value
 	 */
 	const handleChange = (event) => {
-		console.log("event.target.value", event.target.value)
 		setTimeQuery({
 			...timeQuery,
 			sampling: event.target.value

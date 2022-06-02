@@ -97,6 +97,14 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 			preventDuplicate: false
 		})
 	}
+	const showErrorMessage = (message) => {
+		handleMessage({
+			message: message,
+			type: "error",
+			persist: true,
+			preventDuplicate: false
+		})
+	}
 
 	/*
 	 * check active save button
@@ -164,20 +172,20 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	}
 
 	/*
-	 * reset querie monitor
-	 */
-	// const resetMonitor = () => {
-		
-	// }
-	/*
-	 * reset name and description inputs fields if editing 
-	 */
+	* reset name and description inputs fields if editing 
+	*/
 	const reset = () => {
 		setQueryName(editing?.name)
 		setQueryDescription(editing?.description)
 		setifSameQueryName(true)
 	}
-
+	/*
+	 * reset querie monitor
+	 */
+	// const resetMonitors = () => {
+	// 	dispatch(handleSelectedElemets('addMultiple', null, editing?.monitors_, null))
+	// }
+	
 	/*
 	 * save query on data base
 	 */
@@ -200,14 +208,8 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 		})
 		.catch((error) =>{
 			console.error(error)
-			const error_message = (error?.response?.message) ? error.response.message : "Unsupported Error"
-			const error_status  = (error?.status) ? error.status : "Unkwon"
-			handleMessage({
-				message: "Error: " + error_message + " - Code " + error_status,
-				type: "error",
-				persist: true,
-				preventDuplicate: false
-			})
+			const error_message = (error?.response?.message) ? error.response.message : error.message
+			showErrorMessage(error_message)
 		}).finally(() => {
 			backDropLoadClose()
 		})
@@ -221,7 +223,10 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 		Promise.resolve(updateQuery(editing.name, payload))
 		.then(() => {
 			handleCloseSaveQuery()
-			if (editing?.action) {stopEditing()}
+			if (editing?.action) {
+				console.log("hola");
+				stopEditing()
+			}
 			handleMessage({
 				message: "Query save successfully!",
 				type: "success",
@@ -231,14 +236,8 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 		})
 		.catch((error) =>{
 			console.error(error)
-			const error_message = (error?.response?.message) ? error.response.message : "Unsupported Error"
-			const error_status = (error?.status) ? error.status : "Unkwon"
-			handleMessage({
-				message: "Error: " + error_message + " - Code " + error_status,
-				type: "error",
-				persist: true,
-				preventDuplicate: false
-			})
+			const error_message = (error?.response?.message) ? error.response.message : error.message
+			showErrorMessage(error_message)
 		}).finally(() => {
 			backDropLoadClose()
 		})
@@ -356,13 +355,14 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 					</Button>
 					{/* <Button
 						onClick={() => { 
-							resetMonitor()
+							resetMonitors()
 						}}
-						className={classes.updatebutton}
+						disabled={false}
+						className={classes.resetQueryButton}
 						variant="contained"
-						startIcon={<SystemUpdateAltIcon />}
+						startIcon={<RestartAltIcon />}
 					>
-							Reset Monitors
+							Reset
 					</Button> */}
 					<div>
 						Edit Mode: ACTIVE

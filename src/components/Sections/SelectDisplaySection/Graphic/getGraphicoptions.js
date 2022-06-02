@@ -76,9 +76,8 @@ function getGraphicoptions(){
 		let min         = $(".yaxisMin").eq(i).val();
 		let max         = $(".yaxisMax").eq(i).val();
 
-		console.log("name", name, "unit", unit, "unitDefult", unitDefult)
-		selectMonitorName.push(name);
 
+		selectMonitorName.push(name);
 		if(unit === "Default"){
 			if(unitDefult){
 				selectUnitType.push("None")

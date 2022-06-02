@@ -247,8 +247,10 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 	 */
 	const handleEditQuery = (query) => {
 		const monitors_ = getArrageMonitorList(query.row.monitorInfo)
+		delete query.row["monitorInfo"] 										// NOTE: hace falta??
 		dispatch(handleSelectedElemets('addMultiple', null, monitors_, null))
 		dispatch(editingQuery({active: true, ...query.row}))
+		// dispatch(editingQuery({active: true, ...{...query.row, monitors_}}))
 	}
 
 	/*

@@ -372,9 +372,9 @@ function ListComponentMonitor() {
 						(connectionError)  ? error :
 						(loadingComponent) ? skeleton :
 						(resultQueryComponent.length === 0) ? noResultFound :
-						resultQueryComponent.map((element) =>
+						resultQueryComponent.map((element, index) =>
 							<ComponentElement
-								key                = { element }
+								key                = { index }
 								title              = { element }
 								getMonitors        = { getMonitors }
 							/>
