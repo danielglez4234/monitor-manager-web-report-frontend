@@ -15,6 +15,7 @@ import {
 
 // --- Icons
 import AnalyticsIcon  from '@mui/icons-material/Analytics';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import logoSrc        from '../../commons/img/logo.png';
 
 
@@ -69,6 +70,23 @@ function Header() {
              <Typography className="header-h2" variant="h6" component="div" sx={{ flexGrow: 1 }}>
                Monitor Manager Web Report
              </Typography>
+             {/* <div>
+                 {
+                   "dgonzalez"
+                 }
+               </div> */}
+               {/* <div>
+                 <IconButton
+                   onClick={() =>{ hideAllAndShowGrafic() }}
+                   size="large"
+                   aria-label="account of current user"
+                   aria-controls="menu-appbar"
+                   aria-haspopup="true"
+                   color="inherit"
+                 >
+                   <AccountCircleIcon />
+                 </IconButton>
+               </div> */}
                <div>
                  <IconButton
                    onClick={() =>{ hideAllAndShowGrafic() }}

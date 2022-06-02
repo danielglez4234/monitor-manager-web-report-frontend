@@ -12,9 +12,9 @@
 
 // const { REACT_APP_IDISPLAYLENGTH } = process.env
 
-// function getPagination(op, pagination){
+// function getPagination(currentUrl, pagination){
 //     const page = "&page=" 
-//     if((op?.paginating && pagination?.active) || op?.download)
+//     if(pagination?.active || pagination?.download)
 //         return page+pagination.actualPage-1
 // 	return page+0
 // }
@@ -107,10 +107,14 @@
 //     const monitor = useSelector(state => state.monitor)
 //     const [currentUrl, setCurrentUrl] = useState(null);
 
-//     if(pagination?.active){
-//         return getPagination(currentUrl, pagination)
+//     if(pagination?.active)
+//     {
+//         if(currentUrl !== null){
+//             return getPagination(currentUrl, pagination)
+//         }
 //     }
-//     else{
+//     else
+//     {
 //         const url = getUrl(monitor, op)
 //         setCurrentUrl(url)
 //         return url
