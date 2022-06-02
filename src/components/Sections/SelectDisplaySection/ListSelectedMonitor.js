@@ -268,13 +268,23 @@ function ListSelectedMonitor(props) {
 		}
 	}
 
+	/*
+	 * Disabled reload when the conditions are not compatible
+	 */
+	const diActivateReload = () => {
+		dispatch(setloadingButton(false))
+		setDisabled(true)
+	}
+
 
     return(
 		<div className="grafic-section">
 
 			{/*<MenuGraficOrTable />*/}
 
-			<MonitorList />
+			<MonitorList 
+				diActivateReload={diActivateReload}
+			/>
 			{
 				(startloadingGraphic) ? 
 					<div className="img-load-svg-box">

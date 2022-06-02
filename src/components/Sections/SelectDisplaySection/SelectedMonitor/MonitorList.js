@@ -102,7 +102,7 @@ import SelectedElement      from './SelectedElement'
 	}
 
 
-function MonitorList({disabled}) {
+function MonitorList({diActivateReload}) {
     const dispatch = useDispatch();
     const monitor = useSelector(state => state.monitor)
 
@@ -134,14 +134,6 @@ function MonitorList({disabled}) {
 	 */
 	const menuHandle = (type, id, options) => {
 		dispatch(handleSelectedElemets(type, id, null, options))
-	}
-
-	/*
-	 * Disabled reload when the conditions are not compatible
-	 */
-	const diActivateReload = () => {
-		dispatch(setloadingButton(false))
-		// setDisabled(true) // TODO: REFACTOR:
 	}
 
 
