@@ -177,7 +177,7 @@ function PerformQuery(props) {
 				}
 			}
 			let startAt = 0;
-			if (qs?.paginating && pagination?.active)
+			if ((qs?.paginating && pagination?.active) || qs?.download)
 			{
 				startAt = pagination.actualPage-1
 			}
