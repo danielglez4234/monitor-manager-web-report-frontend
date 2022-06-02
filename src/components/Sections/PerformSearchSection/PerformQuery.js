@@ -117,39 +117,42 @@ function PerformQuery(props) {
 			for (let i = 0; i < monitor.length; i++)
 			{
 				const infoMonitor = monitor[i];
+				const type = infoMonitor.type
+				const id = infoMonitor.id
+				const name = infoMonitor.name
 				/* 
 				 * magnitud("b","e"); scalar("d","f","l","s","o"); arrays("D","F","L","S","O"); doubleArrays("9","8","7","6","5");
 				 * state("state");
 				 */
-				queryRest += "id" + getCategory(infoMonitor.type) + "=";
-				if (fnIsScalar(infoMonitor.type))
+				queryRest += "id" + getCategory(type) + "=";
+				if (fnIsScalar(type))
 				{
-					queryRest += infoMonitor.id;
+					queryRest += id;
 				}
-				else if (fnIsArray(infoMonitor.type))
+				else if (fnIsArray(type))
 				{
 					// Get Index
-					let index = $(".Index" + infoMonitor.id).text();
+					let index = $(".Index" + id).text();
 					if (index === '/') 
 					{
 						index = "[[-1]]";
-						queryRest += infoMonitor.id + index;
+						queryRest += id + index;
 					}
 					else 
 					{
 						index = "[" + index + "]";
-						queryRest += infoMonitor.id + index;
+						queryRest += id + index;
 					}
 				}
-				else if (fnIsState(infoMonitor.type))
+				else if (fnIsState(type))
 				{
-					queryRest += infoMonitor.name;
+					queryRest += name;
 				}
 				else
 				{
 					showErrorMessage('Error: Type is not supported. \n Please contact the system administrator.')
 				}
-				if(!fnIsMagnitude(infoMonitor.type) || !fnIsState(infoMonitor.type))
+				if(!fnIsMagnitude(type) || !fnIsState(type))
 				{
 					const unit    = (infoMonitor.options.unit    !== "Default") ? infoMonitor.options.unit    : false
 					const prefix  = (infoMonitor.options.prefix  !== "Default") ? infoMonitor.options.prefix  : false
@@ -419,8 +422,8 @@ function PerformQuery(props) {
 							<MenuItem value={600000000}>10 minutes</MenuItem>
 							<MenuItem value={3600000000}>1 hour</MenuItem>
 							<MenuItem value={7200000000}>2 hours</MenuItem>
-							{/* <MenuItem value={43200000000}>12 hours</MenuItem>
-							<MenuItem value={86400000000}>1 day</MenuItem> */}
+							{/* <MenuItem value={43200000000}>12 hours</MenuItem> */}
+							{/* <MenuItem value={86400000000}>1 day</MenuItem> */}
 						</Select>
 					</FormControl>
 					</Stack>
