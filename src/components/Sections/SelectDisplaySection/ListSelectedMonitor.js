@@ -141,7 +141,7 @@ function ListSelectedMonitor(props) {
 			});
 
 			// if they match disable is set to false
-			if (!loadingGraphic){ // if the graphic is loading dont compare
+			if (!loadingGraphic && getResponse.responseData.samples.length > 0) { // if the graphic is loading dont compare
 				setDisabled(!comparation)
 			}
 		}
