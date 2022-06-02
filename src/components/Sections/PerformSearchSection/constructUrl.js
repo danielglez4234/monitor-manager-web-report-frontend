@@ -1,119 +1,120 @@
-import { getUnit } from '@mui/material/styles/cssUtils';
-import React, {useState} from 'react';
-import {
-    getCategory,
-    fnIsScalar,
-    fnIsArray,
-    fnIsMagnitude,
-    fnIsState
-} from '../../../actions'
-import {useSelector} from 'react-redux';
+// import { getUnit } from '@mui/material/styles/cssUtils';
+// import React, {useState} from 'react';
+// import {
+//     getCategory,
+//     fnIsScalar,
+//     fnIsArray,
+//     fnIsMagnitude,
+//     fnIsState
+// } from '../../../actions';
+// import {useSelector} from 'react-redux';
 
 
-function getPagination(){
+// const { REACT_APP_IDISPLAYLENGTH } = process.env
 
-}
+// function getPagination(op, pagination){
+//     const page = "&page=" 
+//     if((op?.paginating && pagination?.active) || op?.download)
+//         return page+pagination.actualPage-1
+// 	return page+0
+// }
 
-function getUrl(monitor, op){
-    try {			
-        let queryRest = "";
-        for (let i = 0; i < monitor.length; i++)
-        {
-            const infoMonitor = monitor[i];
-            /* 
-             * magnitud("b","e"); scalar("d","f","l","s","o"); arrays("D","F","L","S","O"); doubleArrays("9","8","7","6","5");
-             * state("state");
-             */
-            queryRest += "id" + getCategory(infoMonitor.type) + "=";
-            if (fnIsScalar(infoMonitor.type))
-            {
-                queryRest += infoMonitor.id;
-            }
-            else if (fnIsArray(infoMonitor.type))
-            {
-                // Get Index
-                let index = $(".Index" + infoMonitor.id).text();
-                if (index === '/') 
-                {
-                    index = "[[-1]]";
-                    queryRest += infoMonitor.id + index;
-                }
-                else 
-                {
-                    index = "[" + index + "]";
-                    queryRest += infoMonitor.id + index;
-                }
-            }
-            else if (fnIsState(infoMonitor.type))
-            {
-                queryRest += infoMonitor.component;
-            }
-            else
-            {
-                console.error("Error: Type is not supported. \n Please contact the system administrator.")
-            }
-            if(!fnIsMagnitude(infoMonitor.type) || !fnIsState(infoMonitor.type))
-            {
-                // let unitType = $("#Unit" + infoMonitor.id).val();
-                // let prefixType = $("#Prefix" + infoMonitor.id).val();
-                // let decimalPattern = $("#Pattern" + infoMonitor.id).val();
-                let unitType = infoMonitor.unit
-                let prefixType = infoMonitor.prefix
-                let decimalPattern = infoMonitor.decimal
+// function getUrl(monitor, op){
+//     try {			
+//         let queryRest = "";
+//         for (let i = 0; i < monitor.length; i++)
+//         {
+//             const infoMonitor = monitor[i];
+//             const type = infoMonitor.type
+//             const id = infoMonitor.id
+//             /* 
+//              * magnitud("b","e"); scalar("d","f","l","s","o"); arrays("D","F","L","S","O"); doubleArrays("9","8","7","6","5");
+//              * state("state");
+//              */
+//             queryRest += "id" + getCategory(type) + "=";
+//             if (fnIsScalar(type))
+//             {
+//                 queryRest += id;
+//             }
+//             else if (fnIsArray(type))
+//             {
+//                 // Get Index
+//                 let index = infoMonitor.pos
+//                 if (index === '/' || index === null) 
+//                 {
+//                     index = "[[-1]]";
+//                     queryRest += id + index;
+//                 }
+//                 else 
+//                 {
+//                     index = "[" + index + "]";
+//                     queryRest += id + index;
+//                 }
+//             }
+//             else if (fnIsState(type))
+//             {
+//                 queryRest += infoMonitor.component;
+//             }
+//             else
+//             {
+//                 console.error("Error: Type is not supported. \n Please contact the system administrator.")
+//             }
+//             if(!fnIsMagnitude(type) || !fnIsState(type))
+//             {
+//                 const unit    = (infoMonitor.options.unit    !== "Default") ? infoMonitor.options.unit    : false
+//                 const prefix  = (infoMonitor.options.prefix  !== "Default") ? infoMonitor.options.prefix  : false
+//                 const decimal = (infoMonitor.options.decimal !== "Default") ? infoMonitor.options.decimal : false
+//                 if (unit || decimal){
+//                     queryRest += "{"
+//                     if(unit){
+//                         queryRest += "unit:" + unit
+//                         if(prefix){
+//                             queryRest += ",prefix:" + prefix
+//                         }
+//                     }
+//                     if(decimal){
+//                         if(unit){
+//                             queryRest += ","
+//                         }
+//                         queryRest += "decimal:" + decimal
+//                     }
+//                     queryRest += "}"
+//                 }
+//             }
+//             if ((i + 1) < monitor.length)
+//             {
+//                 queryRest += "&";
+//             }
+//         }
+//         const beginDate = op.beginDate.replace(/\s{1}/,"@")+".000"
+//         const endDate 	= op.endDate.replace(/\s{1}/,"@")+".000"
+//         const sampling  = op.sampling
+//         const page 		= getPagination()
+//         const length 	= "length="+REACT_APP_IDISPLAYLENGTH
 
-                if (unitType !== "Default" || decimalPattern !== "Default"){
-                    queryRest += "{"
-                    if(unitType !== "Default"){
-                        queryRest += "unit:" + unitType
-                        if(prefixType !== "Default"){
-                            queryRest += ",prefix:" + prefixType
-                        }
-                    }
-                    if(decimalPattern !== "Default"){
-                        if(unitType !== "Default"){
-                            queryRest += ","
-                        }
-                        queryRest += "decimal:" + decimalPattern
-                    }
-                    queryRest += "}"
-                }
-            }
-            if ((i + 1) < monitor.length)
-            {
-                queryRest += "&";
-            }
-        }
+//         const url = beginDate+"/"+endDate+"/"+sampling+"?"+queryRest+"&"+page+"&"+length;
 
-        const beginDate = op.beginDate.replace(/\s{1}/,"@")+".000"
-        const endDate 	= op.endDate.replace(/\s{1}/,"@")+".000"
-        const sampling  = op.sampling
-        const page 		= "page=" + 0
-        // const length 	= "length=" + props.urliDisplayLength;
-
-        // const url = beginDate+"/"+endDate+"/"+sampling+"?"+queryRest+"&"+page+"&"+length;
-
-        // const action = (qs?.download) ? "download" : (qs?.query) ? "query" : "search"; // this is for log purposes
-        // console.log(`URL:  ${window.location.href.replace('3006', '')}:${REACT_APP_SERVER_PORT}/rest/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
-        // return url
-    } catch (error) {
-        console.error(error)
-    }
-}
+//         // const action = (qs?.download) ? "download" : (qs?.query) ? "query" : "search"; // this is for log purposes
+//         // console.log(`URL:  ${window.location.href.replace('3006', '')}:${REACT_APP_SERVER_PORT}/rest/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
+//         return url
+//     } catch (error) {
+//         console.error(error)
+//     }
+// }
 
 
-function constructUrl(op) {
-    const monitor = useSelector(state => state.monitor)
-    const pagination = useSelector(state => state.pagination)
-    const [currentUrl, setCurrentUrl] = useState(null);
+// function constructUrl(op, pagination) {
+//     const monitor = useSelector(state => state.monitor)
+//     const [currentUrl, setCurrentUrl] = useState(null);
 
-    if(op?.pagination){
-        return getPagination(currentUrl, pagination)
-    }
-    else{
-        const url = getUrl(monitor, op)
-        setCurrentUrl(url)
-        return url
-    }
-}
+//     if(pagination?.active){
+//         return getPagination(currentUrl, pagination)
+//     }
+//     else{
+//         const url = getUrl(monitor, op)
+//         setCurrentUrl(url)
+//         return url
+//     }
+// }
 
-export default constructUrl;
+// export default constructUrl;
