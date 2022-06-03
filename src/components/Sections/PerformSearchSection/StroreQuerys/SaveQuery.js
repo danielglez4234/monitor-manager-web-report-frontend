@@ -61,13 +61,10 @@ const usesTyles = makeStyles({
 	}
 })
 
-const { REACT_APP_QUERY_NAME_PATTERN, REACT_APP_PATTERN_FLAG } = process.env
+const { REACT_APP_QUERY_NAME_PATTERN } = process.env
 
 
 function SaveQuery({convertToUnix, timeQuery, editing}) {
-	const regexPattern = REACT_APP_QUERY_NAME_PATTERN
-	const regexFlag = REACT_APP_PATTERN_FLAG
-
 	const dispatch = useDispatch()
 	const classes = usesTyles()
 	const monitor = useSelector(state => state.monitor)
@@ -149,8 +146,8 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	/*
 	 * test eregular expresions
 	 */
-	const testRegex = (value, expresion, flag) => {
-		const re = new RegExp(expresion, flag)
+	const testRegex = (value, expresion) => {
+		const re = new RegExp(expresion)
 		return re.test(value)
 	}
 
@@ -158,12 +155,11 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	 * save query on data base
 	 */
 	const onSubmit = () => {
-		console.log("REACT_APP_QUERY_NAME_PATTERN", REACT_APP_QUERY_NAME_PATTERN)
 		try {
 			if(queryName === "" || queryName === undefined){
 				showWarningMessage("Name field cannot be empty")
 			}
-			else if(!testRegex(queryName, regexPattern, regexFlag)){
+			else if(!testRegex(queryName, REACT_APP_QUERY_NAME_PATTERN)){
 				showWarningMessage("name cannot have special characters other than '_-@.' and must not have spaces.")
 			}
 			else{
@@ -209,6 +205,7 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	 */
 	const saveQuery = () => {
 		const payload = createPayload()
+		console.log("payload", JSON.stringify(payload))
 		Promise.resolve(insertQuery(payload))
 		.then(() =>{
 			if(editing?.active){
@@ -287,7 +284,7 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 		const unit  = (options.unit === null || options?.unit === "Default") ? undefined : options.unit
 		const prefix = (options.prefix === null || options?.prefix === "Default") ? undefined : options.prefix
 		const decimal = (options.decimal === null || options.decimal === "Default") ? undefined : options.decimal
-		const pos = (options.pos === null || options.pos === "") ? undefined : "["+options.pos+"]"
+		const pos = (options.pos === null || options.pos === "" || options.pos === undefined) ? undefined : "["+options.pos+"]"
 		delete val.options.prefix
 		delete val.options.unit
 		delete val.options.decimal
