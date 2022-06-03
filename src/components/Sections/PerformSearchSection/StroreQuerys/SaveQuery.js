@@ -61,8 +61,13 @@ const usesTyles = makeStyles({
 	}
 })
 
+const { REACT_APP_QUERY_NAME_PATTERN, REACT_APP_PATTERN_FLAG } = process.env
+
 
 function SaveQuery({convertToUnix, timeQuery, editing}) {
+	const regexPattern = REACT_APP_QUERY_NAME_PATTERN
+	const regexFlag = REACT_APP_PATTERN_FLAG
+
 	const dispatch = useDispatch()
 	const classes = usesTyles()
 	const monitor = useSelector(state => state.monitor)
@@ -142,19 +147,32 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	}
 
 	/*
+	 * test eregular expresions
+	 */
+	const testRegex = (value, expresion, flag) => {
+		const re = new RegExp(expresion, flag)
+		return re.test(value)
+	}
+
+	/*
 	 * save query on data base
 	 */
 	const onSubmit = () => {
+		console.log("REACT_APP_QUERY_NAME_PATTERN", REACT_APP_QUERY_NAME_PATTERN)
 		try {
 			if(queryName === "" || queryName === undefined){
 				showWarningMessage("Name field cannot be empty")
+			}
+			else if(!testRegex(queryName, regexPattern, regexFlag)){
+				showWarningMessage("name cannot have special characters other than '_-@.' and must not have spaces.")
 			}
 			else{
 				backDropLoadOpen()
 				if(editing?.active && ifSameQueryName){
 					handleUpdateQuery()
 				}else{
-					saveQuery()}
+					saveQuery()
+				}
 			}
 		} catch (error) {
 			showWarningMessage(error)
@@ -269,7 +287,7 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 		const unit  = (options.unit === null || options?.unit === "Default") ? undefined : options.unit
 		const prefix = (options.prefix === null || options?.prefix === "Default") ? undefined : options.prefix
 		const decimal = (options.decimal === null || options.decimal === "Default") ? undefined : options.decimal
-		const pos = (options.pos === null || options.pos === "") ? undefined : options.pos
+		const pos = (options.pos === null || options.pos === "") ? undefined : "["+options.pos+"]"
 		delete val.options.prefix
 		delete val.options.unit
 		delete val.options.decimal
