@@ -2,7 +2,7 @@ import * as $  from 'jquery';
 
 
 // TODO: refactor into two functions monitorSettings and graphicSettings 
-// probably use a call inside de monitorSetting and made a parent function in here that call de other two 
+// use state controlled variables
 // FIXME: Graphic.js will now call both functions
 
 
