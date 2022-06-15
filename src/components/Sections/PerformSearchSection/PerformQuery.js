@@ -182,7 +182,9 @@ function PerformQuery(props) {
 			let startAt = 0;
 			if ((qs?.paginating && pagination?.active) || qs?.download)
 			{
-				startAt = pagination.actualPage-1
+				if(pagination?.actualPage && pagination?.actualPage !== 0){
+					startAt = pagination.actualPage-1
+				}
 			}
 			const beginDate = timeQuery.beginDate.replace(/\s{1}/,"@")+".000"
 			const endDate 	= timeQuery.endDate.replace(/\s{1}/,"@")+".000"
@@ -193,7 +195,7 @@ function PerformQuery(props) {
 			const url = beginDate+"/"+endDate+"/"+sampling+"?"+queryRest+"&"+page+"&"+length;
 
 			const action = (qs?.download) ? "download" : (qs?.query) ? "query" : "search"; // this is for log purposes
-			console.log(`URL:  ${window.location.href.replace('3006', '')}:${REACT_APP_SERVER_PORT}/rest/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
+			console.log(`URL: ${window.location.href.replace('3006', REACT_APP_SERVER_PORT)}/rest/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
 			return url
 		} catch (error) {
 			console.error(error)
@@ -405,10 +407,6 @@ function PerformQuery(props) {
 							<em className="default-select-sampling">Sampling</em>
 							</MenuItem>
 							<MenuItem value={0}>Default</MenuItem>
-							{/* <MenuItem value={1000}>1 millisecond</MenuItem>
-							<MenuItem value={2000}>2 milliseconds</MenuItem>
-							<MenuItem value={5000}>5 milliseconds</MenuItem>
-							<MenuItem value={10000}>10 milliseconds</MenuItem> */}
 							<MenuItem value={100000}>100 milliseconds</MenuItem>
 							<MenuItem value={200000}>200 milliseconds</MenuItem>
 							<MenuItem value={500000}>500 milliseconds</MenuItem>
@@ -422,15 +420,13 @@ function PerformQuery(props) {
 							<MenuItem value={600000000}>10 minutes</MenuItem>
 							<MenuItem value={3600000000}>1 hour</MenuItem>
 							<MenuItem value={7200000000}>2 hours</MenuItem>
-							{/* <MenuItem value={43200000000}>12 hours</MenuItem> */}
-							{/* <MenuItem value={86400000000}>1 day</MenuItem> */}
 						</Select>
 					</FormControl>
 					</Stack>
 				</div>
 				<div className="perform-query-buttons-box">
 					<Stack spacing={1}>
-						{ // Advance options component Multi axis
+						{ // Advance options component
 						// <AdvancedOptions />
 						}
 						<div className="flex-row">
@@ -446,26 +442,9 @@ function PerformQuery(props) {
 							>
 								Search & Display
 							</LoadingButton>
-							{
-							/*
-							* Cancel Button
-							*/
-							}
-							{/*<LoadingButton
-							onClick={() => {
-								handleCancelQuery();
-							}}
-							disabled={cancelQuery}
-							loading={loadingCancelQuery}
-							loadingPosition="start"
-							className="perfrom-query-button-cancel-data"
-							variant="contained"
-							startIcon={<StopCircleIcon />}
-							>
-							</LoadingButton>*/}
 						</div>
 
-						{ // Only Download data component
+						{ // Only_Download data component
 							<DownloadEmailData 
 								service ={props.serviceIP} 
 								checkOnSubmit={checkOnSubmit}
@@ -480,7 +459,6 @@ function PerformQuery(props) {
 							Store Queries
 								<SaveQuery 
 									convertToUnix={convertToUnix}
-									constructURL={constructURL}
 									timeQuery={timeQuery}
 									editing={editing}
 								/>
