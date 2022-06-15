@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { editingQuery, handleSelectedElemets } from '../../../../actions';
+import { editingQuery, handleSelectedElemets, setloadingButton } from '../../../../actions';
 import {
 	insertQuery,
 	updateQuery
@@ -76,6 +76,7 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
     const [queryName, setQueryName] = useState("")
 	const [ifSameQueryName, setifSameQueryName] = useState(true)
     const [queryDescription, setQueryDescription] = useState("")
+	const [infoUpdateDescription, setInfoUpdateDescription] = useState("");
     const [openBackDrop, setOpenBackDrop] = useState(false)
     const [monitorList, setMonitorList] = useState([""]);
 
@@ -137,10 +138,7 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	 */
 	const checkIfQueryEditing = (newValue) => {
 		setQueryName(newValue)
-		if(newValue === editing.name)
-			setifSameQueryName(true)
-		else
-			setifSameQueryName(false)
+		setifSameQueryName((newValue === editing.name))
 	}
 
 	/*
@@ -160,15 +158,11 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 				showWarningMessage("Name field cannot be empty")
 			}
 			else if(!testRegex(queryName, REACT_APP_QUERY_NAME_PATTERN)){
-				showWarningMessage("name cannot have special characters other than '_-@.' and must not have spaces.")
+				showWarningMessage("name cannot have special characters other than '_-@.()'")
 			}
 			else{
 				backDropLoadOpen()
-				if(editing?.active && ifSameQueryName){
-					handleUpdateQuery()
-				}else{
-					saveQuery()
-				}
+				fnSaveQuery()
 			}
 		} catch (error) {
 			showWarningMessage(error)
@@ -179,22 +173,23 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	 * dispatch stop editing action
 	 */
 	const stopEditing = () => {
-		dispatch(handleSelectedElemets('removeAll', null, null, null))
+		// dispatch(handleSelectedElemets('removeAll', null, null, null))
 		dispatch(editingQuery({active: false}))
 		setQueryName("")
 		setQueryDescription("")
+		setInfoUpdateDescription("")
 	}
 
 	/*
-	* reset name and description inputs fields if editing 
-	*/
-	const reset = () => {
+	 * reset name and description inputs fields if editing 
+	 */
+	const resetInputs = () => {
 		setQueryName(editing?.name)
 		setQueryDescription(editing?.description)
 		setifSameQueryName(true)
 	}
 	/*
-	 * reset querie monitor
+	 * reset query monitors
 	 */
 	// const resetMonitors = () => {
 	// 	dispatch(handleSelectedElemets('addMultiple', null, editing?.monitors_, null))
@@ -203,45 +198,25 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	/*
 	 * save query on data base
 	 */
-	const saveQuery = () => {
+	const fnSaveQuery = () => {
 		const payload = createPayload()
-		console.log("payload", JSON.stringify(payload))
-		Promise.resolve(insertQuery(payload))
+		const fnAction = (editing?.active && ifSameQueryName) ? () => updateQuery(queryName, payload) : () => insertQuery(payload)
+		Promise.resolve( fnAction() )
 		.then(() =>{
 			if(editing?.active){
+				if(ifSameQueryName && queryDescription !== editing.description){
+					editing["description"] = queryDescription
+					dispatch(editingQuery(editing))
+				}
+				setQueryDescription(editing.description) // input
+				setInfoUpdateDescription((ifSameQueryName) ? queryDescription : editing.description) // info text
+				setQueryName(editing.name)
+				setifSameQueryName(true)
+			}else{
 				setQueryName("")
 				setQueryDescription("")
 			}
 			handleCloseSaveQuery()
-			// if (editing?.active) {stopEditing()} // TODO: ??
-			handleMessage({
-				message: "Query save successfully!",
-				type: "success",
-				persist: false,
-				preventDuplicate: false
-			})
-		})
-		.catch((error) =>{
-			console.error(error)
-			const error_message = (error?.response?.message) ? error.response.message : error.message
-			showErrorMessage(error_message)
-		}).finally(() => {
-			backDropLoadClose()
-		})
-	}
-
-	/*
-	 * update query on data base
-	 */
-	const handleUpdateQuery = () => {
-		const payload = createPayload()
-		Promise.resolve(updateQuery(editing.name, payload))
-		.then(() => {
-			handleCloseSaveQuery()
-			if (editing?.action) {
-				console.log("hola");
-				stopEditing()
-			}
 			handleMessage({
 				message: "Query save successfully!",
 				type: "success",
@@ -386,7 +361,13 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 						Now executing the query: <i>{editing?.name}</i> 
 					</div>
 					<div className="save-query-editing-message">
-						Descirption: <i>{(editing.description === "") ? "No desciption provided" : editing?.description }</i> 
+						Descirption: <i>{
+						(editing.description === "") 
+						? "No desciption provided" 
+						: (infoUpdateDescription === "") 
+						? editing.description
+						: infoUpdateDescription  // if description was edited, shows the current description without doing another petition to the server
+						}</i> 
 					</div>
 				</>
 				:
@@ -540,7 +521,7 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 											size="small"
 											className={classes.resetQueryButton}
 											onClick={() => {
-												reset()
+												resetInputs()
 											}}
 											startIcon={<RestartAltIcon />}
 											variant="contained"
