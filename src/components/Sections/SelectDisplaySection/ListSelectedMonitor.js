@@ -44,7 +44,21 @@ import ButtonMagnitudeReference from './OptionsBarSection/ButtonMagnitudeReferen
 // import RangeThresholdsOptions from './OptionsBarSection/RangeThresholdsOptions';
 
 
-
+const cubeSpinnerImg = () => {
+	return (
+		<>
+		   <div className="spinner">
+			   <div></div>
+			   <div></div>
+			   <div></div>
+			   <div></div>
+			   <div></div>
+			   <div></div>
+		   </div>
+		   <div className="spinner-text">Getting data...</div>
+		</>
+	)
+}
 
 
 function ListSelectedMonitor(props) {
@@ -287,9 +301,14 @@ function ListSelectedMonitor(props) {
 			/>
 			{
 				(startloadingGraphic) ? 
-					<div className="img-load-svg-box">
-						<img src={loadingSls} alt='loading.....' className="img-load-svg" /> 
-					</div>
+					// <div className="img-load-svg-box">
+					// 	<img src={loadingSls} alt='loading.....' className="img-load-svg" /> 
+					// </div>
+					<div className="spinner-box">
+                        {
+                            cubeSpinnerImg()
+                        }
+                    </div>
 				: 
 					<Graphic />
 			}

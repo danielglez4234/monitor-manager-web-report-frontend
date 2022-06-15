@@ -95,6 +95,55 @@ function ListComponentMonitor() {
 
 	const [connectionError, setConnectionError] = useState(false)
 
+//
+	//const testordenate = () => {
+	//	const columns = [
+	//		{name: "date", id: 1},
+	//		{name: "time", id: 0},
+//
+	//		{name: "mag1", id: 11, type: "s"},
+	//		{name: "mag2", id: 12, type: "d"},
+	//		{name: "mag3", id: 13, type: "D"}, 
+	//		{name: "mag3", id: 13, type: "D"},
+	//		{name: "mag3", id: 13, type: "D"},
+	//		{name: "mag5", id: 14, type: "9"}, 
+	//		{name: "mag5", id: 14, type: "9"}
+	//	]
+	//	const samples = [1, 2, 3, 4, 5, 6, 7]
+	//	const monitorOptions = [
+	//		{name: "mag5", id: 11, options: {foo: "w5"}},
+	//		{name: "mag3", id: 12, options: {foo: "w3"}},
+	//		{name: "mag1", id: 13, options: {foo: "w1"}}, 
+	//		{name: "mag2", id: 14, options: {foo: "w2"}}
+	//	]
+//
+	//	let b = 0;
+    //    let prevMonitorName = columns[2].name.split("[");
+//
+	//	let dateAndValues = [];
+	//	for (let i = 2; i < columns.length; i++) {
+	//		
+	//		let monitorName = columns[i].name.split("[");
+	//		if (monitorName[0] !== prevMonitorName[0])
+	//		{
+	//			b = b + 1;
+	//			prevMonitorName = monitorName;
+	//		}
+	//		
+	//		dateAndValues.push(
+	//			{
+	//				samples: samples[i-2], 
+	//				...monitorOptions[b]
+	//			}
+	//		)
+	//	}
+//
+	//	console.log("dateAndValues", JSON.stringify(dateAndValues))
+//
+	//}
+
+
+
 
 
 	/*
@@ -134,6 +183,9 @@ function ListComponentMonitor() {
 	useEffect(() => {
 		$("#initialImg").removeClass('display-none') // return to default state
 		loadComponents()
+
+		// TEST DEBUG: 
+		//testordenate()
 	}, [])
 
 	/*
@@ -268,8 +320,11 @@ function ListComponentMonitor() {
 	const handleSearchMonitors = value => {
 		$('.monitors-list-items').scrollTop(0)
 		const fuse = new Fuse(data_monitors, {
-			keys: ['magnitude']
+			// threshold: 0,
+			keys: ["magnitude"],
+			// keys: ["magnitude", "type"],
 		});
+		// const results = fuse.search({$and: [{magnitude: value}, { type: "e" }]})
 		const results = fuse.search(value)
 		const searchResult = results.map(result => result.item)
 		if (value === '')
@@ -406,6 +461,7 @@ function ListComponentMonitor() {
 						{
 							component_clicked
 						}
+						{/* TODO: botones de selección multiple ["TAGS" => "scalar enum boolean array array2D state"] */}
 					</p>
 					</div>
 

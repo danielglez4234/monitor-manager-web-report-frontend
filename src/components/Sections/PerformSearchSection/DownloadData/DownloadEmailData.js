@@ -142,10 +142,10 @@ function DownloadEmailData(props){
 				persist: false,
 				preventDuplicate: false
 			})
-			if (type === 'CSV')
+			// if (type === 'CSV')
 				downloadToCsv(res)
-			else if (type === 'JSON')
-				downloadToJson(res)
+			// else if (type === 'JSON')
+			// 	downloadToJson(res)
 		})
 		.catch(error => {
 			console.error(error)
@@ -202,11 +202,12 @@ function DownloadEmailData(props){
 				More download formats will be added in the future.
 			</DialogContentText>
 			<div className="donwload-typeSelect-box">
-				<p className="text">Type</p>
-				<select className="downloadType-select">
-				<option value="CSV">CSV</option>
-				<option value="JSON">JSON</option>
-				</select>
+				<p className="download-text">Type:</p>
+				<p className="download-text-type">CSV</p>				
+				{/* <select className="downloadType-select">
+					<option value="CSV">CSV</option>
+					<option value="JSON">JSON</option>
+				</select> */}
 			</div>
 			</DialogContent>
 			<DialogActions>
