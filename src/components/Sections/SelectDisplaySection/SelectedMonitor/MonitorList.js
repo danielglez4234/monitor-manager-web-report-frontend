@@ -119,7 +119,7 @@ function MonitorList({diActivateReload}) {
 			setOnSelect(false)
 			setCountMonitors(monitor.length)
 			setSelectedElements(monitor)
-				blinkAnimation()
+				// blinkAnimation()
 		}
 		else 
 		{

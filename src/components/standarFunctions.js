@@ -23,6 +23,24 @@
 			return true;
 		return false;
 	}
+
+   /*
+    * This function say if a monitor is a magnitude or no.
+    */
+	export const fnIsBoolean = (type) => {
+		if (type === "b")
+			return true;
+		return false;
+	}
+   /*
+    * This function say if a monitor is a magnitude or no.
+    */
+	export const fnIsEnum = (type) => {
+		if (type === "e")
+			return true;
+		return false;
+	}
+
   /*
    * This function say if a monitor is a scalar monitor or no.
    */

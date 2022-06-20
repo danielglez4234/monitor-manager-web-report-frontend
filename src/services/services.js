@@ -81,7 +81,7 @@ export const getAllQuerys = () => {
  *  GET specific query
  */
 export const getQuery = (id) => {
-    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/query/"+encodeURI(id), {header: httpHeaderOptions})
+    return axios.get(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${encodeURI(id)}`, {header: httpHeaderOptions})
             .then(res => res.data)
 }
 
@@ -89,7 +89,7 @@ export const getQuery = (id) => {
  * POST a new query
  */
 export const insertQuery = (payload) => {
-    return axios.post(REACT_APP_SERVICES_IP + "/WebReport/rest/query/", payload, {header: httpHeaderOptions})
+    return axios.post(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/`, payload, {header: httpHeaderOptions})
             .then(res => res.data)
 }
 
@@ -99,7 +99,7 @@ export const insertQuery = (payload) => {
  */
 export const updateQuery = (name, payload) => {
     const replacePad = fnReplacePad(encodeURI(name));
-    return axios.put(REACT_APP_SERVICES_IP + "/WebReport/rest/query/"+replacePad, payload, {header: httpHeaderOptions})
+    return axios.put(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${replacePad}`, payload, {header: httpHeaderOptions})
             .then(res => res.data)
 }
 
@@ -108,6 +108,6 @@ export const updateQuery = (name, payload) => {
  */
 export const deleteQuery = (id) => {
     const replacePad = fnReplacePad(encodeURI(id));
-    return axios.delete(REACT_APP_SERVICES_IP + "/WebReport/rest/query/"+replacePad, {header: httpHeaderOptions})
+    return axios.delete(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${replacePad}`, {header: httpHeaderOptions})
             .then(res => res.data)
 }

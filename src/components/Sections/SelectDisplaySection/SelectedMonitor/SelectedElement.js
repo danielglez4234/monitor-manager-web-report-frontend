@@ -244,6 +244,7 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 									<span>MagnitudeType: { (monitorData?.magnitudeType?.name) ? monitorData.magnitudeType.name : ""} - </span>
 								:             
 									<span>unit: <span className="default-unit">{ monitorData.unit }</span> - </span>
+									// <span>st</span>
 								}
 							</>
 						}

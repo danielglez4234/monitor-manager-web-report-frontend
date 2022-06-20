@@ -1,4 +1,4 @@
-import React, { useEffect, useRef }  from 'react';
+import React, { useEffect, useRef, useState }  from 'react';
 
 import { useSelector }    from 'react-redux';
 import getGraphicoptions  from './getGraphicoptions';
@@ -22,37 +22,143 @@ import PopUpMessage from '../../../handleErrors/PopUpMessage';
 
 
 
+/*
+ * get the index of the element of the second array that matches it
+ */
+const getIndexFromID = (fromArray, inArray) => {
+	const result = []
+	fromArray.map((val) => {
+		const index = inArray.map(object => object.id).indexOf(val.id)
+		if(index !== -1)
+			result.push(index)
+	})
+	return result
+}
+
+
 function Graphic() {
-	//const isInitialMount      = useRef(true);
-	const { enqueueSnackbar } = useSnackbar();
-	const getResponse         = useSelector(state => state.getResponse);
-	const reload              = useSelector(state => state.reload);
-	const [msg, handleMessage]= PopUpMessage();
+	const [msg, handleMessage] = PopUpMessage();
+	const getResponse          = useSelector(state => state.getResponse);
+	const monitor 			   = useSelector(state => state.monitor)
+	const reload               = useSelector(state => state.reload);
+	const searchErrors         = useSelector(state => state.searchErrors);
 
-	let info = [];
-	let root;
+	const [nodataRecive, setNodataRecive] = useState(false);
+	const [error, setError] = useState(false);
+
+	/*
+	 * if data search error is send
+	 */
+	useEffect(() => {
+		setError(searchErrors)
+   	}, [searchErrors])
+
+//    /*
+//     * handle tranform value from server for display
+//     */
+//    const setSampleForGraphic = (date, value, logarithm) => {
+//     //  let parseValue = (value % 1 !== 0) ? parseFloat(value) : parseInt(value)
+//     let parseValue = parseFloat(value)
+//     let setSampleData = {
+//        	"time_sample": parseInt(date),
+//        	"value": (logarithm) ? Math.log10(parseValue) : parseValue
+//      }
+//     if (logarithm && parseValue === 0 || isNaN(setSampleData.value)) {
+//        	handleMessage({ 
+// 			message: 'Error: Logarithm can\'t have zero values, disabled the Logarithm option and click reload', 
+// 			type: 'error', 
+// 			persist: false,
+// 			preventDuplicate: true
+//       	});
+//     }
+//     return setSampleData
+//    }
+   	/*
+	 * handle tranform value from server for display
+	 */
+	const buildGraphicValues = (date, _value, logarithm) => {
+		const time_sample = parseInt(date)
+		const value = (logarithm) ? Math.log10(parseFloat(_value)) : parseFloat(_value)
+		if (logarithm && value === 0 || isNaN(value)) {
+			handleMessage({ 
+				message: 'Error: Logarithm can\'t have zero values, disabled the Logarithm option and click reload', 
+				type: 'error', 
+				persist: false,
+				preventDuplicate: true
+			});
+		}
+		else{
+			return { time_sample, value }
+		}
+	}
+
+	/*
+	 * create data for configuration in graphic
+	 */
+	const arrangeData = (res) => {
+		try {
+			const columns_ = res.responseData.columns
+			const samples_ = res.responseData.samples
+			const graphicOptions = getGraphicoptions()
+		
+			const info_ = []
+			// we delete this to fields to match the monitor graphic options indexes
+			if(columns_[0].name === "TimeStamp"){
+				columns_.shift() // delete timeStamp
+				columns_.shift() // delete timeStampLong
+			}
+			const indexOfFrom_ = getIndexFromID(columns_, monitor)
+			columns_.map((columns_row, index) => {
+				const optionsIndex = indexOfFrom_[index]
+				const options = (optionsIndex !== undefined) ?  monitor[optionsIndex].options : monitor[0].options
+		
+				const dateAndSamples_ = []
+				samples_.map((sample_val) => {
+					const date = sample_val[1].substring(0, sample_val[1].length - 3)
+					let value  = sample_val[index+2] // +2 => jumping timestamp and timestampLong
+					
+					const isMagnuted = columns_row.stateOrMagnitudeValuesBind
+					if (typeof isMagnuted !== "undefined" && isMagnuted !== null)
+						value = isMagnuted[value]
+		
+					if (value !== ""){
+						// if (value > options.limit_min && value < options.limit_max){
+							dateAndSamples_.push( buildGraphicValues(date, value, options.logarithm) )
+						// }
+					}
+				})
+	
+				let unit = ""
+				let sTitle = columns_row.sTitle
+				if(graphicOptions.general.legendTrunkName){
+					sTitle = sTitle.split("/")
+					sTitle = sTitle[sTitle.length - 1]
+				}
+				if(columns_row.unit === null){ 
+					unit = columns_row.unit.abbreviature 
+				}
+				const position = (columns_row.position === -1) ? " " : " /" + columns_row.position 
+				const data = {
+					sTitle: sTitle,
+					name: sTitle + position,
+					unit: unit,
+					data: dateAndSamples_,
+					sampling_period: columns_row.storagePeriod
+				}
+				info_.push({...data, ...options})
+			})
+			return info_
+		} catch (error) {
+			handleMessage({ 
+				message: error, 
+				type: 'error', 
+				persist: false,
+				preventDuplicate: true
+			});
+		}
+	}
 
 
-   /*
-    * handle tranform value from server for display
-    */
-   const setSampleForGraphic = (date, value, logarithm) => {
-    //  let parseValue = (value % 1 !== 0) ? parseFloat(value) : parseInt(value)
-    let parseValue = parseFloat(value)
-    let setSampleData = {
-       	"time_sample": parseInt(date),
-       	"value": (logarithm) ? Math.log10(parseValue) : parseValue
-     }
-    if (logarithm && parseValue === 0 || isNaN(setSampleData.value)) {
-       	handleMessage({ 
-			message: 'Error: Logarithm can\'t have zero values, disabled the Logarithm option and click reload', 
-			type: 'error', 
-			persist: false,
-			preventDuplicate: true
-      	});
-    }
-    return setSampleData
-   }
 
   /*
    *  Chart initialization
@@ -65,26 +171,23 @@ function Graphic() {
    * this function do as like the componentDidMount, componentDidUpdate and componentWillUnmount at the same time.
    *
    */
+let root;
+
 useEffect(() => {
     // Create root element
     root = am5.Root.new("chartdiv");
     root.fps = 40;
 
-    //if (isInitialMount.current)
-    //{
-     //  isInitialMount.current = false;
-    //}
-    //else
-    //{
 	if (getResponse.length === 0)
 	{
+		setNodataRecive(false)
 		$('.no-data-error-message').addClass('display-none');
 	}
       else
 	  {
-        // if(getResponse.responseData.samples === undefined){
         if(!getResponse.responseData?.samples)
 		{
+			setNodataRecive(true)
           	$('.no-data-error-message').removeClass('display-none'); // remove div No Data Recibe
           	$("#initialImg").addClass('display-none');
         }
@@ -97,97 +200,25 @@ useEffect(() => {
           	if (graphicOptions.general.microTheme) { setThemes.push(am5themes_Micro.new(root)) }
           	root.setThemes(setThemes);
 
-          	const dataSamples     = getResponse.responseData.samples;
-          	const dataColumns     = getResponse.responseData.columns;
-          	const sampling_period = getResponse.sampling_period;
+			const sampling_period = getResponse.sampling_period
+			const graphicData = arrangeData(getResponse)
 
-          	let b = 0;
-          	let prevMonitorName = dataColumns[2].sTitle.split("[");
-
-          	for (let a = 2; a < dataColumns.length; a++)
-          	{
-				let dateAndValues = [];
-				let handleValueSample;
-				/*
-				 * compare if the selected monitor is an array. if it is the selected options will be set the same as all of them
-				 */
-				let monitorName = dataColumns[a].sTitle.split("[");
-				if (monitorName[0] !== prevMonitorName[0])
-				{
-					b = b + 1;
-					prevMonitorName = monitorName;
-				}
-
-				for (let n = 0; n < dataSamples.length; n++)
-				{
-					let epochDateInMilliSeconds = dataSamples[n][1];
-					epochDateInMilliSeconds = epochDateInMilliSeconds.substring(0, epochDateInMilliSeconds.length - 3);
-
-				if ((typeof dataColumns[a].stateOrMagnitudeValuesBind !== "undefined")
-					 && (dataColumns[a].stateOrMagnitudeValuesBind !== null))
-				{
-					handleValueSample = dataColumns[a].stateOrMagnitudeValuesBind[dataSamples[n][a]];
-				}
-				else
-				{
-					handleValueSample = dataSamples[n][a];
-				}
-				if (handleValueSample !== "")
-				{
-					if (handleValueSample > graphicOptions.valueMIN[b] && handleValueSample < graphicOptions.valueMAX[b])
-					{
-						// REFACTOR: (usando un map)
-						// TODO: cambiar nombres de las variables a unos mas coherentes
-						dateAndValues.push(setSampleForGraphic(epochDateInMilliSeconds, handleValueSample, graphicOptions.logarithm[b]));
-					}
-				}
-			}
-
-            let sTitle = dataColumns[a].sTitle;
-            if (graphicOptions.general.legendTrunkName) 
-            { 
-              sTitle = sTitle.split("/"); sTitle = sTitle[sTitle.length - 1]; 
-            };
-
-            let position = (dataColumns[a].position === -1) ? " " :" /" + dataColumns[a].position;
-			let unitAbbr = (dataColumns[a].unit === null) ? "" : dataColumns[a].unit.abbreviature
-            let monitorinfo = {
-						title: sTitle,
-						name: sTitle + position,
-						data: dateAndValues,
-						sampling_period: dataColumns[a].storagePeriod,
-						unit: unitAbbr, 
-						valueMIN: graphicOptions.valueMIN[b],
-						valueMAX: graphicOptions.valueMAX[b],
-						positionAxisY: graphicOptions.positionAxisY[b],
-						positionAxisX: graphicOptions.positionAxisX[b],
-						graphic:{
-								color: graphicOptions.color[b],
-								type: graphicOptions.graphicType[b],
-								logarithm: graphicOptions.logarithm[b],
-								strokeWidth: graphicOptions.strokeWidth[b],
-								canvasWidth: graphicOptions.canvasWidth[b],
-								filled: graphicOptions.filled[b],
-								curved: graphicOptions.curved[b],
-								dotted: graphicOptions.dotted[b]
-							},
-						};
-            info.push(monitorinfo);         
-        }
-			generateGraphic(info, graphicOptions, sampling_period);
-			$('.no-data-error-message').addClass('display-none');
+			console.log("graphicData", graphicData)
+			// generateGraphic(graphicData, graphicOptions, sampling_period);
+			$('.no-data-error-message').addClass('display-none')
+			setNodataRecive(false)
         }
         else
         {
-          	$('.no-data-error-message').removeClass('display-none'); // Show No Data Recibe
+			$('.no-data-error-message').removeClass('display-none') // Show No Data Recibe
+			setNodataRecive(true)
         }
       }
-    //}
-    // store current value of root
-    root.current = root;
-    // Restore root element when update
+
+    // store current value of root and restore root element when update
+    root.current = root
     return () => {
-      	root.dispose();
+      	root.dispose()
     }
   }, [getResponse, reload]);
 
@@ -217,15 +248,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
     // let ifFormat = (generalOptions.general.numberFormat !== "") ? generalOptions.general.numberFormat : "#";
     const sciNotation = (generalOptions.general.scientificNotation) ? "e" : "";
     root.numberFormatter.setAll({
-		// numberFormat: numberFormat,
 		numberFormat: "#" + sciNotation,
-		// smallNumberThreshold: 0.001
-		// bigNumberPrefixes: [
-		//   { "number": 1e+4 }
-		// ],
-		// smallNumberThreshold: [
-		//   { "number": 1e-4 },
-		// ]
     });
 
     /*
@@ -251,7 +274,6 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
      * ***WARNING*** on this version the exponential format is up to 7, this wont work on the plugin: 1e-8, +etc...
      */
     yRenderer = am5xy.AxisRendererY.new(root, {
-		// inversed: true
 		opposite: false,
     });
     // hide grid
@@ -271,7 +293,6 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
      */
     xRenderer = am5xy.AxisRendererX.new(root, {
 		minGridDistance: 100,
-		// inversed: true
     });
     // hide grid
     if (!generalOptions.general.grid) {
@@ -283,15 +304,13 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
      */
     let millisecondBaseCount;
     let totalSum = 0;
-    let totalLength = info.length;
-    let numSampling;
+    const totalLength = info.length;
     if (sampling_period === 0) 
     {
 		for (let n = 0; n < info.length; n++) 
 		{
-			// let ifsampling = (info[n].sampling_period === "null") ? 2000000 : info[n].sampling_period;
-			let ifsampling = (info[n].sampling_period === "") ? 2000000 : info[n].sampling_period;
-			numSampling = Math.trunc(ifsampling) / 1000; // tranform to milliseconds
+			const ifsampling = (info[n].sampling_period === "") ? 2000000 : info[n].sampling_period;
+			const numSampling = Math.trunc(ifsampling) / 1000; // tranform to milliseconds
 			totalSum += numSampling;
 		}
 		millisecondBaseCount = totalSum / totalLength; 
@@ -349,8 +368,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 		let setTooltip = am5.Tooltip.new(root, {
 			exportable: false,
 			pointerOrientation: "horizontal",
-			// labelText:  `[bold]{name}[/]\n{valueX.formatDate('yyyy-MM-dd HH:mm:ss.SSS')}\n[bold]{valueY}\n[/]Unit: ${info.unit}`
-			labelText:  `[bold]{name}[/]\n{valueX.formatDate('yyyy-MM-dd HH:mm:ss.SSS')}\n[bold]{valueY}[/] ${info.unit}`
+			labelText: `[bold]{name}[/]\n{valueX.formatDate('yyyy-MM-dd HH:mm:ss.SSS')}\n[bold]{valueY}[/] ${info.unit}`
 		});
 		if (generalOptions.general.tooltip) { properties["tooltip"] = setTooltip };
 		if (info.graphic.curved) { properties["curveFactory"] = d3.curveBumpX };
@@ -388,7 +406,6 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 		/*
 		 * Set Series line weight and dasharray view
 		 */
-		// let handleCanvasArray = (info[y].graphic.canvasWidth === "1" && info[y].graphic.canvasWidth !== undefined) ? false : info[y].graphic.canvasWidth.split(",");
 		let handleStroke;
 		let stroke = info[y].graphic.strokeWidth;
 		if      (stroke === "Medium") { handleStroke = 2 }
@@ -405,18 +422,16 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 		else if (caNv === "Dotted Dashed") { handleCanvasArray = ["10", "5", "2", "5"] }
         else { handleCanvasArray = false }
 
-		// series.strokes.template.setAll({
-		//   strokeWidth: info[y].graphic.strokeWidth,
-		//   strokeDasharray: handleCanvasArray
-		// });
-
+		/*
+		 * Set Stroke
+		 */
 		series.strokes.template.setAll({
 			strokeWidth: handleStroke,
 			strokeDasharray: handleCanvasArray
 		});
 
 		/*
-		 * Set filled series
+		 * Set filled
 		 */
 		if (info[y].graphic.filled) {
 			series.fills.template.setAll({
@@ -426,7 +441,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 		}
 
 		/*
-		 * Set bullets to series
+		 * Set bullets
 		 */
 		if (info[y].graphic.dotted) {
 			series.bullets.push(function() {
@@ -608,39 +623,36 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 		<div className="display-grafic-section">
 			<div id="chartdiv" className="grafic-box">
 
-			{/* The Graphic will be display here  */}
+			{/* The Graphic will be display here  => id="chartdiv"*/}
 
 			{/*
 			Initial Return State to 'ListSelectedMonitors',
 			the class of 'initialImg' is remove onces when the component 'ListSelectedMonitors' mounts, then When
-			the useEffect is update here it will lose this propertie and the display-none class will be set again by default
+			the useEffect is updated here it will lose this propertie and the display-none class will be set again by default
 			resulting in that it will never show up a second time
 			*/}
 			<InsertChartIcon id="initialImg" className="display-none" />
 			{/* --- --- --- */}
-
-			{/* If there is no data the dislpay-none class of data error will be remove */}
-			<div className="no-data-error-message display-none">
-				<LiveHelpIcon className="icon-no-data help-icon" />
-				<MoreHorizIcon className="icon-no-data dot-icon" />
-				<p>No Data Available.</p>
-				<p>Try to use a different date range or a different Monitor.</p>
-			</div>
-
 			{
-			// (responseError) ?
-			// 	<div className="no-data-error-message display-none"> 
-			// 		<NearbyErrorIcon className="icon-no-data help-icon error-color" />
-			// 		{/* <MoreHorizIcon className="icon-no-data dot-icon" /> */}
-			// 		<p>An Error has Ocurred.</p>
-			// 		<p>Try to use a different date range or a different Monitor</p>
-			// 		<p>If the Error persist</p>
-			// 		<p>please contact the administrators.</p>
-			// 	</div>
-			// : ""
+			(nodataRecive) ?
+					<div className="no-data-error-message">
+						<LiveHelpIcon className="icon-no-data help-icon" />
+						<MoreHorizIcon className="icon-no-data dot-icon" />
+						<p>No Data Available.</p>
+						<p>Try to use a different date range or a different Monitor.</p>
+					</div>
+				:
+				(error) ? 
+					<div className="no-data-error-message"> 
+						<NearbyErrorIcon className="icon-no-data help-icon error-color" />
+						{/* <MoreHorizIcon className="icon-no-data dot-icon" /> */}
+						<p>An error has ocurred!</p>
+						<p>If the error persist</p>
+						<p>please contact the administrators.</p>
+					</div>
+				: ""
 			}
 			</div>
-			{/*<div id="legendContainer"></div>*/}
 		</div>
 	);
 }

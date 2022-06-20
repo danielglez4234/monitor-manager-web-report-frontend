@@ -20,9 +20,10 @@ import {
  } from '@mui/x-data-grid';
  import Pagination from '@mui/material/Pagination';
 import { styled } from '@mui/material/styles';
-import { Box, Button,Popover, Typography,  IconButton, Dialog, DialogTitle, DialogActions } from '@mui/material';
+import { Box, Button,Popover, Typography,  IconButton, Dialog, DialogTitle, DialogActions, Tooltip } from '@mui/material';
 
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import UploadIcon from '@mui/icons-material/Upload';
 
 
@@ -127,7 +128,7 @@ function CustomPagination() {
   }
 
 
-export default function QueryTable({openViewQuery, setEditingQuery}) {
+export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	const dispatch = useDispatch()
 	const [msg, handleMessage] = PopUpMessage()
 	const [rows, setRows] = useState([])
@@ -147,6 +148,17 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
     const handleCloseConfirmDelete = () => setOpenConfirm(false);
 
 	/*
+	 * calculate text width in the DOM
+	 */
+	const getTextWidth = (text, font) => {
+		const canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"))
+		const context = canvas.getContext("2d")
+		context.font = font
+		const metrics = context.measureText(text)
+		return Math.trunc(metrics.width)
+	}
+
+	/*
 	 * show popover value on the cell 
 	 */
 	const handlePopoverOpen = (event) => {
@@ -156,7 +168,8 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 			const data = rows.find((r) => r.id === id)
 			if(field === "name" || field === "description" || field === "creation_time" || field === "update_time")
 			{
-				if(data[field].length > 20) // if greater than 17 characters aply tooltip
+				const textWidth = getTextWidth(data[field], "400 0.875rem Roboto")
+				if(textWidth > event.currentTarget.clientWidth) // if greater than textWidth aply tooltip
 				{
 					setRowPopOverValue(data[field])
 					setAnchorEl(event.currentTarget)
@@ -228,10 +241,10 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 			}
 			else if(item?.id_monitor_description){
 				monitorData = item.id_monitor_description
-				item.options["prefix"] = item.prefix
-				item.options["unit"] = item.unit
+				item.options["prefix"] 	= item.prefix
+				item.options["unit"] 	= item.unit
 				item.options["decimal"] = item.decimal
-				item.options["pos"] = item.pos
+				item.options["pos"] 	= item.pos
 				monitorList.push({component_id, name, ...monitorData, options})
 			}
 			else{
@@ -245,12 +258,12 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 	/*
 	 * start editing query
 	 */
-	const handleEditQuery = (query) => {
+	const handleLoadQuery = (query, edit) => {
 		const monitors_ = getArrageMonitorList(query.row.monitorInfo)
-		delete query.row["monitorInfo"] 										// NOTE: hace falta??
+		delete query.row["monitorInfo"]
 		dispatch(handleSelectedElemets('addMultiple', null, monitors_, null))
-		dispatch(editingQuery({active: true, ...query.row}))
-		// dispatch(editingQuery({active: true, ...{...query.row, monitors_}}))
+		handleCloseSaveQuery()
+		if(edit) dispatch(editingQuery({active: true, ...query.row}))
 	}
 
 	/*
@@ -268,55 +281,69 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 	/*
 	 * set action iconButtons
 	 */
-	const loadButton = (cellValues) => {
+	const actionsButtons = (cellValues) => {
 		return (
-			<IconButton 
-				color="primary" 
-				aria-label="load"
-				onClick={(event) => {
-					handleEditQuery(cellValues);
-				}}
-			>
-				<UploadIcon className="rotate90"/>
-			  </IconButton>
-		  );
-	}
-	const deleteButton = (cellValues) => {
-		return (
-			<IconButton 
-				color="error" 
-				aria-label="delete"
-				onClick={(event) => {
-					handleOpenConfirmDelete(getQueryId(cellValues))
-				}}
-			>
-				<DeleteIcon />
-			  </IconButton>
-		  );
+			<>
+			<Tooltip title="Load">
+				<IconButton
+					color="primary"
+					aria-label="load"
+					onClick={(event) => {
+						handleLoadQuery(cellValues);
+					}}
+				>
+					<UploadIcon className="rotate90 blue-iconcolor"/>
+				</IconButton>
+			</Tooltip>
+			<Tooltip title="Edit">
+				<IconButton
+					color="secondary"
+					aria-label="load"
+					onClick={(event) => {
+						handleLoadQuery(cellValues, true);
+					}}
+				>
+					<EditIcon className="gray-iconcolor" />
+				</IconButton>
+			</Tooltip>
+			<Tooltip title="Delete">
+				<IconButton
+					color="error"
+					aria-label="delete"
+					onClick={(event) => {
+						handleOpenConfirmDelete(getQueryId(cellValues))
+					}}
+				>
+					<DeleteIcon className="red-iconcolor" />
+				</IconButton>
+			</Tooltip>
+			</>
+		);
 	}
 
 	/*
 	 * create table data
 	 */
-	const createTableHeads = (field, type, width, sortable, filterable, hide, disableColumnMenu, actionCell, cellType) => {
+	const createTableHeads = (field, type, width, sortable, filterable, hide, disableColumnMenu, actionCell) => {
 		try {
+			const flex = (actionCell) ? null : 1
+			const hideable = false
+			const headerClassName = 'store-query-table-headers'
 			const renderCell = (actionCell) ? {
 				renderCell: (cellValues) => {
-					if(cellType === "load")
-						return loadButton(cellValues)
-					else if(cellType === "delete")
-						return deleteButton(cellValues)
+					return actionsButtons(cellValues)
 				}
 			} : undefined;
 			return {
-					headerClassName: 'store-query-table-headers',
+					headerClassName,
+					hideable,
+					flex,
 					field,
 					type,
 					width,
-					hide,
 					sortable,
 					filterable,
-					hideable: false,
+					hide,
 					disableColumnMenu,
 					...renderCell
 				}
@@ -326,11 +353,6 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 	}
 	const createRows = (rows) => {
 		try {
-			const monitorInfo = [
-				...rows?.magnitudeDescriptions, 
-				...rows?.monitorDescriptions, 
-				...rows?.states
-			]
 			const id = rows?.id
 			const name = rows?.name
 			const description = rows?.description
@@ -338,15 +360,16 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 			const creation_time = rows?.creation_time
 			const update_time = rows?.update_time
 			const sampling = rows?.sampling
+			const monitorInfo = [...rows?.magnitudeDescriptions, ...rows?.monitorDescriptions, ...rows?.states]
 			return {
-				sampling,
-				monitorInfo, 
 				id,
 				name,
 				description,
 				created_by,
 				creation_time,
-				update_time
+				update_time,
+				sampling,
+				monitorInfo 
 			}
 		} catch (error) {
 			console.error(error)
@@ -357,16 +380,15 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 	 * columns heads
 	 */
 	const columnHeads = [
-		createTableHeads("sampling",   	  null,     null,true,  false, true,  false, false, null),
-		createTableHeads("monitorInfo",   null,     null,true,  false, true,  false, false, null),
-		createTableHeads("id", 			  "number", 70,  true,  true,  false, false, false, null),
-		createTableHeads("name", 		  "text", 	153, true,  true,  false, false, false, null),
-		createTableHeads("description",   "text", 	150, true,  true,  false, false, false, null),
-		createTableHeads("created_by", 	  "text", 	115, true,  true,  false, false, false, null),
-		createTableHeads("creation_time", "text", 	160, true,  true,  false, false, false, null),
-		createTableHeads("update_time",   "text", 	160, true,  true,  false, false, false, null),
-		createTableHeads("load", 		  null, 	65,  false, false, false, true,  true,  "load"),
-		createTableHeads("delete", 		  null, 	75,  false, false, false, true,  true,  "delete")
+		createTableHeads("sampling",   	  null,     null, true,  false, true,  false, false),
+		createTableHeads("monitorInfo",   null,     null, true,  false, true,  false, false),
+		createTableHeads("id", 			  "number", null, true,  true,  true,  false, false),
+		createTableHeads("name", 		  "text", 	null, true,  true,  false, false, false),
+		createTableHeads("description",   "text", 	null, true,  true,  false, false, false),
+		createTableHeads("created_by", 	  "text", 	null, true,  true,  true,  false, false),
+		createTableHeads("creation_time", "text", 	null, true,  true,  false, false, false),
+		createTableHeads("update_time",   "text", 	null, true,  true,  false, false, false),
+		createTableHeads("Actions", 	   null, 	175,   false, false, false, true,  true)
 	]
 
 	/*
@@ -438,7 +460,7 @@ export default function QueryTable({openViewQuery, setEditingQuery}) {
 					},
 				  }}
 				loading={loadingQuerys}
-				rows={(rows.length > 0) ? rows : []} //TODO: sin esta comprobocación de momento el icono de "no Rows" no salta.
+				rows={(rows.length > 0) ? rows : []} //TODO: sin esta comprobocación de momento el icono de "no Rows" no salta a pesar de que rows en un array.
 				// rows={row}
 				columns={columnHeads}
 			/>

@@ -31,7 +31,7 @@ const usesTyles = makeStyles({
 })
 
 
-function ViewHandleQuery({constructURL}) {
+function ViewHandleQuery() {
 	const classes = usesTyles()
 	const [openViewQuery, setOpenViewQuery] = useState(false)
 
@@ -72,6 +72,7 @@ function ViewHandleQuery({constructURL}) {
 								{
 									<QueryTable
 										openViewQuery={openViewQuery}
+										handleCloseSaveQuery={handleCloseSaveQuery}
 									/>
 								}
 							</Grid>

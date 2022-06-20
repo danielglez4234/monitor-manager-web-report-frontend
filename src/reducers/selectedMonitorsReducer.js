@@ -2,25 +2,12 @@ const selectedMonitorsReducer = (state = [], action) => {
   switch(action.type) {
     case 'add':
       const data = action.data
-      const reOrderMonitors = [
-        ...state,
+      return [
         { 
-          ...data
+          ...data,
         },
+        ...state
       ]
-      let first = []
-      let others = []
-      let last = []
-      for (var i = 0; i < reOrderMonitors.length; i++) {
-          if (reOrderMonitors[i]["type"] === "e" || reOrderMonitors[i]["type"] === "b")
-              first.push(reOrderMonitors[i])
-          else if(reOrderMonitors[i]["type"] === "state")
-              last.push(reOrderMonitors[i])
-          else
-              others.push(reOrderMonitors[i])
-      }
-      return [...first, ...others, ...last]
-
 
     case 'addMultiple':
       return state = action.data
