@@ -46,7 +46,7 @@ function ButtonMagnitudeReference({magnitudeTitles, magnitudeReferences}) {
 			let fieldsAndVal = Object.entries(refere)
 			for (let a = 0; a < fieldsAndVal.length; a++) {
 				references.push(
-					<div className="references-values-box">
+					<div key={fieldsAndVal[a][1]} className="references-values-box">
 						<div className="references-values-labels">{fieldsAndVal[a][0]}</div>
 						<div className="references-values-values">{fieldsAndVal[a][1]}</div>
 					</div>
@@ -63,6 +63,7 @@ function ButtonMagnitudeReference({magnitudeTitles, magnitudeReferences}) {
      * Handle graphic options OPEN popover
      */
     const handleClickOpenList = () => {
+		console.log("hola?=>")
       	$('.graphOpt-box-magnitude-ref').toggleClass('display-none');
       	$('.close_rangeZone-magnitude-ref').toggleClass('display-none');
     };

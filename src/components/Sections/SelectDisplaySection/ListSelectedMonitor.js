@@ -263,6 +263,7 @@ function ListSelectedMonitor(props) {
 	 * Check if exists magnitudes and return button component with values references
 	 */
 	const checkIfExistsMagnitudes = (data) => {
+		console.log("data", JSON.stringify(data));
 		let titles = []
 		let references = []
 		for (let a = 2; a < data.length; a++) 
@@ -332,16 +333,20 @@ function ListSelectedMonitor(props) {
 						<ButtonGeneralOptions />
 					}
 					{
-						(graphicStillLoading && getResponse.length !== 0) ?
-							(getResponse.responseData.length !== 0 && getResponse.responseData.samples.length > 0) ?
+						console.log("graphicStillLoading: => ", graphicStillLoading)
+					}
+					{
+						// (!startloadingGraphic && getResponse.length !== 0) ?
+							(getResponse?.responseData.length !== 0 && getResponse?.responseData?.samples.length > 0) ?
 								checkIfExistsMagnitudes(getResponse.responseData.columns)
 							: ""
-						: ""
+						// : ""
 					}
 					{
 						// <RangeThresholdsOptions />
 					}
 				</div>
+
 				{
 					(startloadingGraphic && pagination?.active === false) ? "" :
 					(totalResponseData.length === 0) ? "" :

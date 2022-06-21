@@ -2580,6 +2580,7 @@ table.save-query-table-monitor-list tr:nth-child(odd)
 
 .graphOpt-box-magnitude-ref{
   position: absolute;
+  width: 240px;
   top: -243px;
   background-color: #45505e;
   text-align: left;

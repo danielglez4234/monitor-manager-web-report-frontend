@@ -120,7 +120,8 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	const color_St = 		(monitorData?.options?.color) ? monitorData?.options?.color : ""
 	const pos_St = 			(monitorData?.options?.pos) ? monitorData?.options?.pos : ""
 
-	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type) || fnIsState(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0];
+	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0];
+	// const isEnumOrMonitor = (fnIsMagnitude(monitorData.type) || fnIsState(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0];
 	const graphic_type_St = (monitorData?.options?.graphic_type) ? monitorData?.options?.graphic_type : isEnumOrMonitor
 	const stroke_St = 		(monitorData?.options?.stroke) ? monitorData?.options?.stroke : strokeOpts[0]
 	const canvas_St = 		(monitorData?.options?.canvas) ? monitorData?.options?.canvas : canvasOpts[0]
@@ -278,7 +279,7 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 					<div className="monitor-selected-item-title-box">
 						<p className="monitor-selected-item-title monitor-name">
 							{
-								(!fnIsMagnitude(monitorData.type)) ?
+								(!fnIsMagnitude(monitorData.type) && !fnIsState(monitorData.type)) ?
 								<>
 									<LtTooltip
 										title={ 

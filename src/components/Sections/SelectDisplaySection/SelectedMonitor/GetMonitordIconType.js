@@ -1,5 +1,6 @@
 import CircleIcon                   from '@mui/icons-material/Circle';
 import DonutSmallIcon               from '@mui/icons-material/DonutSmall';
+import DeblurIcon 					from '@mui/icons-material/Deblur';
 import {
   fnIsState,
   fnIsMagnitude,
@@ -35,7 +36,7 @@ const GetMonitordIconType = ({type}) => {
 	 * if state
 	 */
 	if (fnIsState(type))
-		defineIcon = <CircleIcon className ="color-type-indicator_state" />
+		defineIcon = <DeblurIcon className ="color-type-indicator_state" />
 
 	return(
 		<div className="monitor-seleted-typeIcon">
