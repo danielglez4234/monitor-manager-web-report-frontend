@@ -332,11 +332,11 @@ function ListSelectedMonitor(props) {
 						<ButtonGeneralOptions />
 					}
 					{
-						// (!startloadingGraphic && getResponse.length !== 0) ?
-							(getResponse?.responseData.length !== 0 && getResponse?.responseData?.samples.length > 0) ?
+						(graphicStillLoading && getResponse.length !== 0) ?
+							(getResponse.responseData.length !== 0 && getResponse.responseData.samples.length > 0) ?
 								checkIfExistsMagnitudes(getResponse.responseData.columns)
 							: ""
-						// : ""
+						: ""
 					}
 					{
 						// <RangeThresholdsOptions />
