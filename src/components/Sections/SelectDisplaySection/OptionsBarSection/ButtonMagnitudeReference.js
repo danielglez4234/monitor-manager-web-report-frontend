@@ -63,7 +63,6 @@ function ButtonMagnitudeReference({magnitudeTitles, magnitudeReferences}) {
      * Handle graphic options OPEN popover
      */
     const handleClickOpenList = () => {
-		console.log("hola?=>")
       	$('.graphOpt-box-magnitude-ref').toggleClass('display-none');
       	$('.close_rangeZone-magnitude-ref').toggleClass('display-none');
     };

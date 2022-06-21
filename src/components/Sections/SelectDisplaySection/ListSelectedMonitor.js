@@ -89,6 +89,9 @@ function ListSelectedMonitor(props) {
 	const [infoSamplesByPage, setInfoSamplesByPage]   = useState(0);
 	const [infoTotalSamples, setInfoTotalSamples]     = useState(0);
 
+	const [references, setReferences] = useState([]);
+	const [referenceComponent, setReferenceComponent] = useState([]);
+
 
 
   /*
@@ -112,6 +115,8 @@ function ListSelectedMonitor(props) {
 				setPage(1) // default page
 				setDisabled(false)
 				setActivatePagination((totalPages <= 1) ? false : true)
+
+				checkIfExistsMagnitudes(getResponse.responseData.columns)
 			}
 			else 
 			{
@@ -263,22 +268,26 @@ function ListSelectedMonitor(props) {
 	 * Check if exists magnitudes and return button component with values references
 	 */
 	const checkIfExistsMagnitudes = (data) => {
-		let titles = []
-		let references = []
-		for (let a = 2; a < data.length; a++) 
-		{
-			if ((typeof data[a].stateOrMagnitudeValuesBind !== "undefined") && (data[a].stateOrMagnitudeValuesBind !== null))
+		try {
+			const titles = []
+			const references = []
+			for (let a = 2; a < data.length; a++) 
 			{
-				titles.push(data[a].sTitle)
-				references.push(data[a].stateOrMagnitudeValuesBind)
+				if (data[a]?.stateOrMagnitudeValuesBind !== null)
+				{
+					titles.push(data[a].sTitle)
+					references.push(data[a].stateOrMagnitudeValuesBind)
+				}
 			}
-		}
-		if (references.length > 0) 
-		{
-			return <ButtonMagnitudeReference 
-						magnitudeTitles={titles}
-						magnitudeReferences={references}
-					/>;
+			setReferences(references)
+			setReferenceComponent(titles)
+		} catch (error) {
+			handleMessage({
+				message: error, 
+				type: 'error', 
+				persist: true,
+				preventDuplicate: false
+			})
 		}
 	}
 
@@ -332,9 +341,14 @@ function ListSelectedMonitor(props) {
 						<ButtonGeneralOptions />
 					}
 					{
-						(graphicStillLoading && getResponse.length !== 0) ?
+						(getResponse.length !== 0) ?
 							(getResponse.responseData.length !== 0 && getResponse.responseData.samples.length > 0) ?
-								checkIfExistsMagnitudes(getResponse.responseData.columns)
+								(references.length > 0) ?
+									<ButtonMagnitudeReference 
+										magnitudeTitles={referenceComponent}
+										magnitudeReferences={references}
+									/>
+								: ""
 							: ""
 						: ""
 					}

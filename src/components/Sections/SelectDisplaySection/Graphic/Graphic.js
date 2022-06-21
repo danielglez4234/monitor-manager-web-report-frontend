@@ -123,8 +123,8 @@ function Graphic() {
 						if (typeof isMagnuted !== "undefined" && isMagnuted !== null){
 							value = isMagnuted[value]
 						}
-						const min_l = (options.limit_min === "") ? -Infinity : options.limit_min // -9e+99
-						const max_l = (options.limit_max === "") ? Infinity  : options.limit_max // 9e+99
+						const min_l = (options.limit_min === "") ? -Infinity : options.limit_min
+						const max_l = (options.limit_max === "") ? Infinity  : options.limit_max
 						if (value > min_l && value < max_l){
 							dateAndSamples_.push( buildGraphicValues(date, value, options.logarithm) )
 						}
@@ -176,9 +176,8 @@ function Graphic() {
 let root;
 
 useEffect(() => {
-    // Create root element
-    root = am5.Root.new("chartdiv");
-    root.fps = 40;
+    root = am5.Root.new("chartdiv") // Create root element =ref=> <div id="chartdiv"></div>
+    root.fps = 40
 
 	if (getResponse.length === 0)
 	{
@@ -193,9 +192,9 @@ useEffect(() => {
 		}
 		else if (getResponse.responseData.samples.length > 0)
 		{
-			const graphicOptions = getGraphicoptions();
+			const graphicOptions = getGraphicoptions()
 
-			let setThemes = [];
+			const setThemes = []
 			if (graphicOptions.general.animations) { setThemes.push(am5themes_Animated.new(root)) }
 			if (graphicOptions.general.microTheme) { setThemes.push(am5themes_Micro.new(root)) }
 			root.setThemes(setThemes)
@@ -203,10 +202,13 @@ useEffect(() => {
 			const sampling_period = getResponse.sampling_period
 			const graphicData = arrangeData(getResponse)
 
-			if(graphicData !== undefined){
+			if(graphicData !== undefined)
+			{
 				generateGraphic(graphicData, graphicOptions, sampling_period)
 				setNodataRecive(false)
-			}else{
+			}
+			else
+			{
 				handleMessage({ 
 					message: "Este error no debería aparecer. entra en pánico! y contacta al administrador!!", 
 					type: 'error', 
