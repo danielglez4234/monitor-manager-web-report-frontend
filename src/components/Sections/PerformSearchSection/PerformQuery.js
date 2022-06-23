@@ -194,8 +194,8 @@ function PerformQuery(props) {
 
 			const url = beginDate+"/"+endDate+"/"+sampling+"?"+queryRest+"&"+page+"&"+length;
 
-			const action = (qs?.download) ? "download" : (qs?.query) ? "query" : "search"; // this is for log purposes
-			console.log(`URL: ${window.location.href.replace('3006', REACT_APP_SERVER_PORT)}/rest/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
+			// const action = (qs?.download) ? "download" : (qs?.query) ? "query" : "search"; // this is for log purposes
+			// console.log(`URL: ${window.location.href.replace('3006', REACT_APP_SERVER_PORT)}/rest/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
 			return url
 		} catch (error) {
 			console.error(error)

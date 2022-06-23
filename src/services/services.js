@@ -1,11 +1,18 @@
 import axios from "axios";
-
-// apaño temporal hacia el backend --> replace '###' por %23 forzando el cambio de esta forma para evitar errores
-const fnReplacePad = (val) => { return val.replace(/#/g, '%23') }
 /*
  * get server name from .env
  */
-const { REACT_APP_SERVICES_IP } = process.env;
+const { REACT_APP_SERVICES_IP, REACT_APP_SERVER_PORT } = process.env;
+
+// apaño temporal hacia el backend --> replace '###' por %23 forzando el cambio de esta forma para evitar errores
+const fnReplacePad = (val) => { return val.replace(/#/g, '%23') }
+
+/*
+ * log url request in console
+ */
+const logUrl = (params, route, action) => {
+    console.log(`URL - ${action}: ${window.location.href.replace('3006', REACT_APP_SERVER_PORT)}/rest/${route}/${encodeURI(params).replace(/#/g,'%23')}`);
+}
 
 /*
  * set headers properties to avoid CORS rejection
@@ -37,6 +44,7 @@ export const getMonitorsFromComponent = (componentName) => {
  */
 export const getDataFromServer = ({url}) => {
     const replacePad = fnReplacePad(encodeURI(url));
+    logUrl(replacePad, "search", "GET")
     return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/search/" + replacePad, {header: httpHeaderOptions})
             .then(res => res.data)
 }
@@ -46,6 +54,7 @@ export const getDataFromServer = ({url}) => {
  */
 export const getDownloadData = ({url}) => {
     const replacePad = fnReplacePad(encodeURI(url));
+    logUrl(replacePad, "download", "GET")
     return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/download/" + replacePad, {header: httpHeaderOptions})
             .then(res => res.data)
 }
@@ -89,6 +98,7 @@ export const getQuery = (id) => {
  * POST a new query
  */
 export const insertQuery = (payload) => {
+    logUrl(payload, "query", "POST")
     return axios.post(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/`, payload, {header: httpHeaderOptions})
             .then(res => res.data)
 }
@@ -99,6 +109,7 @@ export const insertQuery = (payload) => {
  */
 export const updateQuery = (name, payload) => {
     const replacePad = fnReplacePad(encodeURI(name));
+    logUrl(replacePad, "query", "PUT")
     return axios.put(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${replacePad}`, payload, {header: httpHeaderOptions})
             .then(res => res.data)
 }
