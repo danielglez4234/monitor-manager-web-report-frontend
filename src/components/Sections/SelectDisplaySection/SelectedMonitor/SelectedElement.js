@@ -27,40 +27,12 @@ import AnnouncementIcon     from '@mui/icons-material/Announcement';
 /*
  * Set oprions 'select' inputs 
  */
-const graphicOpts = [
-	"Line Series",
-	"Step Line Series"
-]
-const strokeOpts = [
-	"Light",
-	"Medium",
-	"Bold",
-	"Bolder"
-]
-const canvasOpts = [
-	"Default",
-	"Dotted",
-	"Dashed",
-	"Large Dashed",
-	"Dotted Dashed"
-]
-const patternOpts = [
-	"Default",
-	"0.#",
-	"0.##",
-	"0.###",
-	"0.####",
-	"0.#####",
-	"0.######",
-	"0.#######",
-	"0.########"
-]
-const unitOpt = [ // dynamic
-	"Default"
-] 
-const prefixOpt = [ // dynamic
-	"Default"
-]
+const graphicOpts = [ "Line Series", "Step Line Series" ]
+const strokeOpts = [ "Light", "Medium", "Bold", "Bolder" ]
+const canvasOpts = [ "Default", "Dotted", "Dashed", "Large Dashed", "Dotted Dashed"]
+const patternOpts = [ "Default", "0.#", "0.##", "0.###", "0.####", "0.#####", "0.######", "0.#######", "0.########" ]
+const unitOpt = [ "Default" ]
+const prefixOpt = [ "Default" ]
 
 /*
  * Apply changes warning message
@@ -104,7 +76,7 @@ const handleClickOpenSettings = (id) => {
 
 function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	const loadWhileGetData = useSelector(state => state.loadingGraphic)
-	const editing = useSelector(state => state.editingQuery) // FIXME: eliminar editing
+	const editing = useSelector(state => state.editingQuery) // REFACTOR: eliminar editing
 	const [disableWhileSearching, setDisableWhileSearching] = useState(false)
 
 	/*
@@ -144,17 +116,15 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	const [stroke, setStroke] = useState(stroke_St)
 	const [canvas, setCanvas] = useState(canvas_St)
 	const [unit, setUnit] = useState(unit_St)
-	const [prefix, setPrefix] = useState(prefix_St) // REFACTOR: unidad y prefijo Default text
+	const [prefix, setPrefix] = useState(prefix_St)
 	const [decimal, setDecimal] = useState(decimal_St)
 
 	// REFACTOR:
 	useEffect(() => {
-		if(editing?.active){
 			checkLog(monitorData?.options?.logarithm , id)
 			checkCurved(monitorData?.options?.curved, id)
 			checkFilled(monitorData?.options?.filled, id)
 			checkEnableColor(monitorData?.options?.enabled_color, id)
-		}
 	}, [editing]);
 	/*
 	 * handle get options
@@ -172,10 +142,10 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 				canvas,
 				enabled_color,
 				color,
-				pos:	 (fnIsArray(monitorData.type)) ? pos : null, // optional field // TODO: meter en fnExits
-				prefix:  fnIfExistDefault(prefix),     		// optional field
-				unit:  	 fnIfExistDefault(unit),		  	// optional field
-				decimal: fnIfExistDefault(decimal)	  		// optional field
+				pos:	 (fnIsArray(monitorData.type)) ? pos : null, // optional field // TODO: fnExits
+				prefix:  fnIfExistDefault(prefix),     				 // optional field
+				unit:  	 fnIfExistDefault(unit),		  			 // optional field
+				decimal: fnIfExistDefault(decimal)	  				 // optional field
 			}
 		}
 	}

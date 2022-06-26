@@ -119,11 +119,6 @@ function ListComponentMonitor() {
 		.finally(() => { 
 			setLoadingComponent(false)
 		});
-		// var mon = ["component", "arbitrario", "nosecomo", "Fresa" ,"Manzana", "Banana", "Repollo", "Nabo", "Rábano", "Zanahoria"];
-		// setData_components(mon);
-		// setResultQueryComponent(mon);
-		// setResultQueryComponent(mon);
-		// setLoadingComponent(false);
 	}
 	
 	/*
@@ -132,9 +127,6 @@ function ListComponentMonitor() {
 	useEffect(() => {
 		$("#initialImg").removeClass('display-none') // return to default state
 		loadComponents()
-
-		// TEST DEBUG: 
-		//testordenate()
 	}, [])
 
 	/*
@@ -190,23 +182,6 @@ function ListComponentMonitor() {
 				console.error(error)
 			})
 		}
-		// var monirr = [
-		// 	{magnitude:'aldebran' ,type:'D', id:123},
-		// 	{magnitude:'cofin' ,type:'e',id:789}, 
-		// 	{magnitude:'alpapn' ,type:'s', id:567}, 
-		// 	{magnitude:'doble' ,type:'7', id:7824},
-		// 	{magnitude:'doble1' ,type:'9', id:734},
-		// 	{magnitude:'doble2' ,type:'6', id:879},
-		// 	{magnitude:'dobl3e' ,type:'b', id:154},
-		// 	{magnitude:'doble4' ,type:'e', id:756},
-		// 	{magnitude:'doble56' ,type:'s', id:246},
-		// ];
-		// setData_monitors(monirr);
-		// setResultQueryMonitor(monirr);
-		// setComponent_clicked(title);
-		// setNoMonitorsAvailable(false);
-		// setInitialStateMonitors(false);
-		// setLoadingMonitors(false);
 	}
 
 	/*

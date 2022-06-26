@@ -30,7 +30,6 @@ import {
 }
 from '../../standarFunctions'
 
-
 // --- Model Component elements
 import LoadingButton                            from '@mui/lab/LoadingButton';
 import {Stack, MenuItem, FormControl, Select }  from '@mui/material';
@@ -41,12 +40,12 @@ import ArrowRightIcon            from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon             from '@mui/icons-material/ArrowLeft';
 // import StopCircleIcon            from '@mui/icons-material/StopCircle';
 
-
 import DownloadEmailData from './DownloadData/DownloadEmailData';
 // import AdvancedOptions from './AdvancedOptions';
 import SaveQuery     	 from './StroreQuerys/SaveQuery';
 import ViewHandleQuery 	 from './StroreQuerys/handleQuerys/ViewHandleQuery';
 import PopUpMessage      from '../../handleErrors/PopUpMessage';
+import constructURL		 from './constructUrl'
 
 
 const { REACT_APP_SERVER_PORT } = process.env
@@ -108,111 +107,13 @@ function PerformQuery(props) {
 		}
 	}, [editing]);
 
-  	/*
-	 * Build url with monitors and place index if necessary
-	 */
-	const constructURL = (qs) =>{
-		try {			
-			let queryRest = "";
-			for (let i = 0; i < monitor.length; i++)
-			{
-				const infoMonitor = monitor[i];
-				const type = infoMonitor.type
-				const id = infoMonitor.id
-				const name = infoMonitor.name
-				/* 
-				 * magnitud("b","e"); scalar("d","f","l","s","o"); arrays("D","F","L","S","O"); doubleArrays("9","8","7","6","5");
-				 * state("state");
-				 */
-				queryRest += "id" + getCategory(type) + "=";
-				if (fnIsScalar(type))
-				{
-					queryRest += id;
-				}
-				else if (fnIsArray(type))
-				{
-					// Get Index
-					let index = $(".Index" + id).text();
-					if (index === '/') 
-					{
-						index = "[[-1]]";
-						queryRest += id + index;
-					}
-					else 
-					{
-						index = "[" + index + "]";
-						queryRest += id + index;
-					}
-				}
-				else if (fnIsState(type))
-				{
-					queryRest += name;
-				}
-				else
-				{
-					showErrorMessage('Error: Type is not supported. \n Please contact the system administrator.')
-				}
-				if(!fnIsMagnitude(type) || !fnIsState(type))
-				{
-					const unit    = (infoMonitor.options.unit    !== "Default") ? infoMonitor.options.unit    : false
-					const prefix  = (infoMonitor.options.prefix  !== "Default") ? infoMonitor.options.prefix  : false
-					const decimal = (infoMonitor.options.decimal !== "Default") ? infoMonitor.options.decimal : false
-					if (unit || decimal){
-						queryRest += "{"
-						if(unit){
-							queryRest += "unit:" + unit
-							if(prefix){
-								queryRest += ",prefix:" + prefix
-							}
-						}
-						if(decimal){
-							if(unit){
-								queryRest += ","
-							}
-							queryRest += "decimal:" + decimal
-						}
-						queryRest += "}"
-					}
-				}
-				if ((i + 1) < monitor.length)
-				{
-					queryRest += "&";
-				}
-			}
-			let startAt = 0;
-			if ((qs?.paginating && pagination?.active) || qs?.download)
-			{
-				if(pagination?.actualPage && pagination?.actualPage !== 0){
-					startAt = pagination.actualPage-1
-				}
-			}
-			const beginDate = timeQuery.beginDate.replace(/\s{1}/,"@")+".000"
-			const endDate 	= timeQuery.endDate.replace(/\s{1}/,"@")+".000"
-			const sampling  = timeQuery.sampling
-			const page 		= "page=" + startAt
-			const length 	= "length=" + props.urliDisplayLength;
-
-			const url = beginDate+"/"+endDate+"/"+sampling+"?"+queryRest+"&"+page+"&"+length;
-
-			// const action = (qs?.download) ? "download" : (qs?.query) ? "query" : "search"; // this is for log purposes
-			// console.log(`URL: ${window.location.href.replace('3006', REACT_APP_SERVER_PORT)}/rest/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
-			return url
-		} catch (error) {
-			console.error(error)
-		}
-	};
-
-
 	/*
 	 * Get Samples From Server
 	 */
 	const getSamplesFromServer = () => {
-		/*
-		 * we send the data to constructURL because the 'donwload button' uses only the function constructURL 
-		 * to prevent it from being displayed on the graph, and then to be able to pass parameters to the function
-		 */
-		const url = constructURL();
-		dispatch(getUrl(url));
+		// construct url
+		const url = constructURL(monitor, timeQuery, pagination)
+		dispatch(getUrl(url)) // refactor => eliminar
 		// server call
 		Promise.resolve( getDataFromServer({url}) )
 		.then(res => { 
@@ -229,7 +130,7 @@ function PerformQuery(props) {
 				Arrays Recived: " + totalArraysRecive + " \n \
 				total Records: " + totalRecords + " \n \
 				----------------------------------------------------------------"
-			);
+			)
 		})
 		.catch(error => {
 			const error_message = (error.response?.data) ? error.response.data.toString() : "Unsupported error";
@@ -240,12 +141,11 @@ function PerformQuery(props) {
 				persist: true,
 				preventDuplicate: false
 			})
-		console.error(error);
+		console.error(error)
 		})
 		.finally(() => {
-			dispatch(setloadingButton(true));
-			dispatch(loadGraphic(false));
-			$(".block-monitor-selected-when-searching").remove(); // unlock monitor selected section
+			dispatch(setloadingButton(true))
+			dispatch(loadGraphic(false))
 		})
 	}
 
@@ -298,8 +198,8 @@ function PerformQuery(props) {
 	 * Hide Component and monitor list
 	 */
 	const hideAndShowSection = () => {
-		$('.perform-query-section').toggleClass('hide-sections');
-		$('.arrow-showPerfomSection').toggleClass('hide-sections');
+		$('.perform-query-section').toggleClass('hide-sections')
+		$('.arrow-showPerfomSection').toggleClass('hide-sections')
 	}
 	
 	/*
@@ -345,10 +245,10 @@ function PerformQuery(props) {
 			return false
 		}
 		else{
-			if(button_click !== "download"){
+			if(button_click !== "download"){ // refactor llamar constructURL desde download
 				setLoadingSearch(true)
 				dispatch(setActualPage(false, 0, 0)) // reset pagination if it is already display
-				let searchedMonitors = monitor.map(e => e["id"]) // save the monitors id's that where choosen for the search
+				const searchedMonitors = monitor.map(e => e["id"]) // save the monitors id's that where choosen for the search
 				dispatch(hadleSearch(perform, timeQuery.beginDate, timeQuery.endDate, timeQuery.sampling, searchedMonitors))
 				dispatch(setloadingButton(false))
 				dispatch(loadGraphic(true))
@@ -361,7 +261,7 @@ function PerformQuery(props) {
 				/*
 				 * construct the url for download
 				 */
-				return constructURL({download: true})
+				return constructURL(monitor, timeQuery, pagination)
 			}
 			return true
 		}
@@ -444,9 +344,9 @@ function PerformQuery(props) {
 							</LoadingButton>
 						</div>
 
-						{ // Only_Download data component
-							<DownloadEmailData 
-								service ={props.serviceIP} 
+						{ // Only_Download data component // TODO: change file name
+							<DownloadEmailData
+								service ={props.serviceIP}
 								checkOnSubmit={checkOnSubmit}
 							/>
 						}
@@ -465,7 +365,6 @@ function PerformQuery(props) {
 								{
 									(editing?.active) ? "" :
 										<ViewHandleQuery 
-											constructURL={constructURL}
 											editing={editing}
 										/>
 								}

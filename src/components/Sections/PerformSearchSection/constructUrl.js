@@ -1,124 +1,103 @@
-// import { getUnit } from '@mui/material/styles/cssUtils';
-// import React, {useState} from 'react';
-// import {
-//     getCategory,
-//     fnIsScalar,
-//     fnIsArray,
-//     fnIsMagnitude,
-//     fnIsState
-// } from '../../../actions';
-// import {useSelector} from 'react-redux';
+import {
+    getCategory,
+    fnIsScalar,
+    fnIsArray,
+    fnIsMagnitude,
+    fnIsState
+} from '../../standarFunctions';
 
 
-// const { REACT_APP_IDISPLAYLENGTH } = process.env
+const { REACT_APP_IDISPLAYLENGTH } = process.env
 
-// function getPagination(currentUrl, pagination){
-//     const page = "&page=" 
-//     if(pagination?.active || pagination?.download)
-//         return page+pagination.actualPage-1
-// 	return page+0
-// }
+/*
+ * build pagiination params
+ */
+const getPagination = (pagination) => {
+    const pageParam = "&page=" 
+    const length 	= "&length=" + REACT_APP_IDISPLAYLENGTH
+    if(pagination?.active || pagination?.download)
+        return pageParam + (pagination.actualPage-1) + length
+	return pageParam + 0 + length
+}
 
-// function getUrl(monitor, op){
-//     try {			
-//         let queryRest = "";
-//         for (let i = 0; i < monitor.length; i++)
-//         {
-//             const infoMonitor = monitor[i];
-//             const type = infoMonitor.type
-//             const id = infoMonitor.id
-//             /* 
-//              * magnitud("b","e"); scalar("d","f","l","s","o"); arrays("D","F","L","S","O"); doubleArrays("9","8","7","6","5");
-//              * state("state");
-//              */
-//             queryRest += "id" + getCategory(type) + "=";
-//             if (fnIsScalar(type))
-//             {
-//                 queryRest += id;
-//             }
-//             else if (fnIsArray(type))
-//             {
-//                 // Get Index
-//                 let index = infoMonitor.pos
-//                 if (index === '/' || index === null) 
-//                 {
-//                     index = "[[-1]]";
-//                     queryRest += id + index;
-//                 }
-//                 else 
-//                 {
-//                     index = "[" + index + "]";
-//                     queryRest += id + index;
-//                 }
-//             }
-//             else if (fnIsState(type))
-//             {
-//                 queryRest += infoMonitor.component;
-//             }
-//             else
-//             {
-//                 console.error("Error: Type is not supported. \n Please contact the system administrator.")
-//             }
-//             if(!fnIsMagnitude(type) || !fnIsState(type))
-//             {
-//                 const unit    = (infoMonitor.options.unit    !== "Default") ? infoMonitor.options.unit    : false
-//                 const prefix  = (infoMonitor.options.prefix  !== "Default") ? infoMonitor.options.prefix  : false
-//                 const decimal = (infoMonitor.options.decimal !== "Default") ? infoMonitor.options.decimal : false
-//                 if (unit || decimal){
-//                     queryRest += "{"
-//                     if(unit){
-//                         queryRest += "unit:" + unit
-//                         if(prefix){
-//                             queryRest += ",prefix:" + prefix
-//                         }
-//                     }
-//                     if(decimal){
-//                         if(unit){
-//                             queryRest += ","
-//                         }
-//                         queryRest += "decimal:" + decimal
-//                     }
-//                     queryRest += "}"
-//                 }
-//             }
-//             if ((i + 1) < monitor.length)
-//             {
-//                 queryRest += "&";
-//             }
-//         }
-//         const beginDate = op.beginDate.replace(/\s{1}/,"@")+".000"
-//         const endDate 	= op.endDate.replace(/\s{1}/,"@")+".000"
-//         const sampling  = op.sampling
-//         const page 		= getPagination()
-//         const length 	= "length="+REACT_APP_IDISPLAYLENGTH
+/*
+ * build monitor prefix, unit and decimal options
+ */
+const buildOptions = (opt) => {
+    let queryOpt  = String()
+    const unit    = (opt.unit    !== "Default") ? opt.unit    : false
+    const prefix  = (opt.prefix  !== "Default") ? opt.prefix  : false
+    const decimal = (opt.decimal !== "Default") ? opt.decimal : false
+    if (unit || decimal){
+        queryOpt += "{"
+        if(unit){
+            queryOpt += "unit:" + unit
+            if(prefix){
+                queryOpt += ",prefix:" + prefix
+            }
+        }
+        if(decimal){
+            if(unit){
+                queryOpt += ","
+            }
+            queryOpt += "decimal:" + decimal
+        }
+        queryOpt += "}"
+    }
+    return queryOpt
+}
 
-//         const url = beginDate+"/"+endDate+"/"+sampling+"?"+queryRest+"&"+page+"&"+length;
+/*
+ * build time range and sampling params
+ */
+const buildTimeAndSampling = (tm) => {
+    const beginDate = tm.beginDate.replace(/\s{1}/,"@")+".000"
+    const endDate 	= tm.endDate.replace(/\s{1}/,"@")+".000"
+    const sampling  = tm.sampling
+    return { beginDate, endDate, sampling }
+}
 
-//         // const action = (qs?.download) ? "download" : (qs?.query) ? "query" : "search"; // this is for log purposes
-//         // console.log(`URL:  ${window.location.href.replace('3006', '')}:${REACT_APP_SERVER_PORT}/rest/${action}/${encodeURI(url).replace(/#/g,'%23')}`);
-//         return url
-//     } catch (error) {
-//         console.error(error)
-//     }
-// }
-
-
-// function constructUrl(op, pagination) {
-//     const monitor = useSelector(state => state.monitor)
-//     const [currentUrl, setCurrentUrl] = useState(null);
-
-//     if(pagination?.active)
-//     {
-//         if(currentUrl !== null){
-//             return getPagination(currentUrl, pagination)
-//         }
-//     }
-//     else
-//     {
-//         const url = getUrl(monitor, op)
-//         setCurrentUrl(url)
-//         return url
-//     }
-// }
-
-// export default constructUrl;
+/*
+ * buid url params // => main
+ */
+export default function constructUrl(monitors, timeAndSampling, pagination) {
+    try {
+        let queryRest = String()
+        const mlength = monitors.length
+        for (let i = 0; i < mlength; i++)
+        {
+            const infoMonitor = monitors[i];
+            const type = infoMonitor.type
+            const id = infoMonitor.id
+			const component = infoMonitor.name
+            const index = infoMonitor.pos
+ 
+            queryRest += "id" + getCategory(type) + "=";
+            if (fnIsScalar(type)){
+                queryRest += id
+            }else if (fnIsArray(type)){
+                if (index === '/' || index === null){
+                    queryRest += id + "[[-1]]"
+                }else{
+                    queryRest += id + "[" + index + "]"
+                }
+            }else if (fnIsState(type)){
+                queryRest += component
+            }else{
+                console.error("Error: Type is not supported. \n Please contact the system administrator.")
+            }
+            if(!fnIsMagnitude(type) || !fnIsState(type)){
+                queryRest += buildOptions(infoMonitor.options)
+            }
+            if ((i + 1) < mlength){
+                queryRest += "&"
+            }
+        }
+        const tm = buildTimeAndSampling(timeAndSampling)
+        const _pagination = getPagination(pagination)
+        console.log("_pagination", _pagination)
+        return tm.beginDate+"/"+tm.endDate+"/"+tm.sampling+"?"+queryRest+_pagination
+    } catch (error) {
+        console.error(error)
+    }
+}

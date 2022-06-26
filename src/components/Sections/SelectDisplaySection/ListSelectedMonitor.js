@@ -205,8 +205,8 @@ function ListSelectedMonitor(props) {
 		{
 			dispatch(loadGraphic(true))
 
-			let iDisplayLength = pagination.displayLength
-			let actualPage     = pagination.actualPage
+			const iDisplayLength = pagination.displayLength
+			const actualPage     = pagination.actualPage
 
 			// let start = (actualPage * iDisplayLength) - iDisplayLength;
 			let start = actualPage-1
@@ -218,7 +218,6 @@ function ListSelectedMonitor(props) {
 			url[0] += "&page="+ start +"&length="+ iDisplayLength
 			url = url[0]
 
-			console.log("=> WebReport/rest/search/" + url)
 			dispatch(getUrl(url))
 
 			Promise.resolve( getDataFromServer({url}) )
@@ -341,8 +340,8 @@ function ListSelectedMonitor(props) {
 						<ButtonGeneralOptions />
 					}
 					{
-						(getResponse.length !== 0) ?
-							(getResponse.responseData.length !== 0 && getResponse.responseData.samples.length > 0) ?
+						(startloadingGraphic && getResponse.length > 0) ?
+							(getResponse?.responseData.length !== 0 && getResponse?.responseData?.samples.length > 0) ?
 								(references.length > 0) ?
 									<ButtonMagnitudeReference 
 										magnitudeTitles={referenceComponent}

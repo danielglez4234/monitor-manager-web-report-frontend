@@ -98,10 +98,10 @@ function Graphic() {
 					const date = sample_val[1].substring(0, sample_val[1].length - 3)
 					let value  = sample_val[index+2] // +2 => jumping timestamp and timestampLong
 					
-					const isMagnuted = columns_row.stateOrMagnitudeValuesBind
+					const isMagnitude = columns_row.stateOrMagnitudeValuesBind
 					if (value !== ""){
-						if (typeof isMagnuted !== "undefined" && isMagnuted !== null){
-							value = isMagnuted[value]
+						if (typeof isMagnitude !== "undefined" && isMagnitude !== null){
+							value = isMagnitude[value]
 						}
 						const min_l = (options.limit_min === "") ? -Infinity : options.limit_min
 						const max_l = (options.limit_max === "") ? Infinity  : options.limit_max
@@ -139,14 +139,10 @@ function Graphic() {
 
   /*
    *  Chart initialization
-   *  this function do tree mainly things:
-   *    - When the component mount root is initialize, since responseData is empty at the moment nothing is display
-   *    - When responseData suscribtion recive the data the function role again, the change of [responseData] trigger the update of the function
-   *        - same for [reload] it will update the function with the new _propertiesChange
-   *    - The root element from amchart can't be duplicate, we avoid that using the method 'retun () => {...}' to execcute the 'dispose()' when the component unmount
-   *
-   * this function do as like the componentDidMount, componentDidUpdate and componentWillUnmount at the same time.
-   *
+   *   - When the component mount root is initialize, since responseData is empty at the moment nothing is display
+   *   - When responseData suscribtion recive the data the function role again, the change of [responseData] trigger the update of the function
+   *       - same for [reload] it will update the function with the new _propertiesChange
+   *   - The root element from amchart can't be duplicate, we avoid that using the method 'retun () => {...}' to execcute the 'dispose()' when the component unmount
    */
 let root;
 
@@ -185,7 +181,7 @@ useEffect(() => {
 			else
 			{
 				handleMessage({ 
-					message: "Este error no debería aparecer. contacta al administrador!!", 
+					message: "The data could not be processed, please contact the administrator to fix this.", 
 					type: 'error', 
 					persist: false,
 					preventDuplicate: true
@@ -228,7 +224,6 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
     /*
      * Set Root format number for the values recived based if the number is integrer or not
      */
-    // let ifFormat = (generalOptions.general.numberFormat !== "") ? generalOptions.general.numberFormat : "#";
     const sciNotation = (generalOptions.general.scientificNotation) ? "e" : "";
     root.numberFormatter.setAll({
 		numberFormat: "#" + sciNotation,
@@ -370,7 +365,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 		 * Set Graphic type all call configurations function
 		 */
 		let graphtype = info[y].graphic_type;
-			if (graphtype === "Line Series") {
+		if (graphtype === "Line Series") {
 			series = chart.series.push(am5xy.LineSeries.new(root, configuration(info[y])));
 		}
 		else if(graphtype === "Step Line Series") {
@@ -486,7 +481,6 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
     /*
      * Set legends to the chart
      */
-    // if (generalOptions.general.legends) {
     if (generalOptions.general.legends) {
 		let legendSettings = {
 			width: am5.percent(100),
@@ -545,8 +539,8 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 
 
 	/*
-	* Set Cursor XY on the chart
-	*/
+	 * Set Cursor XY on the chart
+	 */
 	chart.set("cursor", am5xy.XYCursor.new(root, {
 		behavior: "zoomX",
 		xAxis: dateAxis
@@ -564,8 +558,8 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 	}
 
 	/*
-	* Set Zoom ScrollBar
-	*/
+	 * Set Zoom ScrollBar
+	 */
 	// Horizontal Zoom
 	scrollbarX = am5.Scrollbar.new(root, {
 		orientation: "horizontal",
@@ -583,8 +577,8 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 	chart.leftAxesContainer.children.push(scrollbarY);
 
 	/*
-	* Set Exporting menu
-	*/
+	 * Set Exporting menu
+	 */
 	exporting = am5exporting.Exporting.new(root, {
 		menu: am5exporting.ExportingMenu.new(root, {}),
 		// dataSource: getResponse.responseData.samples,
@@ -609,7 +603,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 			{/* The Graphic will be display here  => id="chartdiv"*/}
 
 			{/*
-			Initial Return State to 'ListSelectedMonitors',
+			Initial Return State to 'ListSelectedMonitors.js',
 			the class of 'initialImg' is remove onces when the component 'ListSelectedMonitors' mounts, then When
 			the useEffect is updated here it will lose this propertie and the display-none class will be set again by default
 			resulting in that it will never show up a second time

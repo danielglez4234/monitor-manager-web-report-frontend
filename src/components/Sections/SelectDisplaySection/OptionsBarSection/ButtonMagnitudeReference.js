@@ -46,7 +46,7 @@ function ButtonMagnitudeReference({magnitudeTitles, magnitudeReferences}) {
 			let fieldsAndVal = Object.entries(refere)
 			for (let a = 0; a < fieldsAndVal.length; a++) {
 				references.push(
-					<div key={fieldsAndVal[a][1]} className="references-values-box">
+					<div key={i+" "+a} className="references-values-box">
 						<div className="references-values-labels">{fieldsAndVal[a][0]}</div>
 						<div className="references-values-values">{fieldsAndVal[a][1]}</div>
 					</div>

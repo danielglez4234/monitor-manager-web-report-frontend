@@ -382,7 +382,7 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	const columnHeads = [
 		createTableHeads("sampling",   	  null,     null, true,  false, true,  false, false),
 		createTableHeads("monitorInfo",   null,     null, true,  false, true,  false, false),
-		createTableHeads("id", 			  "number", null, true,  true,  true,  false, false),
+		createTableHeads("id", 			  "number", null, true,  false, true,  false, false),
 		createTableHeads("name", 		  "text", 	null, true,  true,  false, false, false),
 		createTableHeads("description",   "text", 	null, true,  true,  false, false, false),
 		createTableHeads("created_by", 	  "text", 	null, true,  true,  true,  false, false),

@@ -1,10 +1,9 @@
 const selectedMonitorsReducer = (state = [], action) => {
   switch(action.type) {
     case 'add':
-      const data = action.data
       return [
         { 
-          ...data,
+          ...action.data,
         },
         ...state
       ]
@@ -20,12 +19,7 @@ const selectedMonitorsReducer = (state = [], action) => {
     case 'removeAll':
       return state = [];
 
-
-    // case 'sort':
-    //   let setB = [...state];
-    //   return setB.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-    
-
+      
     case 'saveOptions':
       const newArr = state.map(obj => {
         if (obj.id === action.id) {
