@@ -1,12 +1,9 @@
-// --- React dependencies
 import React, { useState, useEffect, useRef } from 'react';
 
 import { useSelector } from 'react-redux';
 import { getDownloadData } from '../../../../services/services';
 import * as $          from 'jquery';
 // import emailjs         from '@emailjs/browser';
-
-// --- Model Component elements
 import LoadingButton     from '@mui/lab/LoadingButton';
 import {
 	Button,    
@@ -41,8 +38,8 @@ function DownloadEmailData(props){
 	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
 	/*
-	* Disabled the button when the search is performing
-	*/
+	 * Disable the button when the search is running
+	 */
 	useEffect(() => {
 		if (ifSearching) {
 			setActiveDisabled(true);
@@ -53,9 +50,9 @@ function DownloadEmailData(props){
 
 
 	/*
-	* Handle Open and close download modal
-	* # we dont use prevState function here becouse we are a material ui packege to handle
-	*/
+	 * Handle Open and close download modal
+	 * # we don't use the prevState function here because we are a ui material package to handle it
+	 */
 	const handleClickOpenDonwload = () => {
 		setOpenDonwloadModal(true);
 	};
@@ -65,7 +62,6 @@ function DownloadEmailData(props){
 
 	/*
 	* Handle Open and close email modal
-	*  # we dont use prevState function here becouse we are a material ui packege to handle
 	*/
 	// const handleClickOpenEmail = () => {
 	//   setOpenDonwloadModal(true);
@@ -75,8 +71,8 @@ function DownloadEmailData(props){
 	// };
 
 	/*
-	* Handle download data
-	*/
+	 * Handle download data
+	 */
 	const downloadFile = ({data, fileName, fileType}) => {
 		const blob = new Blob([data], { type: fileType })
 		const a = document.createElement('a')
@@ -92,8 +88,8 @@ function DownloadEmailData(props){
 	}
 
 	/*
-	* download data to CSV
-	*/
+	 * download data to CSV
+	 */
 	const downloadToCsv = (response) => {
 		downloadFile({
 			data: response,
@@ -102,21 +98,10 @@ function DownloadEmailData(props){
 		})
 	}
 
-	/*
-	* download data to JSON
-	*/
-	const downloadToJson = (response) => {
-		downloadFile({
-			data: JSON.stringify(response),
-			fileName: 'data.json',
-			fileType: 'text/json',
-		})
-	}
-
 
 	/*
-	* Handle Send Email
-	*/
+	 * Handle Send Email
+	 */
 	//  const sendEmail = () => {
 	//    emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', emailForm.current, 'YOUR_USER_ID')
 	//      .then((result) => {
@@ -130,10 +115,10 @@ function DownloadEmailData(props){
 	/*
 	 * Get data for donwload
 	 */
-	const getSamplesFromServerForDownload = (type, url) => {
+	const getSamplesFromServerForDownload = (url) => {
 		setLoadingSearch(true);
 		console.log("Downloading.....");
-		Promise.resolve( getDownloadData({url}) )
+		Promise.resolve( getDownloadData(url) )
 		.then(res => {
 			console.log("** Downloaded successfully **");
 			handleMessage({ 
@@ -142,10 +127,7 @@ function DownloadEmailData(props){
 				persist: false,
 				preventDuplicate: false
 			})
-			// if (type === 'CSV')
-				downloadToCsv(res)
-			// else if (type === 'JSON')
-			// 	downloadToJson(res)
+			downloadToCsv(res)
 		})
 		.catch(error => {
 			console.error(error)
@@ -162,7 +144,6 @@ function DownloadEmailData(props){
 		})
 		.finally(() => {
 			setLoadingSearch(false);
-			// $(".block-monitor-selected-when-searching").remove(); // unlock monitor selected section
 		})
 	}
 
@@ -204,10 +185,6 @@ function DownloadEmailData(props){
 			<div className="donwload-typeSelect-box">
 				<p className="download-text">Type:</p>
 				<p className="download-text-type">CSV</p>				
-				{/* <select className="downloadType-select">
-					<option value="CSV">CSV</option>
-					<option value="JSON">JSON</option>
-				</select> */}
 			</div>
 			</DialogContent>
 			<DialogActions>
@@ -217,7 +194,7 @@ function DownloadEmailData(props){
 			<Button 
 				onClick={() => { 
 					handleCloseDonwload(); 
-					getSamplesFromServerForDownload($('.downloadType-select').val(), urlDownload) 
+					getSamplesFromServerForDownload(urlDownload) 
 				}}
 				autoFocus
 			>

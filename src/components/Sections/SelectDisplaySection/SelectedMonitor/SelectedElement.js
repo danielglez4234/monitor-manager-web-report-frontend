@@ -9,30 +9,25 @@ import {
 }
 from '../../../standarFunctions';
 import { LtTooltip } from '../../../../commons/uiStyles';
-// --- Model Component elements
 import {Stack, IconButton, Box, TextField, Autocomplete } from '@mui/material';
-
-// --- Icons
-import CloseIcon                  from '@mui/icons-material/Close';
-import HelpIcon                   from '@mui/icons-material/Help';
-import InfoRoundedIcon            from '@mui/icons-material/InfoRounded';
-
-// --- Get other Components
-import GetMonitordIconType  from './GetMonitordIconType';
-import GetIndexArrayModal   from './GetIndexArrayModal';
-import GetUnitSelecttype    from './GetUnitSelecttype';
-import TuneIcon             from '@mui/icons-material/Tune';
-import AnnouncementIcon     from '@mui/icons-material/Announcement';
+import CloseIcon           from '@mui/icons-material/Close';
+import HelpIcon            from '@mui/icons-material/Help';
+import InfoRoundedIcon     from '@mui/icons-material/InfoRounded';
+import GetMonitordIconType from './GetMonitordIconType';
+import GetIndexArrayModal  from './GetIndexArrayModal';
+import GetUnitSelecttype   from './GetUnitSelecttype';
+import TuneIcon            from '@mui/icons-material/Tune';
+import AnnouncementIcon    from '@mui/icons-material/Announcement';
 
 /*
  * Set oprions 'select' inputs 
  */
 const graphicOpts = [ "Line Series", "Step Line Series" ]
-const strokeOpts = [ "Light", "Medium", "Bold", "Bolder" ]
-const canvasOpts = [ "Default", "Dotted", "Dashed", "Large Dashed", "Dotted Dashed"]
+const strokeOpts  = [ "Light", "Medium", "Bold", "Bolder" ]
+const canvasOpts  = [ "Default", "Dotted", "Dashed", "Large Dashed", "Dotted Dashed"]
 const patternOpts = [ "Default", "0.#", "0.##", "0.###", "0.####", "0.#####", "0.######", "0.#######", "0.########" ]
-const unitOpt = [ "Default" ]
-const prefixOpt = [ "Default" ]
+const unitOpt     = [ "Default" ]
+const prefixOpt   = [ "Default" ]
 
 /*
  * Apply changes warning message
@@ -66,17 +61,15 @@ const handleClickOpenSettings = (id) => {
 	$('.close-settingsMon' + id).toggleClass('display-none')
 }
 
-
-	// REFACTOR:
-	const checkLog = (value, id) => {$(".logarithm"+id).prop('checked', value)}
-	const checkCurved = (value, id) => {$(".curved"+id).prop('checked', value)}
-	const checkFilled = (value, id) => {$(".filled"+id).prop('checked', value)}
-	const checkEnableColor = (value, id) => {$(".enabled_color"+id).prop('checked', value)}
+const checkLog 		   = (value, id) => {$(".logarithm"+id).prop('checked', value)}
+const checkCurved 	   = (value, id) => {$(".curved"+id).prop('checked', value)}
+const checkFilled 	   = (value, id) => {$(".filled"+id).prop('checked', value)}
+const checkEnableColor = (value, id) => {$(".enabled_color"+id).prop('checked', value)}
 
 
 function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	const loadWhileGetData = useSelector(state => state.loadingGraphic)
-	const editing = useSelector(state => state.editingQuery) // REFACTOR: eliminar editing
+	const editing = useSelector(state => state.editingQuery) // refactor =>  eliminar editing
 	const [disableWhileSearching, setDisableWhileSearching] = useState(false)
 
 	/*
@@ -93,7 +86,6 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	const pos_St = 			(monitorData?.options?.pos) ? monitorData?.options?.pos : ""
 
 	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0];
-	// const isEnumOrMonitor = (fnIsMagnitude(monitorData.type) || fnIsState(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0];
 	const graphic_type_St = (monitorData?.options?.graphic_type) ? monitorData?.options?.graphic_type : isEnumOrMonitor
 	const stroke_St = 		(monitorData?.options?.stroke) ? monitorData?.options?.stroke : strokeOpts[0]
 	const canvas_St = 		(monitorData?.options?.canvas) ? monitorData?.options?.canvas : canvasOpts[0]
@@ -119,13 +111,14 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	const [prefix, setPrefix] = useState(prefix_St)
 	const [decimal, setDecimal] = useState(decimal_St)
 
-	// REFACTOR:
+	// => refactor functions
 	useEffect(() => {
 			checkLog(monitorData?.options?.logarithm , id)
 			checkCurved(monitorData?.options?.curved, id)
 			checkFilled(monitorData?.options?.filled, id)
 			checkEnableColor(monitorData?.options?.enabled_color, id)
 	}, [editing]);
+
 	/*
 	 * handle get options
 	 */
@@ -158,14 +151,14 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	}
 
 	/*
-	 *	call save options  
+	 *	call save options action
 	 */
 	const saveOptions = () => {
 		menuHandle('saveOptions', id, getOptions())
 	}
 
 	/*
-	 * store monitor selected options on redux variable
+	 * store the selected monitor options in the redux variable
 	 */
 	useEffect(() => {
 		if(monitorData){
@@ -187,7 +180,6 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 		menuHandle('remove', id, null)
 		diActivateReload()
 	}
-
 
 	/*
 	 * Get Icons
@@ -215,7 +207,6 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 									<span>MagnitudeType: { (monitorData?.magnitudeType?.name) ? monitorData.magnitudeType.name : ""} - </span>
 								:             
 									<span>unit: <span className="default-unit">{ monitorData.unit }</span> - </span>
-									// <span>st</span>
 								}
 							</>
 						}

@@ -1,15 +1,7 @@
-// --- React dependencies
 import React from 'react';
-
-// --- Dependencies
 import * as $         from 'jquery';
 import { LtTooltip }  from '../../../../commons/uiStyles';
-
-// --- Model Component elements
-// import Popover        from '@mui/material/Popover';
 import {IconButton, Box} from '@mui/material';
-
-// --- Icons
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import SettingsIcon              from '@mui/icons-material/Settings';
 import Grid3x3Icon               from '@mui/icons-material/Grid3x3';

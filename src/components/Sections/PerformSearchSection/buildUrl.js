@@ -10,7 +10,7 @@ import {
 const { REACT_APP_IDISPLAYLENGTH } = process.env
 
 /*
- * build pagiination params
+ * build pagination params
  */
 const getPagination = (pagination) => {
     const pageParam = "&page=" 
@@ -60,7 +60,7 @@ const buildTimeAndSampling = (tm) => {
 /*
  * buid url params // => main
  */
-export default function constructUrl(monitors, timeAndSampling, pagination) {
+export default function buildUrl(monitors, timeAndSampling, pagination) {
     try {
         let queryRest = String()
         const mlength = monitors.length
@@ -95,7 +95,7 @@ export default function constructUrl(monitors, timeAndSampling, pagination) {
         }
         const tm = buildTimeAndSampling(timeAndSampling)
         const _pagination = getPagination(pagination)
-        console.log("_pagination", _pagination)
+        
         return tm.beginDate+"/"+tm.endDate+"/"+tm.sampling+"?"+queryRest+_pagination
     } catch (error) {
         console.error(error)

@@ -1,15 +1,10 @@
-// --- React dependencies
 import React, { useState, useEffect } from 'react';
-
-// --- Dependencies
 import * as $  from 'jquery';
 import { getDataFromServer } from '../../../services/services';
-
 import {
 	useDispatch,
 	useSelector
 } from 'react-redux';
-
 import {
 	reloadGrafic,
 	loadGraphic,
@@ -21,20 +16,15 @@ import {
 } from '../../../actions';
 
 import loadingSls    from '../../../commons/img/loadingSls.svg';
-
-// --- Model Component elements
 import {
 	Stack,
 	Button,
 	Pagination,
 	LinearProgress
 } from '@mui/material';
-
-// --- Icons
 import ReplayIcon                   from '@mui/icons-material/Replay';
 import ArrowDropUpIcon              from '@mui/icons-material/ArrowDropUp';
 
-// --- React Components
 //import MenuGraficOrTable from './MenuGraficOrTable';
 import Graphic              from './Graphic/Graphic';
 import MonitorList			from './SelectedMonitor/MonitorList';
@@ -43,7 +33,9 @@ import PopUpMessage         from '../../handleErrors/PopUpMessage';
 import ButtonMagnitudeReference from './OptionsBarSection/ButtonMagnitudeReference'
 // import RangeThresholdsOptions from './OptionsBarSection/RangeThresholdsOptions';
 
-
+/*
+ * css loading cube
+ */
 const cubeSpinnerImg = () => {
 	return (
 		<>
@@ -73,7 +65,7 @@ function ListSelectedMonitor(props) {
 	const graphicStillLoading = useSelector(state => state.loadingButton);
 	const loadingGraphic      = useSelector(state => state.loadingGraphic);
 
-	// pagination
+	// pagination => todo => refactor 
 	let url            = useSelector(state => state.url);
 	const pagination   = useSelector(state => state.pagination);
 	const [disabled, setDisabled]         = useState(true);
@@ -94,9 +86,9 @@ function ListSelectedMonitor(props) {
 
 
 
-  /*
-   * Update reload button when 'loadingbutton' and 'responseData'states changes
-   */
+	/*
+	 * Update reload button when 'loadingbutton' and 'responseData' states change
+	 */
 	useEffect(() => {
 		if(graphicStillLoading)
 		{
@@ -129,7 +121,7 @@ function ListSelectedMonitor(props) {
 	}, [graphicStillLoading])
 
 	/*
-	 * Show the loading icon for graphic when the loadingGrahic state changes
+	 *Show loading icon for the graph when the loadingGrahic status changes
 	 */
 	useEffect(() => {
 		setStartloadingGraphic(loadingGraphic)
@@ -141,16 +133,16 @@ function ListSelectedMonitor(props) {
 
 
 	/*
-	 * If perform is true the monitors selected 'id' will be stored,
-	 + This will reset the 'reset_button' to 'active' if it returns to
-	 + the original state of the monitors selected when the search was made
+	 *	This will reset the 'reset button' to 'active' if it returns to the original state of
+	 *	the selected monitors when the search was performed. the original state of the monitors
+	 * 	selected when the search was made.
 	 */
 	useEffect(() => {
 		if (getResponse?.responseData && onSearch?.perform && monitor.length > 0)
 		{
 			let monitorLastState    = onSearch.searchedMonitors
 			let monitorsNowSelected = monitor.map(e => e["id"])
-			// transform object to array, so we can use the every() and includes() functions
+
 			let a = Object.values(monitorLastState)
 			let b = Object.values(monitorsNowSelected)
 
@@ -159,7 +151,7 @@ function ListSelectedMonitor(props) {
 				return val
 			});
 
-			// if they match disable is set to false
+			// if they match 'disabled' is set to false
 			if (!loadingGraphic && getResponse.responseData.samples.length > 0) { // if the graphic is loading dont compare
 				setDisabled(!comparation)
 			}
@@ -185,21 +177,8 @@ function ListSelectedMonitor(props) {
 	};
 
 	/*
-	 * Handle next page dataSamples
+	 * Handle next page dataSamples REFACTOR: => eliminar, llamar a funcion general
 	 */
-	// TODO: REFACTOR: convert to this NOTE: buscar como setear la variable disabled a true o false con estas condiciones, sin el Promise
-	// useEffect(() => {
-	// 	if(getResponse.length !== 0 && pagination.active)
-	// 	{
-	// 		if(loadingGraphic){
-	// 			setLoadingPage(false)
-	// 			setDisabled(false)
-	// 		}else{
-	// 			setLoadingPage(true)
-	// 		}
-	// 	}
-	// }, [loadingGraphic]);
-
 	useEffect(()=>{
 		if (getResponse.length !== 0 && pagination.active ) 
 		{
@@ -208,7 +187,6 @@ function ListSelectedMonitor(props) {
 			const iDisplayLength = pagination.displayLength
 			const actualPage     = pagination.actualPage
 
-			// let start = (actualPage * iDisplayLength) - iDisplayLength;
 			let start = actualPage-1
 
 			dispatch(setloadingButton(true))
@@ -257,14 +235,13 @@ function ListSelectedMonitor(props) {
 					dispatch(loadGraphic(false))
 					setLoadingPage(false)
 					setDisabled(false)
-					// $(".block-monitor-selected-when-searching").remove() // unlock monitor selected section
 				})
 		}
 	},[pagination]);
 
 
 	/*
-	 * Check if exists magnitudes and return button component with values references
+	 * Checks if magnitudes exist and returns the button component with the references of the values
 	 */
 	const checkIfExistsMagnitudes = (data) => {
 		try {
@@ -309,9 +286,6 @@ function ListSelectedMonitor(props) {
 			/>
 			{
 				(startloadingGraphic) ? 
-					// <div className="img-load-svg-box">
-					// 	<img src={loadingSls} alt='loading.....' className="img-load-svg" /> 
-					// </div>
 					<div className="spinner-box">
                         {
                             cubeSpinnerImg()
@@ -380,9 +354,6 @@ function ListSelectedMonitor(props) {
 									defaultValue={1}
 								/>
 							</div>
-							{/* <p className="total-pages">
-							Pages:  <span> { totalPages } </span>
-							</p> */}
 						</>
 						}
 					</div>

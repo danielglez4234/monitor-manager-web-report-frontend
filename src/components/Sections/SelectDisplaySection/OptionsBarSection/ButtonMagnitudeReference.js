@@ -1,15 +1,7 @@
-// --- React dependencies
 import React from 'react';
-
-// --- Dependencies
 import * as $         from 'jquery';
 import { LtTooltip }  from '../../../../commons/uiStyles';
-
-// --- Model Component elements
-// import Popover        from '@mui/material/Popover';
 import {IconButton, Box} from '@mui/material';
-
-// --- Icons
 import ListIcon from '@mui/icons-material/List';
 
 
@@ -19,31 +11,12 @@ function ButtonMagnitudeReference({magnitudeTitles, magnitudeReferences}) {
 	 * List all magnitude values references 
 	 */
 	const listMagnitudeReferences = () => {
-		let references = []
-		// magnitudeTitles.map((name, index) => {
-		//   references.push(
-		//     <div>{name}</div>
-		//   ) 
-		//     magnitudeReferences.map(objects => {
-		//       let fieldsWithValues = Object.entries(objects);
-			
-		//       fieldsWithValues.map(([key, value]) => {
-		//         references.push(
-		//           <div className="references-values-box">
-		//             <div className="references-values-labels">{key}</div>
-		//             <div className="references-values-values">{value}</div>
-		//           </div>
-		//         )
-		//       }) 
-		//     })
-		// })
-
+		const references = []
 		for (let i = 0; i < magnitudeTitles.length; i++) {
 			references.push(
 				<div className="references-values-sTitle">{magnitudeTitles[i]}</div>
 			) 
-			let refere = magnitudeReferences[i]
-			let fieldsAndVal = Object.entries(refere)
+			const fieldsAndVal = Object.entries(magnitudeReferences[i])
 			for (let a = 0; a < fieldsAndVal.length; a++) {
 				references.push(
 					<div key={i+" "+a} className="references-values-box">
@@ -55,9 +28,6 @@ function ButtonMagnitudeReference({magnitudeTitles, magnitudeReferences}) {
 		}
 		return references
     };
-
-    const referencesList = listMagnitudeReferences()
-
 
     /*
      * Handle graphic options OPEN popover
@@ -83,7 +53,7 @@ function ButtonMagnitudeReference({magnitudeTitles, magnitudeReferences}) {
 
 				<div className="graphOpt-refrences-box">
 					{
-						referencesList
+						listMagnitudeReferences()
 					}
 				</div>
 

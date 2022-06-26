@@ -5,10 +5,11 @@ import {
 }
 from '../../../standarFunctions';
 import { LtTooltip } from '../../../../commons/uiStyles';
-
 import HelpIcon                   from '@mui/icons-material/Help';
 import SettingsBackupRestoreIcon  from '@mui/icons-material/SettingsBackupRestore';
 
+
+// TODO: eliminar esta funcionalidad -> agregar listado dinamico de selección de posiciones
 
 const GetIndexArrayModal = ({id, type, pos, setPos, applyChangesWarning, dimension_x, dimension_y}) => {
   
@@ -31,8 +32,6 @@ const GetIndexArrayModal = ({id, type, pos, setPos, applyChangesWarning, dimensi
   const [openIndexModal, setOpenIndexModal]     = useState(false);
   const [enableResetIndex, setEnableResetIndex] = useState(true);
   
-  // TODO: eliminar esta funcionalidad -> agregar listado dinamico de selección de posiciones
-  // REFACTOR: eliminar la actuación sobre los dobles corchetes
   const [textIndex, setTextIndex] = useState((pos === "" || pos === null) ? "/" : pos.slice(1, -1));
   const [indexTypeChoosen, setIndexTypeChoosen] = useState("range");
   const [indexTypeChoosen2D, setIndexTypeChoosen2D] = useState("range2D");
@@ -44,9 +43,9 @@ const GetIndexArrayModal = ({id, type, pos, setPos, applyChangesWarning, dimensi
     setOpenIndexModal(preState => !preState);
   }
 
- /*
-  * handle add index 1D
-  */
+  /*
+   * handle add index 1D
+   */
   const addIndexNumber = (type, single, fromRange, toRange) => {
     let text = "";
    
@@ -159,7 +158,7 @@ const GetIndexArrayModal = ({id, type, pos, setPos, applyChangesWarning, dimensi
      </div>
      
      {/* 
-       * SHOW Index number selected and reset button
+       * SHOW Index selected and reset button
        */}
     <LtTooltip title={textIndex} enterDelay={900} leaveDelay={100} placement="left" className="tool-tip-options">
         <div className="array-index-box">
@@ -190,7 +189,7 @@ const GetIndexArrayModal = ({id, type, pos, setPos, applyChangesWarning, dimensi
     </LtTooltip>
 
     {/* 
-      * Handle modal selection number inputs for "textIndex"
+      * Handle modal selection inputs for "textIndex"
       */}
     {
         (openIndexModal) ?

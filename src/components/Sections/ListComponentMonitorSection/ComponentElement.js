@@ -2,7 +2,6 @@ import React          from 'react';
 import folder         from '../../../commons/img/folderIcon.png';
 
 const ComponentElement = ({ title, getMonitors }) => {
-  // <p className="componentItem-title"> { title } </p>
 	return(
 		<div className="componentItem-box-container">
 			<div className="componentItem-box" onClick={() => { getMonitors(title) }}>
