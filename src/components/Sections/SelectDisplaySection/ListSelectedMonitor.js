@@ -198,7 +198,7 @@ function ListSelectedMonitor(props) {
 
 			dispatch(getUrl(url))
 
-			Promise.resolve( getDataFromServer({url}) )
+			Promise.resolve( getDataFromServer(url) )
 			.then(res => {
 				const totalArraysRecive  = res.samples.length
 				const totalRecords       = res.reportInfo.totalSamples
