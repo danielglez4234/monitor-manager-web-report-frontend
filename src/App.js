@@ -1,4 +1,3 @@
-// ---
 import React                from 'react';
 import { createStore }      from 'redux';
 import { Provider }         from 'react-redux';
@@ -9,11 +8,9 @@ import {
   Navigate
 } from 'react-router-dom';
 import allReducers          from './components/store';
-// import interact             from 'interactjs';
 import { SnackbarProvider } from 'notistack';
 import Button               from '@mui/material/Button';
 
-// --- React Components link
 import Header               from './components/Sections/Header';
 import ListComponentMonitor from './components/Sections/ListComponentMonitorSection/ListComponentMonitor';
 import ListSelectedMonitor  from './components/Sections/SelectDisplaySection/ListSelectedMonitor';
@@ -31,8 +28,9 @@ const { REACT_APP_IDISPLAYLENGTH }  = process.env;
 
 function App() {
   	const notistackRef = React.createRef();
+
 	/*
-	 * handle close information messages
+	 * handle close Snackbar messages
 	 */
 	const onClickDismiss = key => () => {
 		notistackRef.current.closeSnackbar(key);
@@ -56,14 +54,8 @@ function App() {
 							<div className="container">
 								<Header />
 								<div className="content">
-									<ListComponentMonitor 
-										serviceIP={REACT_APP_SERVICES_IP}
-										urliDisplayLength={REACT_APP_IDISPLAYLENGTH}
-									/>
-									<ListSelectedMonitor  
-										serviceIP={REACT_APP_SERVICES_IP}
-										urliDisplayLength={REACT_APP_IDISPLAYLENGTH}
-									/>
+									<ListComponentMonitor />
+									<ListSelectedMonitor urliDisplayLength={REACT_APP_IDISPLAYLENGTH} /> {/* refactor prop */}
 									<PerformQuery         
 										serviceIP={REACT_APP_SERVICES_IP}
 										urliDisplayLength={REACT_APP_IDISPLAYLENGTH}

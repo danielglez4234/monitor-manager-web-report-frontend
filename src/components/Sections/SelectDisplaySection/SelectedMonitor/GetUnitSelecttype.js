@@ -10,7 +10,7 @@ function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix, a
 	const [prefixesOptions, setPrefixesOptions] = useState([prefix]);
 	
     /*
-     *  Get units type compatible conversion from server
+     *  get list of compatible units from the server
      */
     const getcompatibleconversion = () => {
       Promise.resolve( getUnitConversion(DefaultUnit) )

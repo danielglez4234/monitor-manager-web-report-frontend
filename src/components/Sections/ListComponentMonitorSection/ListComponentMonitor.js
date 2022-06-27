@@ -1,33 +1,22 @@
-// --- React dependencies
 import React, { useState, useEffect } from 'react';
-
-// --- Dependencies
 import $                              from "jquery";
-import { fnIsState }                  from '../../standarFunctions';
-
 import { 
   getComponents, 
   getMonitorsFromComponent 
 } from '../../../services/services'
-
 import { useDispatch, useSelector }   from 'react-redux';
 import {
-  selectMonitor,
   handleSelectedElemets,
   setloadingButton
 }
 from '../../../actions';
 import Fuse                           from 'fuse.js';
-
-// --- Model Component elements
 import {Stack, Skeleton, IconButton}  from '@mui/material';
 import { 
   Search,
   SearchIconWrapper,
   StyledInputBase 
 } from '../../../commons/uiStyles';
-
-// --- Icons
 import CachedIcon 					  from '@mui/icons-material/Cached';
 import SearchIcon                     from '@mui/icons-material/Search';
 import SnippetFolderIcon              from '@mui/icons-material/SnippetFolder';
@@ -35,14 +24,10 @@ import ArrowLeftIcon                  from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon                 from '@mui/icons-material/ArrowRight';
 import HelpOutlineIcon                from '@mui/icons-material/HelpOutline';
 import ReportGmailerrorredRoundedIcon from '@mui/icons-material/ReportGmailerrorredRounded';
-
-// --- React Components link
 import ComponentElement               from './ComponentElement';
 import MonitorElement                 from './MonitorElement';
 import PopUpMessage                   from '../../handleErrors/PopUpMessage';
 
-
-import { useForm, useFieldArray } from "react-hook-form";
 
 /*
  * Declare condition html variables
@@ -70,7 +55,6 @@ const error               = <div className="noComponentSelected-box">
 								<ReportGmailerrorredRoundedIcon className="noComponentSelected-icon" />
 								<p className="noComponentSelected-title">Connection Error</p>
 							</div>;
-
 
 
 function ListComponentMonitor() {
@@ -130,7 +114,7 @@ function ListComponentMonitor() {
 	}, [])
 
 	/*
-	 * Try reconnecting components
+	 * Try reconnecting
 	 */
 	const tryReconnect = () => {
 		setLoadingComponent(true)
@@ -138,7 +122,7 @@ function ListComponentMonitor() {
 	}
 
 	/*
-	 * Check if monitor is alredy selected
+	 * Check if the monitor is alredy selected
 	 */
 	useEffect(() => {
 		setIdMonitorsAlreadySelected(monitorAlreadySelected)
@@ -149,10 +133,10 @@ function ListComponentMonitor() {
 	 * Get All MonitorsMagnitude and state from a Component
 	 */
 	const getMonitors = (title) =>{
-		document.getElementById('searchInputCompMon').value = '' // reset the value of the input search when a component is clicked
+		document.getElementById('searchInputCompMon').value = '' // reset the value of the search input when a component is clicked
 		if (component_clicked !== title)
 		{
-			setInitialStateMonitors(false) // initial monitors section state to false
+			setInitialStateMonitors(false)
 			setComponent_clicked(title)
 			setLoadingMonitors(true)
 			Promise.resolve( getMonitorsFromComponent(title) )
@@ -160,9 +144,9 @@ function ListComponentMonitor() {
 				if (res.magnitudeDescriptions.length > 0 || res.monitorDescription.length > 0) 
 				{
 					setNoMonitorsAvailable(false)
-					const dataist = buildDataElementsList(res)
-					setData_monitors(dataist)
-					setResultQueryMonitor(dataist)
+					const dataList = buildDataElementsList(res)
+					setData_monitors(dataList)
+					setResultQueryMonitor(dataList)
 					console.log("Get monitors from component successfully")
 				}
 				else 
@@ -172,7 +156,6 @@ function ListComponentMonitor() {
 				setLoadingMonitors(false)
 			})
 			.catch(error => {
-
 				handleMessage({ 
 					message: 'Error fetching monitors data on the Server', 
 					type: 'error', 
@@ -185,7 +168,7 @@ function ListComponentMonitor() {
 	}
 
 	/*
-	 * arrange monitors from server
+	 * build monitors list data
 	 */
 	const buildDataElementsList = (data) => {
 		const component_id = data.id
@@ -231,7 +214,7 @@ function ListComponentMonitor() {
 	}
 
     /*
-     * Get current value of the input search from Components
+     * Get current value of the search input from Components
      */
     const handleOnSeacrhComponent = ({ currentTarget = [] }) => {
 		const { value } = currentTarget
@@ -244,11 +227,8 @@ function ListComponentMonitor() {
 	const handleSearchMonitors = value => {
 		$('.monitors-list-items').scrollTop(0)
 		const fuse = new Fuse(data_monitors, {
-			// threshold: 0,
 			keys: ["magnitude"],
-			// keys: ["magnitude", "type"],
 		});
-		// const results = fuse.search({$and: [{magnitude: value}, { type: "e" }]})
 		const results = fuse.search(value)
 		const searchResult = results.map(result => result.item)
 		if (value === '')
@@ -261,7 +241,7 @@ function ListComponentMonitor() {
 	}
 
     /*
-     * Get current value of the input search from Monitors
+     * Get current value of the search input from Monitors
      */
     const handleOnSeacrhMonitors = ({ currentTarget = [] }) => {
 		const { value } = currentTarget
@@ -277,7 +257,7 @@ function ListComponentMonitor() {
     }
 
     /*
-     * diActivate the reload button when a new component is selected
+     * disable the reload button when a new component is selected
      */
     const diActivateReload = () => {
       	dispatch(setloadingButton(false))
@@ -285,7 +265,6 @@ function ListComponentMonitor() {
 
     /*
      * dispatch variables to the global state action selectMonitor
-     * we do it here and no inside the map of 'MonitorElement.js' to avoid duplication
      */
     const select = (monitorData) => {
 		if (idMonitorsAlreadySelected.length > 0 && idMonitorsAlreadySelected.filter(e => e["id"] === monitorData.id).length > 0){
@@ -326,7 +305,6 @@ function ListComponentMonitor() {
 							</Search>
 							{
 								(connectionError) ?
-	
 									<IconButton 
 										color="primary" 
 										aria-label="upload picture" 
@@ -346,20 +324,18 @@ function ListComponentMonitor() {
 					</div>
 
 					<div className="sample-items component-list-items">
-
-					{
-						(connectionError)  ? error :
-						(loadingComponent) ? skeleton :
-						(resultQueryComponent.length === 0) ? noResultFound :
-						resultQueryComponent.map((element, index) =>
-							<ComponentElement
-								key                = { index }
-								title              = { element }
-								getMonitors        = { getMonitors }
-							/>
-						)
-					}
-
+						{
+							(connectionError)  ? error :
+							(loadingComponent) ? skeleton :
+							(resultQueryComponent.length === 0) ? noResultFound :
+							resultQueryComponent.map((element, index) =>
+								<ComponentElement
+									key                = { index }
+									title              = { element }
+									getMonitors        = { getMonitors }
+								/>
+							)
+						}
 					</div>
 				</div>
 
@@ -385,26 +361,24 @@ function ListComponentMonitor() {
 						{
 							component_clicked
 						}
-						{/* TODO: botones de selección multiple ["TAGS" => "scalar enum boolean array array2D state"] */}
+						{/* to do => botones de selección multiple ["TAGS" => "scalar, enum, boolean, array, array2D, state"] */}
 					</p>
 					</div>
 
 					<div id="offer-area" className="sample-items monitors-list-items">
-
-					{
-						(initialStateMonitors) ? noSelectedComponent :
-						(loadingMonitors) ? skeleton :
-						(resultQueryMonitor.length === 0 || monitorsAvailable) ? noMonitorElements :
-						resultQueryMonitor.map((element, index) =>
-							<MonitorElement
-								key                = { index }
-								monitorData        = { element }
-								select             = { select }
-								diActivateReload   = { diActivateReload }
-							/>
-						)
-					}
-
+						{
+							(initialStateMonitors) ? noSelectedComponent :
+							(loadingMonitors) ? skeleton :
+							(resultQueryMonitor.length === 0 || monitorsAvailable) ? noMonitorElements :
+							resultQueryMonitor.map((element, index) =>
+								<MonitorElement
+									key                = { index }
+									monitorData        = { element }
+									select             = { select }
+									diActivateReload   = { diActivateReload }
+								/>
+							)
+						}
 					</div>
 
 				</div>

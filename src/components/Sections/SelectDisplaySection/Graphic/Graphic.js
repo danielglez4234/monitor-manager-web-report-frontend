@@ -24,7 +24,7 @@ import { ConstructionOutlined } from '@mui/icons-material';
 
 
 /*
- * get the index of the element of the second array that matches it
+ * obtain the index of the element of the second matrix that matches it
  */
 const getIndexFromID = (fromArray, inArray) => {
 	const result = []
@@ -48,14 +48,14 @@ function Graphic() {
 	const [error, setError] = useState(false);
 
 	/*
-	 * if data search error is send
+	 * if a data search error is sent
 	 */
 	useEffect(() => {
 		setError(searchErrors)
    	}, [searchErrors])
 
    	/*
-	 * handle tranform value from server for display
+	 * handle the server's transformation value for display
 	 */
 	const buildGraphicValues = (date, _value, logarithm) => {
 		const time_sample = parseInt(date)
@@ -74,7 +74,7 @@ function Graphic() {
 	}
 
 	/*
-	 * create data for configuration in graphic
+	 * create data for configuration in the chart
 	 */
 	const arrangeData = (res) => {
 		try {
@@ -83,7 +83,7 @@ function Graphic() {
 			const graphicOptions = getGraphicoptions()
 		
 			const info_ = []
-			// we delete this two fields to match the monitor graphic options indexes more easely
+			// we remove these two fields so that the indexes of the graphical monitor options match more easily
 			if(columns_[0].name === "TimeStamp"){
 				columns_.shift() // delete timeStamp
 				columns_.shift() // delete timeStampLong
@@ -139,10 +139,10 @@ function Graphic() {
 
   /*
    *  Chart initialization
-   *   - When the component mount root is initialize, since responseData is empty at the moment nothing is display
-   *   - When responseData suscribtion recive the data the function role again, the change of [responseData] trigger the update of the function
-   *       - same for [reload] it will update the function with the new _propertiesChange
-   *   - The root element from amchart can't be duplicate, we avoid that using the method 'retun () => {...}' to execcute the 'dispose()' when the component unmount
+   *   - When the component is mounted, the root is initialized, since responseData is empty at the moment nothing is shown
+   +   - When the responseData subscriber receives the data the function is executed again, the change of [responseData] will trigger the update of the function.
+   *       - the same for [reload] the function will be updated with the new data
+   +   - The root element of amchart cannot be duplicated, we avoid this by using the 'retun () => {...}' method to execute the 'dispose()' when the component is unmount
    */
 let root;
 
@@ -222,7 +222,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 
 
     /*
-     * Set Root format number for the values recived based if the number is integrer or not
+     * Set the root format number for received values depending on whether the number is integer or not
      */
     const sciNotation = (generalOptions.general.scientificNotation) ? "e" : "";
     root.numberFormatter.setAll({
@@ -249,7 +249,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
     /*
      * Add Value Y Axis
      * format suported -> 5e-7 or 0.0000005, 450000 or 45e+4
-     * ***WARNING*** on this version the exponential format is up to 7, this wont work on the plugin: 1e-8, +etc...
+     * ***WARNING*** on this version the exponential format is up to 7, this does not work in the plugin: 1e-8, +etc...
      */
     yRenderer = am5xy.AxisRendererY.new(root, {
 		opposite: false,
@@ -298,7 +298,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
       	millisecondBaseCount = sampling_period / 1000;
     }
     /*
-     * Set the value representation format and set the count interval for data 
+     *  Set the format for representing the values and set the data count interval 
      */
     dateAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
 		groupData: generalOptions.general.groupData,
@@ -311,7 +311,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
     }));
 
     /*
-     * Format the date depending on the time unit is showing
+     * Format the date depending on the time unit to be displayed
      */
     dateAxis.get("dateFormats")["millisecond"] = "HH:mm:ss.SSS";
 
@@ -362,7 +362,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 	 */
 	for (let y = 0; y < info.length; y++) {
 		/*
-		 * Set Graphic type all call configurations function
+		 * Set Graphic type
 		 */
 		let graphtype = info[y].graphic_type;
 		if (graphtype === "Line Series") {
@@ -382,7 +382,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 		}
 
 		/*
-		 * Set Series line weight and dasharray view
+		 * Set Series line weight and dashArray view
 		 */
 		let handleStroke;
 		let stroke = info[y].strokeWidth;
@@ -493,10 +493,10 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
       	if (generalOptions.general.legendContainerPos) { legend = chart.bottomAxesContainer.children.push(am5.Legend.new(root, legendSettings)) }
     	else { legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, legendSettings)) }
 
-		// When legend item container is hovered, dim all the series except the hovered one
+		//  When hovering over the legend element container, all series are dimmed except the one hovered over.
 		legend.itemContainers.template.events.on("pointerover", function(e) {
 			let itemContainer = e.target;
-			// As series list is data of a legend, dataContext is series
+			//  As the list of series is data from a legend, dataContext is the series
 			let series = itemContainer.dataItem.dataContext;
 
 			chart.series.each(function(chartSeries) {
@@ -532,7 +532,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 			width: am5.p100,
 			textAlign: "left"
 		});
-		// It's is important to set legend data after all the events are set on template, otherwise events won't be apply
+		// It is important to set the legend data after all events are set in the template, otherwise the events will not be applied.
 		legend.data.setAll(chart.series.values);
 		// https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
     }
@@ -601,15 +601,8 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 			<div id="chartdiv" className="grafic-box">
 
 			{/* The Graphic will be display here  => id="chartdiv"*/}
-
-			{/*
-			Initial Return State to 'ListSelectedMonitors.js',
-			the class of 'initialImg' is remove onces when the component 'ListSelectedMonitors' mounts, then When
-			the useEffect is updated here it will lose this propertie and the display-none class will be set again by default
-			resulting in that it will never show up a second time
-			*/}
 			<InsertChartIcon id="initialImg" className="display-none" />
-			{/* --- --- --- */}
+
 			{
 			(nodataRecive) ?
 					<div className="no-data-error-message">
@@ -622,7 +615,6 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 				(error) ? 
 					<div className="no-data-error-message"> 
 						<NearbyErrorIcon className="icon-no-data help-icon error-color" />
-						{/* <MoreHorizIcon className="icon-no-data dot-icon" /> */}
 						<p>An error has ocurred!</p>
 						<p>If the error persist</p>
 						<p>please contact the administrators.</p>

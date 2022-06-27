@@ -64,7 +64,7 @@ const usesTyles = makeStyles({
 const { REACT_APP_QUERY_NAME_PATTERN } = process.env
 
 
-function SaveQuery({convertToUnix, timeQuery, editing}) {
+function SaveQuery({timeQuery, editing}) {
 	const dispatch = useDispatch()
 	const classes = usesTyles()
 	const monitor = useSelector(state => state.monitor)
@@ -113,9 +113,6 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	 * check active save button
 	 */
 	useEffect(() => {
-		// const unixBeginDate = convertToUnix(timeQuery.beginDate)
-		// const unixEndDate = convertToUnix(timeQuery.endDate)
-		// if(monitor.length > 0 && timeQuery.beginDate !== "" && timeQuery.endDate !== "" && unixBeginDate < unixEndDate){
 		if(monitor.length > 0){
 			setDisabled(false)
 		}else{
@@ -134,7 +131,7 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	}, [editing]);
 
 	/*
-	 * check for changes in queryName when editing
+	 * check the changes in queryName when editing
 	 */
 	const checkIfQueryEditing = (newValue) => {
 		setQueryName(newValue)
@@ -142,15 +139,15 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	}
 
 	/*
-	 * test eregular expresions
+	 * test regular expressions
 	 */
-	const testRegex = (value, expresion) => {
-		const re = new RegExp(expresion)
+	const testRegex = (value, expression) => {
+		const re = new RegExp(expression)
 		return re.test(value)
 	}
 
 	/*
-	 * save query on data base
+	 * handle on submit
 	 */
 	const onSubmit = () => {
 		try {
@@ -170,10 +167,9 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	}
 
 	/*
-	 * dispatch stop editing action
+	 * stop editing action
 	 */
 	const stopEditing = () => {
-		// dispatch(handleSelectedElemets('removeAll', null, null, null))
 		dispatch(editingQuery({active: false}))
 		setQueryName("")
 		setQueryDescription("")
@@ -181,7 +177,7 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	}
 
 	/*
-	 * reset name and description inputs fields if editing 
+	 * reset name and description inputs if editing 
 	 */
 	const resetInputs = () => {
 		setQueryName(editing?.name)
@@ -196,11 +192,15 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 	// }
 	
 	/*
-	 * save query on data base
+	 * save query
 	 */
 	const fnSaveQuery = () => {
 		const payload = createPayload()
-		const fnAction = (editing?.active && ifSameQueryName) ? () => updateQuery(queryName, payload) : () => insertQuery(payload)
+
+		const fnAction = (editing?.active && ifSameQueryName) 
+		? () => updateQuery(queryName, payload) 
+		: () => insertQuery(payload);
+
 		Promise.resolve( fnAction() )
 		.then(() =>{
 			if(editing?.active){
@@ -252,7 +252,7 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 
 
 	/*
-	 * monitor separate conf 
+	 * separate monitor options 
 	 */
 	const confOptionsSeparator = (val) => {
 		const options = val.options
@@ -459,12 +459,6 @@ function SaveQuery({convertToUnix, timeQuery, editing}) {
 								alignItems="left"
 								className="save-query-input-title-name save-query-title-date"
 							>
-								{/* <Grid item md={2} className="save-query-input-title-name">
-									<i>Begin date: { timeQuery?.beginDate } </i>
-								</Grid>
-								<Grid item md={10}>
-									<i>End date: { timeQuery?.endDate } </i>
-								</Grid> */}
 								<Grid item md={10}>
 									<i>Sampling: { (timeQuery?.sampling !== "" && timeQuery?.sampling !== "Default") ? timeQuery.sampling  : 0 } microseconds</i>
 								</Grid>

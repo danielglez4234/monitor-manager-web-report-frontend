@@ -21,15 +21,6 @@ import {
 	setActualPage
 }
 from '../../../actions';
-import {
-	fnIsState,
-	fnIsScalar,
-	fnIsArray,
-	fnIsMagnitude,
-	getCategory
-}
-from '../../standarFunctions'
-
 // --- Model Component elements
 import LoadingButton                            from '@mui/lab/LoadingButton';
 import {Stack, MenuItem, FormControl, Select }  from '@mui/material';
@@ -45,10 +36,8 @@ import DownloadEmailData from './DownloadData/DownloadEmailData';
 import SaveQuery     	 from './StroreQuerys/SaveQuery';
 import ViewHandleQuery 	 from './StroreQuerys/handleQuerys/ViewHandleQuery';
 import PopUpMessage      from '../../handleErrors/PopUpMessage';
-import constructURL		 from './constructUrl'
+import buildUrl		 from './buildUrl'
 
-
-const { REACT_APP_SERVER_PORT } = process.env
 
 function PerformQuery(props) {
 	const dispatch             = useDispatch();
@@ -66,7 +55,7 @@ function PerformQuery(props) {
 	const [timeQuery, setTimeQuery] = useState({
 		beginDate: "",
 		endDate: "",
-		sampling: ""
+		sampling: 0
 	});
 
 	/*
@@ -82,7 +71,7 @@ function PerformQuery(props) {
 	}
 	
 	/*
-	 * 'loadWhileGetData' will be set to true when the data has arrive, and then buttons will be active again
+	 * 'loadWhileGetData' will be set to true when the data has arrived, and then the buttons will be active again
 	 */
 	useEffect(() => {
 		if (loadWhileGetData) {
@@ -90,7 +79,9 @@ function PerformQuery(props) {
 		}
 	}, [loadWhileGetData]);
 
-
+	/*
+	 * set a sampling if specified
+	 */
 	useEffect(() => {
 		if(editing?.active){
 			if(editing?.sampling){
@@ -111,11 +102,10 @@ function PerformQuery(props) {
 	 * Get Samples From Server
 	 */
 	const getSamplesFromServer = () => {
-		// construct url
-		const url = constructURL(monitor, timeQuery, pagination)
+		const url = buildUrl(monitor, timeQuery, pagination) // construct url
 		dispatch(getUrl(url)) // refactor => eliminar
-		// server call
-		Promise.resolve( getDataFromServer({url}) )
+		
+		Promise.resolve( getDataFromServer(url) )
 		.then(res => { 
 			const totalArraysRecive  = res.samples.length;
 			const totalRecords       = res.iTotalSamples;
@@ -212,21 +202,26 @@ function PerformQuery(props) {
 	}
 
 	/*
+	 * dispatch acction if submit was correct
+	 */
+	const dispatchActionsOnSubmit = () => {
+		const perform = true; // initial state use to check searched monitors selected comparation
+		dispatch(setActualPage(false, 0, 0)) // reset pagination if it is already display
+		const searchedMonitors = monitor.map(e => e["id"]) // save the monitors id's that where choosen for the search
+		dispatch(hadleSearch(perform, timeQuery.beginDate, timeQuery.endDate, timeQuery.sampling, searchedMonitors))
+		dispatch(setloadingButton(false))
+		dispatch(loadGraphic(true))
+	}
+
+	/*
 	 * Check Dates and sampling inputs before submit
 	 */
 	const checkOnSubmit = (button_click) => {
-		const perform = true; // initial state use to check searched monitors selected comparation
-		
 		// convert to unix 
 		// we use this to get a better control over the correct validation of the dates
 		const unixBeginDate = convertToUnix(timeQuery["beginDate"])
 		const unixEndDate = convertToUnix(timeQuery["endDate"])
 
-		// if sampling is not selected is set to 0 by default 
-		// 0 means for the server the monitor default storage period
-		if (timeQuery.sampling === "" || timeQuery.sampling  === "Default") {
-			timeQuery["sampling"] = 0;
-		}
 		// handle all errors from the date inputs
 		if (timeQuery.beginDate === '' || timeQuery.endDate === ''){
 			showWarningMeggage('The Date Fields cannot be empty')
@@ -245,23 +240,13 @@ function PerformQuery(props) {
 			return false
 		}
 		else{
-			if(button_click !== "download"){ // refactor llamar constructURL desde download
+			if(button_click !== "download"){ // refactor llamar buildUrl desde download
 				setLoadingSearch(true)
-				dispatch(setActualPage(false, 0, 0)) // reset pagination if it is already display
-				const searchedMonitors = monitor.map(e => e["id"]) // save the monitors id's that where choosen for the search
-				dispatch(hadleSearch(perform, timeQuery.beginDate, timeQuery.endDate, timeQuery.sampling, searchedMonitors))
-				dispatch(setloadingButton(false))
-				dispatch(loadGraphic(true))
-				/*
-				 * construct the url and call the server data 
-				 */
+				dispatchActionsOnSubmit()
 				getSamplesFromServer()
 			}
 			else{
-				/*
-				 * construct the url for download
-				 */
-				return constructURL(monitor, timeQuery, pagination)
+				return buildUrl(monitor, timeQuery, pagination)
 			}
 			return true
 		}

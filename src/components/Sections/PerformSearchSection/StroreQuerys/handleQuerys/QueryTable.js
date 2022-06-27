@@ -54,6 +54,11 @@ const StyledGridOverlay = styled('div')(({ theme }) => ({
 }));
 
 
+
+/*
+ * CustomToolbar: up button section
+ * filter, density
+ */
 function CustomToolbar() {
 	return (
 	  <GridToolbarContainer>
@@ -64,6 +69,10 @@ function CustomToolbar() {
 	);
 }
 
+/*
+ * CustomColumnMenu: column side button
+ * sort columns, filter columns
+ */
 function CustomColumnMenu(props){
     const { hideMenu, currentColumn } = props;
     return (
@@ -77,6 +86,9 @@ function CustomColumnMenu(props){
     );
 };
 
+/*
+ * CustomNoRowsOverlay: icon that shows when there is no data
+ */
 function CustomNoRowsOverlay() {
 	return (
 		<StyledGridOverlay>
@@ -112,6 +124,9 @@ function CustomNoRowsOverlay() {
 	);
 }
 
+/*
+ * CustomPagination: bottom pagination
+ */
 function CustomPagination() {
 	const apiRef = useGridApiContext();
 	const page = useGridSelector(apiRef, gridPageSelector);
@@ -226,7 +241,7 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	}
 
 	/*
-	 * Arrange monitors from stored query
+	 * Arrange monitors from storedquery
 	 */
 	const getArrageMonitorList = (val) => {
 		const monitorList = []
@@ -249,8 +264,7 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 			}
 			else{
 				monitorList.push({id: component_id, name, magnitude: "STATE", type: "state", options})
-			}	
-							
+			}
 		})
 		return monitorList
 	}
@@ -392,7 +406,7 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	]
 
 	/*
-	 * search when the modal opens
+	 * load when the modal opens
 	 */
 	useEffect(() => {
 		if(openViewQuery){
@@ -460,8 +474,7 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 					},
 				  }}
 				loading={loadingQuerys}
-				rows={(rows.length > 0) ? rows : []} //TODO: sin esta comprobocación de momento el icono de "no Rows" no salta a pesar de que rows en un array.
-				// rows={row}
+				rows={(rows.length > 0) ? rows : []}
 				columns={columnHeads}
 			/>
 		</Box>

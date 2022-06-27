@@ -32,7 +32,7 @@ import SelectedElement      from './SelectedElement'
                         </div>;
 
     /*
-	 * Blink animation when a monitor is selected
+	 * Blink animation when a monitor is selected // TODO: llamar solo al guardar los opciones
 	 */
 	const blinkAnimation = () => {
 		const animationListeners = 'webkitAnimationEnd oanimationend msAnimationEnd animationend';

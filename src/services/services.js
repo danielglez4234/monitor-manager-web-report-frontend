@@ -5,7 +5,7 @@ import axios from "axios";
 const { REACT_APP_SERVICES_IP, REACT_APP_SERVER_PORT } = process.env;
 
 // apaño temporal hacia el backend --> replace '###' por %23 forzando el cambio de esta forma para evitar errores
-const fnReplacePad = (val) => { return val.replace(/#/g, '%23') }
+const fnReplacePad = (val) => val.replace(/#/g, '%23');
 
 /*
  * log url request in console
@@ -25,46 +25,45 @@ const httpHeaderOptions = {
 /*
  * GET all components
  */
-export const getComponents = () => {
-    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/components", {header: httpHeaderOptions})
-            .then(res => res.data)
+export const getComponents = async () => {
+    const res = await axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/components", {header: httpHeaderOptions});
+    return res.data;
 }
 
 /*
  * GET all monitors from a component
  */
-export const getMonitorsFromComponent = (componentName) => {
-    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/components/" + componentName, {header: httpHeaderOptions})
-            .then(res => res.data)
+export const getMonitorsFromComponent = async (componentName) => {
+    const res = await axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/components/" + componentName, {header: httpHeaderOptions});
+    return res.data;
 }
-
 
 /*
  * GET the data 
  */
-export const getDataFromServer = ({url}) => {
+export const getDataFromServer = async (url) => {
     const replacePad = fnReplacePad(encodeURI(url));
     logUrl(replacePad, "search", "GET")
-    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/search/" + replacePad, {header: httpHeaderOptions})
-            .then(res => res.data)
+    const res = await axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/search/" + replacePad, {header: httpHeaderOptions});
+    return res.data;
 }
 
 /*
  * GET csv transform data
  */
-export const getDownloadData = ({url}) => {
+export const getDownloadData = async (url) => {
     const replacePad = fnReplacePad(encodeURI(url));
     logUrl(replacePad, "download", "GET")
-    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/download/" + replacePad, {header: httpHeaderOptions})
-            .then(res => res.data)
+    const res = await axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/download/" + replacePad, {header: httpHeaderOptions});
+    return res.data;
 }
 
 /*
  * GET compatible conversion for a Unit type
  */
-export const getUnitConversion = (unitType) => {
-    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/units/" + encodeURI(unitType), {header: httpHeaderOptions})
-            .then(res => res.data)
+export const getUnitConversion = async (unitType) => {
+    const res = await axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/units/" + encodeURI(unitType), {header: httpHeaderOptions});
+    return res.data;
 }
 
 
@@ -81,44 +80,43 @@ export const getUnitConversion = (unitType) => {
 /*
  * GET all querys
  */
-export const getAllQuerys = () => {
-    return axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/query/", {header: httpHeaderOptions})
-            .then(res => res.data)
+export const getAllQuerys = async () => {
+    const res = await axios.get(REACT_APP_SERVICES_IP + "/WebReport/rest/query/", {header: httpHeaderOptions});
+    return res.data;
 }
 
 /*
  *  GET specific query
  */
-export const getQuery = (id) => {
-    return axios.get(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${encodeURI(id)}`, {header: httpHeaderOptions})
-            .then(res => res.data)
+export const getQuery = async (id) => {
+    const res = await axios.get(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${encodeURI(id)}`, {header: httpHeaderOptions});
+    return res.data;
 }
 
 /*
  * POST a new query
  */
-export const insertQuery = (payload) => {
-    logUrl(payload, "query", "POST")
-    return axios.post(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/`, payload, {header: httpHeaderOptions})
-            .then(res => res.data)
+export const insertQuery = async (payload) => {
+    logUrl(payload, "query", "POST");
+    const res = await axios.post(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/`, payload, {header: httpHeaderOptions});
+    return res.data;
 }
-
 
 /*
  * UPDATE a new query
  */
-export const updateQuery = (name, payload) => {
+export const updateQuery = async (name, payload) => {
     const replacePad = fnReplacePad(encodeURI(name));
-    logUrl(replacePad, "query", "PUT")
-    return axios.put(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${replacePad}`, payload, {header: httpHeaderOptions})
-            .then(res => res.data)
+    logUrl(replacePad, "query", "PUT");
+    const res = await axios.put(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${replacePad}`, payload, {header: httpHeaderOptions});
+    return res.data;
 }
 
 /*
  * DELETE query
  */
-export const deleteQuery = (id) => {
+export const deleteQuery = async (id) => {
     const replacePad = fnReplacePad(encodeURI(id));
-    return axios.delete(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${replacePad}`, {header: httpHeaderOptions})
-            .then(res => res.data)
+    const res = await axios.delete(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${replacePad}`, {header: httpHeaderOptions});
+    return res.data;
 }
