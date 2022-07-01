@@ -125,20 +125,20 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	const getOptions = () => {
 		return {
 			options: {
-				logarithm,
-				curved,
-				filled,
-				limit_max,
-				limit_min,
-				graphic_type,
-				stroke,
-				canvas,
-				enabled_color,
-				color,
-				pos:	 (fnIsArray(monitorData.type)) ? pos : null, // optional field // TODO: fnExits
-				prefix:  fnIfExistDefault(prefix),     				 // optional field
-				unit:  	 fnIfExistDefault(unit),		  			 // optional field
-				decimal: fnIfExistDefault(decimal)	  				 // optional field
+				logarithm: logarithm,
+				curved: curved,
+				filled: filled,
+				limit_max: limit_max,
+				limit_min: limit_min,
+				graphic_type: graphic_type,
+				stroke: stroke,
+				canvas: canvas,
+				enabled_color: enabled_color,
+				color: color,
+				pos: (fnIsArray(monitorData.type)) ? pos : null,
+				prefix: fnIfExistDefault(prefix),
+				unit: fnIfExistDefault(unit),
+				decimal: fnIfExistDefault(decimal)
 			}
 		}
 	}
