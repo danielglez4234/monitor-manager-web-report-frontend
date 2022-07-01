@@ -20,13 +20,25 @@ import {
  } from '@mui/x-data-grid';
  import Pagination from '@mui/material/Pagination';
 import { styled } from '@mui/material/styles';
-import { Box, Button,Popover, Typography,  IconButton, Dialog, DialogTitle, DialogActions, Tooltip } from '@mui/material';
+import { 
+	Box, 
+	Button,
+	Popover, 
+	Typography,  
+	IconButton, 
+	Dialog, 
+	DialogTitle, 
+	DialogActions, 
+	Tooltip,
+	Checkbox
+} from '@mui/material';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import UploadIcon from '@mui/icons-material/Upload';
+import { BookmarkBorder, Bookmark } from '@mui/icons-material';
 
-
+import HEADS from './columnsHeads'
 import PopUpMessage from '../../../../handleErrors/PopUpMessage';
 
 const StyledGridOverlay = styled('div')(({ theme }) => ({
@@ -152,6 +164,7 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	const [loadingQuerys, setLoadingQuerys] = useState(true)
 	const [queryId, setQueryId] = useState(null)
 	const [openConfirm, setOpenConfirm] = useState(false)
+	// const [checked, setChecked] = useState(false); // TODO: => change to array
 
 	/*
 	 * Confirm before Delete
@@ -291,6 +304,17 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 			showErrorMessage("name is undefined")
 		}
 	}
+
+	/*
+	 * save query to local storage
+	 */
+	// useEffect(() => {
+		
+	// }, [checked]);
+	// const saveToLocalStorage = (val) => {
+	// 	localStorage.setItem("favorites", val)
+		
+	// }
 	
 	/*
 	 * set action iconButtons
@@ -331,6 +355,13 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 					<DeleteIcon className="red-iconcolor" />
 				</IconButton>
 			</Tooltip>
+			<Tooltip title="Add To Favorites">
+				<Checkbox 
+					// checked={true}
+					icon={<BookmarkBorder />}
+					checkedIcon={<Bookmark />} 
+				/>
+			</Tooltip>
 			</>
 		);
 	}
@@ -338,7 +369,7 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	/*
 	 * create table data
 	 */
-	const createTableHeads = (field, type, width, sortable, filterable, hide, disableColumnMenu, actionCell) => {
+	const createTableHeads = ({field, type, width, sortable, filterable, hide, disableColumnMenu, actionCell}) => {
 		try {
 			const flex = (actionCell) ? null : 1
 			const hideable = false
@@ -393,17 +424,8 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	/*
 	 * columns heads
 	 */
-	const columnHeads = [
-		createTableHeads("sampling",   	  null,     null, true,  false, true,  false, false),
-		createTableHeads("monitorInfo",   null,     null, true,  false, true,  false, false),
-		createTableHeads("id", 			  "number", null, true,  false, true,  false, false),
-		createTableHeads("name", 		  "text", 	null, true,  true,  false, false, false),
-		createTableHeads("description",   "text", 	null, true,  true,  false, false, false),
-		createTableHeads("created_by", 	  "text", 	null, true,  true,  true,  false, false),
-		createTableHeads("creation_time", "text", 	null, true,  true,  false, false, false),
-		createTableHeads("update_time",   "text", 	null, true,  true,  false, false, false),
-		createTableHeads("Actions", 	   null, 	175,   false, false, false, true,  true)
-	]
+	const columnHeads = []
+	HEADS.map((val) => {columnHeads.push(createTableHeads(val))})
 
 	/*
 	 * load when the modal opens
