@@ -39,6 +39,14 @@ import PopUpMessage      from '../../handleErrors/PopUpMessage';
 import buildUrl		 from './buildUrl'
 
 
+/*
+ * Hide Component and monitor list
+ */
+const hideAndShowSection = () => {
+	$('.perform-query-section').toggleClass('hide-sections')
+	$('.arrow-showPerfomSection').toggleClass('hide-sections')
+}
+
 function PerformQuery(props) {
 	const dispatch             = useDispatch();
 	const [msg, handleMessage] = PopUpMessage();
@@ -69,6 +77,17 @@ function PerformQuery(props) {
 			preventDuplicate: false
 		})
 	}
+	/*
+	 * handle warning message
+	 */
+	const showWarningMeggage = (message) => {
+		handleMessage({ 
+			message: message, 
+			type: 'warning', 
+			persist: false,
+			preventDuplicate: false
+		})
+	}
 	
 	/*
 	 * 'loadWhileGetData' will be set to true when the data has arrived, and then the buttons will be active again
@@ -83,19 +102,10 @@ function PerformQuery(props) {
 	 * set a sampling if specified
 	 */
 	useEffect(() => {
-		if(editing?.active){
-			if(editing?.sampling){
-				setTimeQuery({
-					...timeQuery,
-					sampling: editing.sampling
-				})
-			}
-		}else{
-			setTimeQuery({
-				...timeQuery,
-				sampling: 0
-			})
-		}
+		setTimeQuery({
+			...timeQuery,
+			sampling: (editing?.active && editing?.sampling) ? editing.sampling : 0
+		})
 	}, [editing]);
 
 	/*
@@ -108,7 +118,7 @@ function PerformQuery(props) {
 		Promise.resolve( getDataFromServer(url) )
 		.then(res => { 
 			const totalArraysRecive  = res.samples.length;
-			const totalRecords       = res.iTotalSamples;
+			const totalRecords       = res.totalSamples;
 			const totalPerPage       = props.urliDisplayLength
 
 			dispatch(setSamples(res, timeQuery.sampling));
@@ -125,12 +135,7 @@ function PerformQuery(props) {
 		.catch(error => {
 			const error_message = (error.response?.data) ? error.response.data.toString() : "Unsupported error";
 			const error_status = (error.response?.status) ? error.response.status : "Unknown"
-			handleMessage({ 
-				message: 'Error: ' + error_message + " - Code " + error_status,
-				type: 'error',
-				persist: true,
-				preventDuplicate: false
-			})
+			showErrorMessage('Error: ' + error_message + " - Code " + error_status)
 		console.error(error)
 		})
 		.finally(() => {
@@ -139,57 +144,22 @@ function PerformQuery(props) {
 		})
 	}
 
-
 	/*
-	 * get BeginDate Value
+	 * handle  search inputs onchange
 	 */
-	const onChangeBeginDate = (date, dateString) => {
-		setTimeQuery({
-			...timeQuery,
-			beginDate: dateString // string format
-		})
-		setBeginDateInput(date) // antDesign input format date
-	}
-
-	/*
-	 * get endDate Value
-	 */
-	const onChangeEndDate = (date, dateString) => {
-		setTimeQuery({
-			...timeQuery,
-			endDate: dateString // string format
-		})
-		setEndDateInput(date) // antDesign input format date
-	}
-
-	/*
-	 * get sampling input value
-	 */
-	const handleChange = (event) => {
-		setTimeQuery({
-			...timeQuery,
-			sampling: event.target.value
-		})
-	};
-   
-	/*
-	 * handle warning message
-	 */
-	const showWarningMeggage = (message) => {
-		handleMessage({ 
-			message: message, 
-			type: 'warning', 
-			persist: false,
-			preventDuplicate: false
-		})
-	}
-   
-	/*
-	 * Hide Component and monitor list
-	 */
-	const hideAndShowSection = () => {
-		$('.perform-query-section').toggleClass('hide-sections')
-		$('.arrow-showPerfomSection').toggleClass('hide-sections')
+	const onChange = (date, value, dateFieldName) => {
+		try {
+			setTimeQuery({
+				...timeQuery,
+				[dateFieldName]: value
+			})
+			if(dateFieldName === "beginDate") // antDesign input string format date
+				setBeginDateInput(date) 
+			else if(dateFieldName === "endDate")
+				setEndDateInput(date)
+		} catch (error) {
+			showErrorMessage(error)
+		}
 	}
 	
 	/*
@@ -269,7 +239,7 @@ function PerformQuery(props) {
 							format="DD/MM/YYYY HH:mm:ss"
 							placeholder="Start Date"
 							value={beginDateInput}
-							onChange={onChangeBeginDate}
+							onChange={(date, dateString) => {onChange(date, dateString, "beginDate")}}
 						/>
 						<DatePicker
 							id="endDate"
@@ -277,14 +247,14 @@ function PerformQuery(props) {
 							format="DD/MM/YYYY HH:mm:ss"
 							placeholder="End Date"
 							value={endDateInput}
-							onChange={onChangeEndDate}
+							onChange={(date, dateString) => {onChange(date, dateString, "endDate")}}
 						/>
 					</div>
 					<FormControl sx={{ m: 1, minWidth: 120 }}>
 						<Select
 							className="select-sampling-perform-query"
 							value={timeQuery.sampling}
-							onChange={handleChange}
+							onChange={(e) => {onChange(null, e.target.value, "sampling")}}
 							displayEmpty
 							inputProps={{ 'aria-label': 'Without label' }}
 						>
