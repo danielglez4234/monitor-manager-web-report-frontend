@@ -57,6 +57,9 @@ function PerformQuery(props) {
 		sampling: 0
 	})
 
+	// TODO: temposeral
+	const [addItem, setAddItem] = useState(null)
+
 	/*
 	 * Show Error
 	 */
@@ -212,6 +215,14 @@ function PerformQuery(props) {
 		}
 	}
 
+
+	/*
+	 * TODO: temporal => cuendo se tenga una tabla dedicada esto se borrara
+	 */
+	const addItemtoLocalStorage = (item) => {
+		setAddItem(item)
+	}
+
     return(
 		<>
 			<div className="arrowShowHide arrow-showPerfomSection hide-sections"><ArrowLeftIcon onClick={() => { hideAndShowSection() }} className="arrow-rightSection" /></div>
@@ -311,12 +322,15 @@ function PerformQuery(props) {
 									(editing?.active) ? "" :
 										<ViewHandleQuery 
 											editing={editing}
+											addItemtoLocalStorage={addItemtoLocalStorage}
 										/>
 								}
 						</Stack>
 					</div>
 					
-					<FavoriteQueries />
+					<FavoriteQueries 
+						addItem={addItem}
+					/>
 
 				</div>
 			</div>

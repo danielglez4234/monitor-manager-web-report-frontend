@@ -157,7 +157,7 @@ function CustomPagination() {
   }
 
 
-export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
+export default function QueryTable({addItemtoLocalStorage, openViewQuery, handleCloseSaveQuery}) {
 	const dispatch = useDispatch()
 	const [msg, handleMessage] = PopUpMessage()
 	const [rows, setRows] = useState([])
@@ -403,6 +403,7 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 			<Tooltip title="Add To Favorites">
 				<Checkbox 
 					// checked={true}
+					onClick={(event) => {addItemtoLocalStorage(cellValues.row)}} // TODO: temporal
 					icon={<BookmarkBorder />}
 					checkedIcon={<Bookmark />} 
 				/>
