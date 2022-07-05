@@ -25,6 +25,7 @@ import DownloadEmailData from './DownloadData/DownloadEmailData';
 // import AdvancedOptions from './AdvancedOptions';
 import SaveQuery     	 from './StroreQuerys/SaveQuery';
 import ViewHandleQuery 	 from './StroreQuerys/handleQuerys/ViewHandleQuery';
+import FavoriteQueries	 from './FavoriteQueries/FavoriteQueries'
 import PopUpMessage      from '../../handleErrors/PopUpMessage';
 import buildUrl		 	 from './buildUrl'
 
@@ -314,6 +315,9 @@ function PerformQuery(props) {
 								}
 						</Stack>
 					</div>
+					
+					<FavoriteQueries />
+
 				</div>
 			</div>
 		</>
