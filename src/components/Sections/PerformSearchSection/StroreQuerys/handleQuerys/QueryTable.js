@@ -30,12 +30,14 @@ import {
 	DialogTitle, 
 	DialogActions, 
 	Tooltip,
-	Checkbox
+	Checkbox,
+	Modal
 } from '@mui/material';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import UploadIcon from '@mui/icons-material/Upload';
+import PreviewIcon from '@mui/icons-material/Preview';
 import { BookmarkBorder, Bookmark } from '@mui/icons-material';
 
 import HEADS from './columnsHeads'
@@ -164,6 +166,9 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	const [loadingQuerys, setLoadingQuerys] = useState(true)
 	const [queryId, setQueryId] = useState(null)
 	const [openConfirm, setOpenConfirm] = useState(false)
+	const [openPreviewModal, setOpenPreviewModal] = useState(false);
+	const [monitorsListPreview, setMonitorsListPreview] = useState([]);
+	const [selectionModel, setSelectionModel] = useState([]);
 	// const [checked, setChecked] = useState(false); // TODO: => change to array
 
 	/*
@@ -288,21 +293,43 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	const handleLoadQuery = (query, edit) => {
 		const monitors_ = getArrageMonitorList(query.row.monitorInfo)
 		delete query.row["monitorInfo"]
-		dispatch(handleSelectedElemets('addMultiple', null, monitors_, null))
-		handleCloseSaveQuery()
-		if(edit) dispatch(editingQuery({active: true, ...query.row}))
+		// if(concatMonitors){
+			// dispatch(handleSelectedElemets('concatMultiple', null, monitors_, null))
+		// }
+		// else{
+			dispatch(handleSelectedElemets('addMultiple', null, monitors_, null))
+			handleCloseSaveQuery()
+			if(edit) dispatch(editingQuery({active: true, ...query.row}))
+		// }
 	}
 
+	const previewQuery = (monitorList) => {
+		console.log("monitorList", monitorList)
+		setMonitorsListPreview(monitorList)
+		setOpenPreviewModal(true)
+	}
+	const closePreviewQuery = () => {
+		setMonitorsListPreview([])
+		setOpenPreviewModal(false)
+	}
 	/*
 	 * get cell row value id
 	 */
 	const getQueryId = (val) => {
-		if(val?.row?.name){
+		if(val?.row?.name)
 			return val.row.name
-		}
-		else{
+		else
 			showErrorMessage("name is undefined")
-		}
+	}
+
+	const getMonitorInfo = (val) => {
+		if(val?.row?.monitorInfo)
+			if(val.row.monitorInfo.length > 0)
+				return val.row.monitorInfo
+			else
+				showErrorMessage("monitorInfo is empty")
+		else
+			showErrorMessage("monitorInfo is undefined")
 	}
 
 	/*
@@ -315,6 +342,24 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	// 	localStorage.setItem("favorites", val)
 		
 	// }
+	/*
+	 * preview monitors button
+	 */
+	const previewButton = (cellValues) => {
+		return (
+			<Tooltip title="Preview Monitors">
+				<IconButton
+					color="primary"
+					aria-label="load"
+					onClick={(event) => {
+						previewQuery(getMonitorInfo(cellValues))
+					}}
+				>
+					<PreviewIcon/>
+				</IconButton>
+			</Tooltip>
+		);
+	}
 	
 	/*
 	 * set action iconButtons
@@ -366,19 +411,26 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 		);
 	}
 
+	const getButtonsCell = (type, ) => {
+		return {
+			renderCell: (cellValues) => {
+				if(type === "preview")
+					return previewButton(cellValues)
+				else
+					return actionsButtons(cellValues)
+			}
+		}
+	}
+
 	/*
 	 * create table data
 	 */
-	const createTableHeads = ({field, type, width, sortable, filterable, hide, disableColumnMenu, actionCell}) => {
+	const createTableHeads = ({field, type, width, sortable, filterable, hide, disableColumnMenu, actionCell, actionCellType}) => {
 		try {
 			const flex = (actionCell) ? null : 1
 			const hideable = false
 			const headerClassName = 'store-query-table-headers'
-			const renderCell = (actionCell) ? {
-				renderCell: (cellValues) => {
-					return actionsButtons(cellValues)
-				}
-			} : undefined;
+			const renderCell = (actionCell) ?  getButtonsCell(actionCellType) : undefined;
 			return {
 					headerClassName,
 					hideable,
@@ -468,6 +520,34 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 			</DialogActions>
 		</Dialog>
 
+		<Modal
+			// open={openPreviewModal}
+			open={false}
+			onClose={closePreviewQuery}
+			aria-labelledby="modal-modal-title"
+			aria-describedby="modal-modal-description"
+		>
+		<Box>
+			{
+				(monitorsListPreview.length > 0) ? 
+					monitorsListPreview.map((val) => {
+						return (
+							<Typography id="modal-modal-title" variant="h6" component="h2">
+								{val.magnitude}
+							</Typography>
+						);
+					})
+				: ""
+			}
+			<Typography id="modal-modal-title" variant="h6" component="h2">
+				Text in a modal
+			</Typography>
+			<Typography id="modal-modal-description" sx={{ mt: 2 }}>
+				Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+			</Typography>
+		</Box>
+		</Modal>
+
 		<Box
 			sx={{
 				height: '100%',
@@ -479,9 +559,13 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 			}}
 			>
 			<DataGrid
+				checkboxSelection
+				onSelectionModelChange={(newSelectionModel) => {
+					setSelectionModel(newSelectionModel);
+				}}
+				selectionModel={selectionModel}
 				pagination
 				pageSize={11}
-				rowsPerPageOptions={[11]}
 				className="store-querys-table"
 				components={{
 					ColumnMenu: CustomColumnMenu,

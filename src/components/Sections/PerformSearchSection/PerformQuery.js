@@ -1,15 +1,9 @@
-// --- React dependencies
 import React, { useState, useEffect }  from 'react';
-
-// --- Dependencies
 import * as $                from 'jquery';
 import { getDataFromServer } from '../../../services/services';
-
 import moment                 from 'moment';
 import { DatePicker }         from 'antd';
 import 'antd/dist/antd.css';
-
-// --- Imported functions
 import { useDispatch, useSelector } from 'react-redux';
 import {
 	hadleSearch,
@@ -21,22 +15,18 @@ import {
 	setActualPage
 }
 from '../../../actions';
-// --- Model Component elements
 import LoadingButton                            from '@mui/lab/LoadingButton';
 import {Stack, MenuItem, FormControl, Select }  from '@mui/material';
-
-// --- Icons
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
 import ArrowRightIcon            from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon             from '@mui/icons-material/ArrowLeft';
 // import StopCircleIcon            from '@mui/icons-material/StopCircle';
-
 import DownloadEmailData from './DownloadData/DownloadEmailData';
 // import AdvancedOptions from './AdvancedOptions';
 import SaveQuery     	 from './StroreQuerys/SaveQuery';
 import ViewHandleQuery 	 from './StroreQuerys/handleQuerys/ViewHandleQuery';
 import PopUpMessage      from '../../handleErrors/PopUpMessage';
-import buildUrl		 from './buildUrl'
+import buildUrl		 	 from './buildUrl'
 
 
 /*
@@ -48,23 +38,23 @@ const hideAndShowSection = () => {
 }
 
 function PerformQuery(props) {
-	const dispatch             = useDispatch();
-	const [msg, handleMessage] = PopUpMessage();
+	const dispatch             = useDispatch()
+	const [msg, handleMessage] = PopUpMessage()
 
-	const monitor          = useSelector(state => state.monitor);
-	const loadWhileGetData = useSelector(state => state.loadingButton);
-	const pagination       = useSelector(state => state.pagination);
-	const editing 	   	   = useSelector(state => state.editingQuery);
+	const monitor          = useSelector(state => state.monitor)
+	const loadWhileGetData = useSelector(state => state.loadingButton)
+	const pagination       = useSelector(state => state.pagination)
+	const editing 	   	   = useSelector(state => state.editingQuery)
 
-	const [loadingSearch, setLoadingSearch] = useState(false);
-	const [beginDateInput, setBeginDateInput] = useState("");
-	const [endDateInput, setEndDateInput] = useState("");
+	const [loadingSearch, setLoadingSearch] = useState(false)
+	const [beginDateInput, setBeginDateInput] = useState("")
+	const [endDateInput, setEndDateInput] = useState("")
 	
 	const [timeQuery, setTimeQuery] = useState({
 		beginDate: "",
 		endDate: "",
 		sampling: 0
-	});
+	})
 
 	/*
 	 * Show Error
@@ -96,7 +86,7 @@ function PerformQuery(props) {
 		if (loadWhileGetData) {
 			setLoadingSearch(false);
 		}
-	}, [loadWhileGetData]);
+	}, [loadWhileGetData])
 
 	/*
 	 * set a sampling if specified
@@ -106,7 +96,7 @@ function PerformQuery(props) {
 			...timeQuery,
 			sampling: (editing?.active && editing?.sampling) ? editing.sampling : 0
 		})
-	}, [editing]);
+	}, [editing])
 
 	/*
 	 * Get Samples From Server
@@ -117,14 +107,13 @@ function PerformQuery(props) {
 		
 		Promise.resolve( getDataFromServer(url) )
 		.then(res => { 
-			const totalArraysRecive  = res.samples.length;
-			const totalRecords       = res.totalSamples;
+			const totalArraysRecive  = res.samples.length
+			const totalRecords       = res.reportInfo.totalSamples
 			const totalPerPage       = props.urliDisplayLength
 
-			dispatch(setSamples(res, timeQuery.sampling));
-			dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage));
-			console.log(
-				"\n \
+			dispatch(setSamples(res, timeQuery.sampling))
+			dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
+			console.log("\n \
 				MonitorsMagnitude Data was recibe successfully!! \n \
 				Sampling Period Choosen: " + timeQuery.sampling + " microsegundos \n \
 				Arrays Recived: " + totalArraysRecive + " \n \

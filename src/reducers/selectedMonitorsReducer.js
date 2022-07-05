@@ -8,8 +8,14 @@ const selectedMonitorsReducer = (state = [], action) => {
         ...state
       ]
 
+
     case 'addMultiple':
       return state = action.data
+
+
+    case 'concatMultiple':
+      // const removeDuplicates = action.data.filter((item) => item)
+      return action.data.concat(state)
 
 
     case 'remove':
@@ -19,7 +25,7 @@ const selectedMonitorsReducer = (state = [], action) => {
     case 'removeAll':
       return state = [];
 
-      
+    
     case 'saveOptions':
       const newArr = state.map(obj => {
         if (obj.id === action.id) {

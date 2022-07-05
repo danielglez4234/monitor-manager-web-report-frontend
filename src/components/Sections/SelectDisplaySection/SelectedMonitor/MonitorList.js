@@ -6,7 +6,7 @@ import {
 } from '../../../../actions';
 import * as $  from 'jquery';
 import {
-    IconButton
+    IconButton, Button
 } from '@mui/material'
 import { LtTooltip } from '../../../../commons/uiStyles'
 
@@ -128,6 +128,10 @@ function MonitorList({diActivateReload}) {
 		}
 	}, [monitor])
 
+	const saveOptions = () => {
+
+	}
+
 
 	/*
 	 * handle all menu global state acions from monitorSelected
@@ -155,9 +159,15 @@ function MonitorList({diActivateReload}) {
 				</label>
 				{
                     (true) ? "" : 
-                    <IconButton aria-label="fingerprint" color="success">
-                        <CachedIcon />
-                    </IconButton>
+					<Button 
+						className="selected-monitors-save-options"
+						size="small" 
+						variant="contained" 
+						startIcon={<CachedIcon />}
+						onClick={() =>{ saveOptions()}}
+					>
+						Aply Options
+					</Button>
                 }
 			</div>
 

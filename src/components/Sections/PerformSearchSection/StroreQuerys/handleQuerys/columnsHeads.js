@@ -6,8 +6,7 @@ const HEADS = [
         "sortable": true,
         "filterable": false,
         "hide": true,
-        "disableColumnMenu": false,
-        "actionCell": false
+        "disableColumnMenu": false
     },
     {    
         "field": "monitorInfo",
@@ -16,8 +15,7 @@ const HEADS = [
         "sortable": true,
         "filterable": false,
         "hide": true,
-        "disableColumnMenu": false,
-        "actionCell": false
+        "disableColumnMenu": false
     },
     {    
         "field": "id",
@@ -26,8 +24,18 @@ const HEADS = [
         "sortable": true,
         "filterable": false,
         "hide": true,
-        "disableColumnMenu": false,
-        "actionCell": false
+        "disableColumnMenu": false
+    },
+    {    
+        "field": "view",
+        "type": null,
+        "width": "60",
+        "sortable": false,
+        "filterable": false,
+        "hide": false,
+        "disableColumnMenu": true,
+        "actionCell": true,
+        "actionCellType": "preview"
     },
     {    
         "field": "name",
@@ -36,8 +44,7 @@ const HEADS = [
         "sortable": true,
         "filterable": true,
         "hide": "",
-        "disableColumnMenu": false,
-        "actionCell": false
+        "disableColumnMenu": false
     },
     {    
         "field": "description",
@@ -46,8 +53,7 @@ const HEADS = [
         "sortable": true,
         "filterable": true,
         "hide": false,
-        "disableColumnMenu": false,
-        "actionCell": false
+        "disableColumnMenu": false
     },
     {    
         "field": "created_by",
@@ -56,8 +62,7 @@ const HEADS = [
         "sortable": true,
         "filterable": false,
         "hide": true,
-        "disableColumnMenu": false,
-        "actionCell": false
+        "disableColumnMenu": false
     },
     {    
         "field": "creation_time",
@@ -66,8 +71,7 @@ const HEADS = [
         "sortable": true,
         "filterable": true,
         "hide": false,
-        "disableColumnMenu": false,
-        "actionCell": false
+        "disableColumnMenu": false
     },
     {    
         "field": "update_time",
@@ -76,8 +80,7 @@ const HEADS = [
         "sortable": true,
         "filterable": true,
         "hide": false,
-        "disableColumnMenu": false,
-        "actionCell": false
+        "disableColumnMenu": false
     },
     {    
         "field": "Actions",
@@ -87,7 +90,8 @@ const HEADS = [
         "filterable": false,
         "hide": false,
         "disableColumnMenu": true,
-        "actionCell": true
+        "actionCell": true,
+        "actionCellType": "actions"
     }
 ];
 export default HEADS

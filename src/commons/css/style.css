@@ -386,19 +386,11 @@ code {
   background-color: #aab4b7;
   position: relative;
 }
-.block-monitor-selected-when-searching{
-  background-color:rgba(151, 149, 149, 0.158);
-  width:100%;
-  height:100%;
-  position: absolute;
-  z-index:2;
-}
-
-.bolck-svg-monitors{
-  position: absolute;
-  right: 0px;
-  bottom:10px;
-  width:80px;
+.selected-monitors-save-options{
+  background-color: red !important;
+  font-family: 'RobotoMono-Bold' !important;
+  position: relative;
+  right: -15px;
 }
 
 .selected-monitors-title{
