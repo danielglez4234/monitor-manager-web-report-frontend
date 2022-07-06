@@ -54,23 +54,35 @@ function FavoriteQueries({addItem}) {
 
 	// localStorage.setItem('favorites', JSON.stringify([{name: "hola?"}])) 
 
-	async function init() {
-		const data = await JSON.parse(localStorage.getItem('favorites'))
-		setFavorites(data)
-		setLoadingFavorites(false)
+	const init = async () => {
+		try {
+			const data = await JSON.parse(localStorage.getItem('favorites'))
+			setFavorites(data)
+			setLoadingFavorites(false)
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
-	async function createLocalStorage() { 
-		await localStorage.setItem('favorites', JSON.stringify([]))
-		init()
-	} 
+	const createLocalStorage = async () => {
+		try {
+			await localStorage.setItem('favorites', JSON.stringify([]))
+			init()
+		} catch (error) {
+			console.log(error)
+		}
+	}
 
-	const addtolocalSotorage = async (item) => {
-		const data = await JSON.parse(localStorage.getItem('favorites'))
-		const newSet = [...data, item]
-		localStorage.setItem('favorites', JSON.stringify(newSet)) 
-		setFavorites(newSet)
-		setLoadingFavorites(false)
+	const addToLocalStorage = async (item) => {
+		try {
+			const data = await JSON.parse(localStorage.getItem('favorites'))
+			const newSet = [...data, item]
+			localStorage.setItem('favorites', JSON.stringify(newSet)) 
+			setFavorites(newSet)
+			setLoadingFavorites(false)	
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	/*
@@ -79,7 +91,7 @@ function FavoriteQueries({addItem}) {
 	useEffect(() => {
 		setLoadingFavorites(true)
 		if(addItem)
-			addtolocalSotorage(addItem)
+			addToLocalStorage(addItem)
 		else if(localStorage.getItem('favorites') === null)
 			createLocalStorage()
 		else
