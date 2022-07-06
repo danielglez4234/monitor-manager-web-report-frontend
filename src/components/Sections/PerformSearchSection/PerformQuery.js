@@ -96,10 +96,10 @@ function PerformQuery(props) {
 	 * set a sampling if specified
 	 */
 	useEffect(() => {
-		setTimeQuery({
-			...timeQuery,
+		setTimeQuery(prevState =>({
+			...prevState,
 			sampling: (editing?.active && editing?.sampling) ? editing.sampling : 0
-		})
+		}))
 	}, [editing])
 
 	/*
@@ -142,10 +142,10 @@ function PerformQuery(props) {
 	 */
 	const onChange = (date, value, dateFieldName) => {
 		try {
-			setTimeQuery({
-				...timeQuery,
+			setTimeQuery(prevState => ({
+				...prevState,
 				[dateFieldName]: value
-			})
+			}))
 			if(dateFieldName === "beginDate") // antDesign input string format date
 				setBeginDateInput(date) 
 			else if(dateFieldName === "endDate")
