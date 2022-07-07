@@ -40,6 +40,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import PreviewIcon from '@mui/icons-material/Preview';
 import { BookmarkBorder, Bookmark } from '@mui/icons-material';
 
+import { arrageMonitors } from '../../manageMonitorData';
 import HEADS from './columnsHeads'
 import PopUpMessage from '../../../../handleErrors/PopUpMessage';
 
@@ -257,41 +258,12 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 			setLoadingQuerys(false)
 		})
 	}
-
-	/*
-	 * Arrange monitors from storedquery
-	 */
-	const getArrageMonitorList = (val) => {
-		const monitorList = []
-		val.map(item => {
-			const component_id = item.id_monitor_component.id
-			const name = item.id_monitor_component.name
-			const options = item.options
-			let monitorData
-			if(item?.id_magnitude_description){
-				monitorData = item.id_magnitude_description
-				monitorList.push({component_id, name, ...monitorData, options})
-			}
-			else if(item?.id_monitor_description){
-				monitorData = item.id_monitor_description
-				item.options["prefix"] 	= item.prefix
-				item.options["unit"] 	= item.unit
-				item.options["decimal"] = item.decimal
-				item.options["pos"] 	= item.pos
-				monitorList.push({component_id, name, ...monitorData, options})
-			}
-			else{
-				monitorList.push({id: component_id, name, magnitude: "STATE", type: "state", options})
-			}
-		})
-		return monitorList
-	}
 	
 	/*
 	 * start editing query
 	 */
 	const handleLoadQuery = (query, edit) => {
-		const monitors_ = getArrageMonitorList(query.row.monitorInfo)
+		const monitors_ = arrageMonitors(query.row.monitorInfo)
 		delete query.row["monitorInfo"]
 		// if(concatMonitors){
 			// dispatch(handleSelectedElemets('concatMultiple', null, monitors_, null))

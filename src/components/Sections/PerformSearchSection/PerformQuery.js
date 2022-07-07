@@ -327,10 +327,10 @@ function PerformQuery(props) {
 								}
 						</Stack>
 					</div>
+				</div>
 					<FavoriteQueries 
 						addItem={addItem} // TODO: temporal
 					/>
-				</div>
 			</div>
 		</>
     );

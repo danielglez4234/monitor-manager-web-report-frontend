@@ -23,6 +23,8 @@ import BookmarkIcon	   from '@mui/icons-material/Bookmark';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import HelpIcon from '@mui/icons-material/Help';
 import FavoriteElement from './FavoriteElement'
+
+import { arrageMonitors } from '../manageMonitorData';
 import PopUpMessage    from '../../../handleErrors/PopUpMessage';
 
 
@@ -41,7 +43,7 @@ const noResultFound       = <div className="noComponentSelected-box">
 
 
 /*
- * localStorage
+ * localStorage => 
  * setItem() :
  * getItem() :
  * removeItem() :
@@ -49,16 +51,32 @@ const noResultFound       = <div className="noComponentSelected-box">
  */
 
 function FavoriteQueries({addItem}) {
+	const dispatch = useDispatch()
 	const [loadingFavorites, setLoadingFavorites] = useState(true)
 	const [favorites, setFavorites] = useState([])
 	const [resultQueryFavorite, setResultQueryFavorite] = useState([])
 
 	// localStorage.setItem('favorites', JSON.stringify([{name: "hola?"}])) 
 
-	const init = async () => {
+	const getLocalStorage = async () => {
 		try {
-			console.log("init()")
-			const data = await JSON.parse(localStorage.getItem('favorites'))
+			return await JSON.parse(localStorage.getItem('favorites'))
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	const setLocalStorage = (data) => {
+		try {
+			localStorage.setItem('favorites', JSON.stringify(data))
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	const load = async () => {
+		try {
+			const data = await getLocalStorage()
 			setFavorites(data)
 			setLoadingFavorites(false)
 		} catch (error) {
@@ -66,10 +84,10 @@ function FavoriteQueries({addItem}) {
 		}
 	}
 
-	const createLocalStorage = async () => {
+	const createLocalStorage = () => {
 		try {
-			await localStorage.setItem('favorites', JSON.stringify([]))
-			init()
+			setLocalStorage([])
+			load()
 		} catch (error) {
 			console.log(error)
 		}
@@ -77,9 +95,9 @@ function FavoriteQueries({addItem}) {
 
 	const addToLocalStorage = async (item) => {
 		try {
-			const data = await JSON.parse(localStorage.getItem('favorites'))
+			const data = await getLocalStorage()
 			const newSet = [...data, item]
-			localStorage.setItem('favorites', JSON.stringify(newSet)) 
+			setLocalStorage(newSet)
 			setFavorites(newSet)
 			setLoadingFavorites(false)	
 		} catch (error) {
@@ -87,36 +105,49 @@ function FavoriteQueries({addItem}) {
 		}
 	}
 
-	/*
-	 * get items
-	 */
-	useEffect(() => {
-		setLoadingFavorites(true)
-		if(addItem)
-			addToLocalStorage(addItem)
-		else if(localStorage.getItem('favorites') === null)
-			createLocalStorage()
-		else
-			init()
-	}, [addItem])
 
 	/*
-	 * initial search state
+	 * get query by id
 	 */
-	useEffect(() => {
-		if(favorites.length > 0)
-			handleSearchFavorites("")
-		else
-			setResultQueryFavorite([])
-	}, [favorites])
+	const getQueryById = (id) => {
+		return favorites.filter(f => f.id === id)
+	}
+	
+	/*
+	 * get monitor info
+	 */
+	const getMonitorInfo = (data) => {
+		return data.monitorInfo
+	}
+
+	/*
+	 * load monitors
+	 */
+	const loadMonitors = (id) => {
+		try {
+			const query = getQueryById(id)
+			if(query.length > 1)
+				throw new Error("ERROR there is two queries with the same key")
+			else{
+				const monitors_ = getMonitorInfo(query[0])
+				const arrageList_ = arrageMonitors(monitors_)
+				dispatch(handleSelectedElemets('addMultiple', null, arrageList_, null))
+			}
+		} catch (error) {
+			console.log(error)
+		}
+	}
 
 
 	/*
 	 * remove from favorites
 	 */
-	const removeFavorite = (itemID) => {
+	const removeFavorite = async (itemID) => {
 		try {
-			localStorage.setItem("favorites", JSON.stringify(favorites.filter(f => f.id === itemID)))
+			const data_ = await getLocalStorage()
+			const filterData_ = data_.filter(f => f.id !== itemID)
+			setLocalStorage(filterData_)
+			load()
 		} catch (error) {
 			console.log(error)
 		}
@@ -127,7 +158,7 @@ function FavoriteQueries({addItem}) {
 	 */
 	const removeAllFavorites = () => {
 		try {
-			localStorage.setItem("favorites", JSON.stringify([]))
+			setLocalStorage([])
 			setFavorites([])
 		} catch (error) {
 			console.log(error)	
@@ -137,10 +168,9 @@ function FavoriteQueries({addItem}) {
 	/*
 	 * sort favorites
 	 */
-	const sortFavorites = () => {
+	const sortFavorites = async () => {
 		try {
-			const data = JSON.parse(localStorage.getItem('favorites')) 
-			setFavorites(data.sort())
+			setFavorites(favorites.sort())
 		} catch (error) {
 			console.log(error)
 		}
@@ -170,8 +200,32 @@ function FavoriteQueries({addItem}) {
 		handleSearchFavorites(value)
 	}
 
+	/*
+	 * get items
+	 */
+	useEffect(() => { 
+		setLoadingFavorites(true)
+		if(addItem)
+			addToLocalStorage(addItem)
+		else if(localStorage.getItem('favorites') === null)
+			createLocalStorage()
+		else
+			load()
+	}, [addItem])
+
+	/*
+	 * initial search state
+	 */
+	useEffect(() => {
+		if(favorites.length > 0)
+			handleSearchFavorites("")
+		else
+			setResultQueryFavorite([])
+	}, [favorites])
+
     return(
-		<div className="favorite-title-box">
+		<>
+		{/* <div className="favorite-title-box"> */}
 			<div className="favorite-sample-header">
 				<Stack direction="column" spacing={0}>
 					<Stack className="stack-row-components-title-buttons" direction="row">
@@ -198,12 +252,13 @@ function FavoriteQueries({addItem}) {
 						<FavoriteElement
 							key = { index }
 							element = { element }
+							loadMonitors = { loadMonitors }
+							removeFavorite = { removeFavorite }
 						/>
 					)
 				}
 			</div>
 			<div className="favorite-bottom-menu-actions">
-				
 				<Stack
 					direction="row"
 					alignItems="center"
@@ -234,7 +289,8 @@ function FavoriteQueries({addItem}) {
 					</Stack>
 				</Stack>
 			</div>
-		</div>
+		{/* </div> */}
+		</>
     );
 }
 export default FavoriteQueries;

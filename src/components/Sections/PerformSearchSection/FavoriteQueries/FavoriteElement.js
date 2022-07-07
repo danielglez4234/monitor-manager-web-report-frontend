@@ -1,17 +1,13 @@
 import React from 'react';
-import InventoryIcon from '@mui/icons-material/Inventory';
 import { IconButton } from '@mui/material';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
 
-const FavoriteElement = ({element}) => {
+const FavoriteElement = ({element, loadMonitors, removeFavorite}) => {
 	return(
 		<div className="drag componentItem-box-container monitor-element">
-			<div 
-				className="componentItem-box" 
-				onClick={() => { 
-					// select(monitorData); 
-					// diActivateReload(); 
-				}}
-			>
+			<div className="componentItem-box">
 				<div className="componentItem-icon">
                     <div className="monitor-seleted-typeIcon">
                         <InventoryIcon sx={{color: "rgb(139, 159, 159)"}}/>
@@ -22,16 +18,16 @@ const FavoriteElement = ({element}) => {
 				</div>
 
 				<div className="monitorItem-title-div favoriteItem-title-actions-icons">
-					<div className="monitor-seleted-typeIcon">
-					<IconButton>
-                        <InventoryIcon sx={{color: "rgb(139, 159, 159)"}}/>
+					<IconButton className="divide-vertical-left"
+						onClick={() => {loadMonitors(element.id)}}
+					>
+						<DownloadForOfflineIcon className="rotate270" sx={{color: "rgb(232, 238, 238)"}}/>
 					</IconButton>
-                    </div>
-					<div className="monitor-seleted-typeIcon">
-					<IconButton>
-                        <InventoryIcon sx={{color: "rgb(139, 159, 159)"}}/>
+					<IconButton
+						onClick={() => {removeFavorite(element.id)}}
+					>
+                        <DeleteIcon sx={{color: "rgb(232, 238, 238)"}}/>
 					</IconButton>
-                    </div>
 				</div>
 			</div>
 		</div>
