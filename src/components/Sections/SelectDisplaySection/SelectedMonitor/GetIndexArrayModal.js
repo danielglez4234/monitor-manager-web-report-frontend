@@ -29,12 +29,12 @@ const GetIndexArrayModal = ({id, type, pos, setPos, applyChangesWarning, dimensi
     toRange2Dy: ""
   })
   
-  const [openIndexModal, setOpenIndexModal]     = useState(false);
-  const [enableResetIndex, setEnableResetIndex] = useState(true);
+  const [openIndexModal, setOpenIndexModal]     = useState(false)
+  const [enableResetIndex, setEnableResetIndex] = useState(true)
   
-  const [textIndex, setTextIndex] = useState((pos === "" || pos === null) ? "/" : pos.slice(1, -1));
-  const [indexTypeChoosen, setIndexTypeChoosen] = useState("range");
-  const [indexTypeChoosen2D, setIndexTypeChoosen2D] = useState("range2D");
+  const [textIndex, setTextIndex] = useState((pos === "" || pos === null) ? "/" : pos)
+  const [indexTypeChoosen, setIndexTypeChoosen] = useState("range")
+  const [indexTypeChoosen2D, setIndexTypeChoosen2D] = useState("range2D")
 
    /*
     * handle open "choose index" modal
