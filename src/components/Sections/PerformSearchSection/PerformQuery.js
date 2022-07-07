@@ -322,16 +322,14 @@ function PerformQuery(props) {
 									(editing?.active) ? "" :
 										<ViewHandleQuery 
 											editing={editing}
-											addItemtoLocalStorage={addItemtoLocalStorage}
+											addItemtoLocalStorage={addItemtoLocalStorage} // TODO: temporal
 										/>
 								}
 						</Stack>
 					</div>
-					
 					<FavoriteQueries 
-						addItem={addItem}
+						addItem={addItem} // TODO: temporal
 					/>
-
 				</div>
 			</div>
 		</>

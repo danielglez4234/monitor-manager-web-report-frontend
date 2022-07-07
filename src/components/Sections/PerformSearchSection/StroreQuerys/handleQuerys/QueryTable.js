@@ -561,6 +561,7 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 			>
 			<DataGrid
 				checkboxSelection
+				disableSelectionOnClick
 				onSelectionModelChange={(newSelectionModel) => {
 					setSelectionModel(newSelectionModel);
 				}}

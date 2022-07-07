@@ -1,28 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector }   from 'react-redux';
-import $                              from "jquery";
+import { useDispatch } from 'react-redux';
+import $ from "jquery";
 import {
   handleSelectedElemets,
 }
 from '../../../../actions';
-import Fuse                           from 'fuse.js';
-import {Stack, Skeleton, IconButton}  from '@mui/material';
+import Fuse from 'fuse.js';
+import { 
+	Stack, 
+	Skeleton, 
+	IconButton, 
+	Divider
+}  from '@mui/material';
 import { 
   Search,
   SearchIconWrapper,
   StyledInputBase 
 } from '../../../../commons/uiStyles';
-import CachedIcon 					  from '@mui/icons-material/Cached';
-import SearchIcon                     from '@mui/icons-material/Search';
-import SnippetFolderIcon              from '@mui/icons-material/SnippetFolder';
-import ArrowLeftIcon                  from '@mui/icons-material/ArrowLeft';
-import ArrowRightIcon                 from '@mui/icons-material/ArrowRight';
-import HelpOutlineIcon                from '@mui/icons-material/HelpOutline';
-import ReportGmailerrorredRoundedIcon from '@mui/icons-material/ReportGmailerrorredRounded';
-import BookmarkIcon 				  from '@mui/icons-material/Bookmark';
+import SearchIcon      from '@mui/icons-material/Search';
+import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
+import BookmarkIcon	   from '@mui/icons-material/Bookmark';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
+import HelpIcon from '@mui/icons-material/Help';
 import FavoriteElement from './FavoriteElement'
-import PopUpMessage                   from '../../../handleErrors/PopUpMessage';
-import { gridColumnsTotalWidthSelector } from '@mui/x-data-grid';
+import PopUpMessage    from '../../../handleErrors/PopUpMessage';
 
 
 
@@ -56,6 +57,7 @@ function FavoriteQueries({addItem}) {
 
 	const init = async () => {
 		try {
+			console.log("init()")
 			const data = await JSON.parse(localStorage.getItem('favorites'))
 			setFavorites(data)
 			setLoadingFavorites(false)
@@ -103,7 +105,9 @@ function FavoriteQueries({addItem}) {
 	 */
 	useEffect(() => {
 		if(favorites.length > 0)
-			handleSearchFavorites("") 
+			handleSearchFavorites("")
+		else
+			setResultQueryFavorite([])
 	}, [favorites])
 
 
@@ -123,9 +127,22 @@ function FavoriteQueries({addItem}) {
 	 */
 	const removeAllFavorites = () => {
 		try {
-			localStorage.clear()
+			localStorage.setItem("favorites", JSON.stringify([]))
+			setFavorites([])
 		} catch (error) {
 			console.log(error)	
+		}
+	}
+
+	/*
+	 * sort favorites
+	 */
+	const sortFavorites = () => {
+		try {
+			const data = JSON.parse(localStorage.getItem('favorites')) 
+			setFavorites(data.sort())
+		} catch (error) {
+			console.log(error)
 		}
 	}
 
@@ -156,7 +173,7 @@ function FavoriteQueries({addItem}) {
     return(
 		<div className="favorite-title-box">
 			<div className="favorite-sample-header">
-				<Stack direction="column" spacing={2}>
+				<Stack direction="column" spacing={0}>
 					<Stack className="stack-row-components-title-buttons" direction="row">
 						<p className="components-item-title">Marked Queries</p>
 					</Stack>
@@ -184,6 +201,38 @@ function FavoriteQueries({addItem}) {
 						/>
 					)
 				}
+			</div>
+			<div className="favorite-bottom-menu-actions">
+				
+				<Stack
+					direction="row"
+					alignItems="center"
+					justifyContent="space-between"
+				>
+					<Stack>
+						<IconButton>
+							<HelpIcon sx={{color: '#e9e9e9'}}/>
+						</IconButton>
+					</Stack>
+					<Stack
+						direction="row"
+						justifyContent="flex-end"
+						alignItems="center"
+						divider={<Divider orientation="vertical" flexItem />}
+						spacing={1}
+					>
+						<IconButton
+							onClick={() => {sortFavorites()}}
+						>
+							<SortByAlphaIcon sx={{color: '#e9e9e9'}}/>
+						</IconButton>
+						<IconButton
+							onClick={() => {removeAllFavorites()}}
+						>
+							<DeleteSweepIcon sx={{color: '#e9e9e9'}}/>
+						</IconButton>
+					</Stack>
+				</Stack>
 			</div>
 		</div>
     );
