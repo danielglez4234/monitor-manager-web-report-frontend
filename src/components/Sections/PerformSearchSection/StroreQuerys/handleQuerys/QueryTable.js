@@ -277,7 +277,7 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 				item.options["prefix"] 	= item.prefix
 				item.options["unit"] 	= item.unit
 				item.options["decimal"] = item.decimal
-				item.options["pos"] 	= item.pos
+				item.options["pos"] 	= item.pos.slice(1, -1)
 				monitorList.push({component_id, name, ...monitorData, options})
 			}
 			else{
@@ -400,13 +400,13 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 					<DeleteIcon className="red-iconcolor" />
 				</IconButton>
 			</Tooltip>
-			<Tooltip title="Add To Favorites">
+			{/* <Tooltip title="Add To Favorites">
 				<Checkbox 
 					// checked={true}
 					icon={<BookmarkBorder />}
 					checkedIcon={<Bookmark />} 
 				/>
-			</Tooltip>
+			</Tooltip> */}
 			</>
 		);
 	}

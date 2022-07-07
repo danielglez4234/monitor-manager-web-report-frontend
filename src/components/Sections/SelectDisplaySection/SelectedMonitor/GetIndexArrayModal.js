@@ -32,7 +32,7 @@ const GetIndexArrayModal = ({id, type, pos, setPos, applyChangesWarning, dimensi
   const [openIndexModal, setOpenIndexModal]     = useState(false);
   const [enableResetIndex, setEnableResetIndex] = useState(true);
   
-  const [textIndex, setTextIndex] = useState((pos === "" || pos === null) ? "/" : pos.slice(1, -1));
+  const [textIndex, setTextIndex] = useState((pos === "" || pos === null) ? "/" : pos);
   const [indexTypeChoosen, setIndexTypeChoosen] = useState("range");
   const [indexTypeChoosen2D, setIndexTypeChoosen2D] = useState("range2D");
 
