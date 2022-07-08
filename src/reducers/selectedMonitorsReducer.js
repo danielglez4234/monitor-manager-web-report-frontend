@@ -1,32 +1,45 @@
 const selectedMonitorsReducer = (state = [], action) => {
   switch(action.type) {
-    case 'getSelectedMonitor':
+    case 'add':
       return [
-        ...state,
-          {
-            id: action.id,
-            monitorData: action.monitorData,
-            component: action.component
-          }
-      ];
+        { 
+          ...action.data,
+        },
+        ...state
+      ]
 
 
-    case 'diselectMonitor':
-      return state.filter((item) => item.id !== action.idMonitorMagnitude);
+    case 'addMultiple':
+      return state = action.data
+
+
+    case 'concatMultiple':
+      // const removeDuplicates = action.data.filter((item) => item)
+      return action.data.concat(state)
+
+
+    case 'remove':
+      return state.filter((item) => item.id !== action.id);
       
 
-    case 'diselectALLMonitor':
+    case 'removeAll':
       return state = [];
 
+    
+    case 'saveOptions':
+      const newArr = state.map(obj => {
+        if (obj.id === action.id) {
+          return {...obj, ...action.options}
+        }
+        return obj
+      })
+      return newArr
 
-    case 'sortMonitors':
-      let setB = [...state];
-      return setB.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-
-
+      
     default:
       return state;
 
   }
 }
 export default selectedMonitorsReducer;
+
