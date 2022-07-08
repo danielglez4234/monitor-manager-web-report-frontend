@@ -69,6 +69,10 @@ code {
   transform: rotate(270deg);
 }
 
+.divide-vertical-left{
+  border-left: 2px dashed lightgray !important;
+}
+
 
 .position-static{
   position: static !important;
@@ -129,6 +133,8 @@ code {
   margin-left: 12px;
   border-radius: 6px
 }
+
+
 
 
 
@@ -2134,6 +2140,79 @@ font-size: 13px !important;
     } */
 
 
+/*---------------------------------------------------------------------------------------------------*/
+/* FAVORITES SECTION */
+/*---------------------------------------------------------------------------------------------------*/
+.favorite-sample-header{
+  background-color: #333a44;
+  color: #c8d2d2;
+  height: 107px;
+  width: 100%;
+  padding-top: 10px;
+  padding-left: 16px;
+  padding-right: 16px;
+  box-sizing: border-box;
+  /* line-height: 48px; */
+  list-style: none;
+  font-family: 'RobotoMono-Bold' !important;
+  word-spacing: -2px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.skeleton-favorites{
+  margin-top: 10px;
+  margin-left: 12px;
+  border-radius: 6px;
+  width: 93% !important;
+}
+
+.sample-items-favorites{
+  width: 100%;
+  /* height: 100%; */
+  flex:1;
+}
+
+.favorites-over-div-items{
+  /* height: 100%;
+  overflow-y: scroll; */
+}
+
+
+.favoriteItem-title-div{
+  width: 100%;
+  flex: 1;
+}
+
+.favoriteItem-title-actions-icons{
+  display:flex;
+  background-color: #515760;
+  width:80px;
+  border-top-left-radius: 18.9px;
+  border-bottom-left-radius: 18.9px;
+  padding-left: 10px;
+  border-left: 3px solid #85d1ff;
+}
+
+.favorite-bottom-menu-actions{
+  background-color: #3b424d;
+  border-top: 2px solid #62bfa5;
+  height: 46px;
+}
+
+
+/*---------------------------------------------------------------------------------------------------*/
+/* END ************************************************ FAVORITES SECTION */
+/*---------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+
+
 
 
 .total-pages{
@@ -2259,10 +2338,11 @@ font-size: 13px !important;
   display: flex;
   flex-direction: column;
   /* height: 0%; */
-  flex: 1;
+  /* flex: 1; */
 }
 
 .sample-header-store-query{
+  flex: 0;
   box-sizing: border-box;
   line-height: 48px;
   list-style: none;
@@ -2273,8 +2353,9 @@ font-size: 13px !important;
   padding-left: 16px;
   padding-right: 16px;
   background-color: #333a44;
-  /* height: 153px; */
   border-top: 2px solid #475160 !important;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #475160 !important;
 }
 
 /* .sample-header-store-query:hover{

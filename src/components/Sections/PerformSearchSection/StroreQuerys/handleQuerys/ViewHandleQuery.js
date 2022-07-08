@@ -31,7 +31,7 @@ const usesTyles = makeStyles({
 })
 
 
-function ViewHandleQuery() {
+function ViewHandleQuery({addItemtoLocalStorage}) {
 	const classes = usesTyles()
 	const [openViewQuery, setOpenViewQuery] = useState(false)
 
@@ -69,6 +69,7 @@ function ViewHandleQuery() {
 						<Grid item xs={12} sm={12} md={12} className="store-query-title-table-box">
 							{
 								<QueryTable
+									addItemtoLocalStorage={addItemtoLocalStorage}
 									openViewQuery={openViewQuery}
 									handleCloseSaveQuery={handleCloseSaveQuery}
 								/>

@@ -38,8 +38,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import UploadIcon from '@mui/icons-material/Upload';
 import PreviewIcon from '@mui/icons-material/Preview';
+import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
 import { BookmarkBorder, Bookmark } from '@mui/icons-material';
 
+import { arrageMonitors } from '../../manageMonitorData';
 import HEADS from './columnsHeads'
 import PopUpMessage from '../../../../handleErrors/PopUpMessage';
 
@@ -157,7 +159,7 @@ function CustomPagination() {
   }
 
 
-export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
+export default function QueryTable({addItemtoLocalStorage, openViewQuery, handleCloseSaveQuery}) {
 	const dispatch = useDispatch()
 	const [msg, handleMessage] = PopUpMessage()
 	const [rows, setRows] = useState([])
@@ -257,41 +259,12 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 			setLoadingQuerys(false)
 		})
 	}
-
-	/*
-	 * Arrange monitors from storedquery
-	 */
-	const getArrageMonitorList = (val) => {
-		const monitorList = []
-		val.map(item => {
-			const component_id = item.id_monitor_component.id
-			const name = item.id_monitor_component.name
-			const options = item.options
-			let monitorData
-			if(item?.id_magnitude_description){
-				monitorData = item.id_magnitude_description
-				monitorList.push({component_id, name, ...monitorData, options})
-			}
-			else if(item?.id_monitor_description){
-				monitorData = item.id_monitor_description
-				item.options["prefix"] 	= item.prefix
-				item.options["unit"] 	= item.unit
-				item.options["decimal"] = item.decimal
-				item.options["pos"] 	= item.pos.slice(1, -1)
-				monitorList.push({component_id, name, ...monitorData, options})
-			}
-			else{
-				monitorList.push({id: component_id, name, magnitude: "STATE", type: "state", options})
-			}
-		})
-		return monitorList
-	}
 	
 	/*
 	 * start editing query
 	 */
 	const handleLoadQuery = (query, edit) => {
-		const monitors_ = getArrageMonitorList(query.row.monitorInfo)
+		const monitors_ = arrageMonitors(query.row.monitorInfo)
 		delete query.row["monitorInfo"]
 		// if(concatMonitors){
 			// dispatch(handleSelectedElemets('concatMultiple', null, monitors_, null))
@@ -347,7 +320,12 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	 */
 	const previewButton = (cellValues) => {
 		return (
-			<Tooltip title="Preview Monitors">
+			<Tooltip
+				title="Preview Monitors"
+				disableInteractive
+				enterDelay={500}
+				leaveDelay={200}
+			>
 				<IconButton
 					color="primary"
 					aria-label="load"
@@ -367,7 +345,12 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	const actionsButtons = (cellValues) => {
 		return (
 			<>
-			<Tooltip title="Load">
+			<Tooltip
+				title="Load"
+				disableInteractive
+				enterDelay={500}
+				leaveDelay={200}
+			>
 				<IconButton
 					color="primary"
 					aria-label="load"
@@ -378,7 +361,12 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 					<UploadIcon className="rotate90 blue-iconcolor"/>
 				</IconButton>
 			</Tooltip>
-			<Tooltip title="Edit">
+			<Tooltip
+				title="Edit"
+				disableInteractive
+				enterDelay={500}
+				leaveDelay={200}
+			>
 				<IconButton
 					color="secondary"
 					aria-label="load"
@@ -389,7 +377,12 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 					<EditIcon className="gray-iconcolor" />
 				</IconButton>
 			</Tooltip>
-			<Tooltip title="Delete">
+			<Tooltip
+				title="Delete"
+				disableInteractive
+				enterDelay={500}
+				leaveDelay={200}
+			>
 				<IconButton
 					color="error"
 					aria-label="delete"
@@ -400,18 +393,32 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 					<DeleteIcon className="red-iconcolor" />
 				</IconButton>
 			</Tooltip>
-			{/* <Tooltip title="Add To Favorites">
-				<Checkbox 
+			<Tooltip
+				title="Add To Favorites"
+				disableInteractive
+				enterDelay={500}
+				leaveDelay={200}
+			>
+				<IconButton
+					color="error"
+					aria-label="delete"
+					onClick={(event) => {addItemtoLocalStorage(cellValues.row)}} // TODO: temporal
+				>
+					<BookmarkAddIcon sx={{color: "#2fd38e"}}/>
+				</IconButton>
+
+				{/* <Checkbox
 					// checked={true}
+					onClick={(event) => {addItemtoLocalStorage(cellValues.row)}} // TODO: temporal
 					icon={<BookmarkBorder />}
 					checkedIcon={<Bookmark />} 
-				/>
-			</Tooltip> */}
+				/> */}
+			</Tooltip>
 			</>
 		);
 	}
 
-	const getButtonsCell = (type, ) => {
+	const getButtonsCell = (type) => {
 		return {
 			renderCell: (cellValues) => {
 				if(type === "preview")
@@ -558,10 +565,25 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 				},
 			}}
 			>
+				{
+					    //  const selectedIDs = new Set(ids);
+						//  const selectedRowData = rows.filter((row) =>
+						//    selectedIDs.has(row.id.toString())
+						//  );
+						//  console.log(selectedRowData);
+				}
 			<DataGrid
 				checkboxSelection
-				onSelectionModelChange={(newSelectionModel) => {
-					setSelectionModel(newSelectionModel);
+				disableSelectionOnClick
+				onSelectionModelChange={(ids) => {
+					const selectedIDs = new Set(ids);
+					console.log("selectedIDs", selectedIDs)
+					console.log("rows", rows)
+					const selectedRowData = rows.filter((row) =>
+					  selectedIDs.has(row.id.toString())
+					);
+					console.log("selectedRowData", selectedRowData)
+					setSelectionModel(ids);
 				}}
 				selectionModel={selectionModel}
 				pagination

@@ -205,12 +205,9 @@ function ListComponentMonitor() {
 		const results = fuse.search(value)
 		const searchResult = results.map(result => result.item)
 		if (value === '')
-		{
 			setResultQueryComponent(data_components)
-		}else
-		{
+		else
 			setResultQueryComponent(searchResult)
-		}
 	}
 
     /*
@@ -232,12 +229,9 @@ function ListComponentMonitor() {
 		const results = fuse.search(value)
 		const searchResult = results.map(result => result.item)
 		if (value === '')
-		{
 			setResultQueryMonitor(data_monitors)
-		}else
-		{
+		else
 			setResultQueryMonitor(searchResult)
-		}
 	}
 
     /*

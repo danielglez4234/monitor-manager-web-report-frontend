@@ -70,7 +70,7 @@ export default function buildUrl(monitors, timeAndSampling, pagination) {
             const type = infoMonitor.type
             const id = infoMonitor.id
 			const component = infoMonitor.name
-            const index = infoMonitor.pos
+            const index = infoMonitor.options.pos
  
             queryRest += "id" + getCategory(type) + "=";
             if (fnIsScalar(type)){
