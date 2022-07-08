@@ -38,6 +38,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import UploadIcon from '@mui/icons-material/Upload';
 import PreviewIcon from '@mui/icons-material/Preview';
+import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
 import { BookmarkBorder, Bookmark } from '@mui/icons-material';
 
 import { arrageMonitors } from '../../manageMonitorData';
@@ -319,7 +320,12 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 	 */
 	const previewButton = (cellValues) => {
 		return (
-			<Tooltip title="Preview Monitors">
+			<Tooltip 
+				title="Preview Monitors" 
+				disableInteractive 
+				enterDelay={500} 
+				leaveDelay={200}
+			>
 				<IconButton
 					color="primary"
 					aria-label="load"
@@ -339,7 +345,12 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 	const actionsButtons = (cellValues) => {
 		return (
 			<>
-			<Tooltip title="Load">
+			<Tooltip 
+				title="Load" 
+				disableInteractive 
+				enterDelay={500} 
+				leaveDelay={200}
+			>
 				<IconButton
 					color="primary"
 					aria-label="load"
@@ -350,7 +361,12 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 					<UploadIcon className="rotate90 blue-iconcolor"/>
 				</IconButton>
 			</Tooltip>
-			<Tooltip title="Edit">
+			<Tooltip 
+				title="Edit" 
+				disableInteractive 
+				enterDelay={500} 
+				leaveDelay={200}
+			>
 				<IconButton
 					color="secondary"
 					aria-label="load"
@@ -361,7 +377,12 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 					<EditIcon className="gray-iconcolor" />
 				</IconButton>
 			</Tooltip>
-			<Tooltip title="Delete">
+			<Tooltip 
+				title="Delete" 
+				disableInteractive 
+				enterDelay={500} 
+				leaveDelay={200}
+			>
 				<IconButton
 					color="error"
 					aria-label="delete"
@@ -372,19 +393,32 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 					<DeleteIcon className="red-iconcolor" />
 				</IconButton>
 			</Tooltip>
-			<Tooltip title="Add To Favorites">
-				<Checkbox 
+			<Tooltip 
+				title="Add To Favorites" 
+				disableInteractive 
+				enterDelay={500} 
+				leaveDelay={200}
+			>
+				<IconButton
+					color="error"
+					aria-label="delete"
+					onClick={(event) => {addItemtoLocalStorage(cellValues.row)}} // TODO: temporal
+				>
+					<BookmarkAddIcon sx={{color: "#2fd38e"}}/>
+				</IconButton>
+				
+				{/* <Checkbox 
 					// checked={true}
 					onClick={(event) => {addItemtoLocalStorage(cellValues.row)}} // TODO: temporal
 					icon={<BookmarkBorder />}
 					checkedIcon={<Bookmark />} 
-				/>
+				/> */}
 			</Tooltip>
 			</>
 		);
 	}
 
-	const getButtonsCell = (type, ) => {
+	const getButtonsCell = (type) => {
 		return {
 			renderCell: (cellValues) => {
 				if(type === "preview")
@@ -531,11 +565,25 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 				},
 			}}
 			>
+				{
+					    //  const selectedIDs = new Set(ids);
+						//  const selectedRowData = rows.filter((row) =>
+						//    selectedIDs.has(row.id.toString())
+						//  );
+						//  console.log(selectedRowData);
+				}
 			<DataGrid
 				checkboxSelection
 				disableSelectionOnClick
-				onSelectionModelChange={(newSelectionModel) => {
-					setSelectionModel(newSelectionModel);
+				onSelectionModelChange={(ids) => {
+					const selectedIDs = new Set(ids);
+					console.log("selectedIDs", selectedIDs)
+					console.log("rows", rows)
+					const selectedRowData = rows.filter((row) =>
+					  selectedIDs.has(row.id.toString())
+					);
+					console.log("selectedRowData", selectedRowData)
+					setSelectionModel(ids);
 				}}
 				selectionModel={selectionModel}
 				pagination
