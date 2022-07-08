@@ -1,7 +1,8 @@
 import React from 'react';
 import { IconButton } from '@mui/material';
+import { LtTooltip } from '../../../../commons/uiStyles'
 import InventoryIcon from '@mui/icons-material/Inventory';
-import DeleteIcon from '@mui/icons-material/Delete';
+import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
 
 const FavoriteElement = ({element, loadMonitors, removeFavorite}) => {
@@ -18,16 +19,22 @@ const FavoriteElement = ({element, loadMonitors, removeFavorite}) => {
 				</div>
 
 				<div className="monitorItem-title-div favoriteItem-title-actions-icons">
-					<IconButton className="divide-vertical-left"
+				<LtTooltip title="Load" placement="top" className="tool-tip-options" disableInteractive>
+					<IconButton
 						onClick={() => {loadMonitors(element.id)}}
+						size="small"
 					>
-						<DownloadForOfflineIcon className="rotate270" sx={{color: "rgb(232, 238, 238)"}}/>
+						<DownloadForOfflineIcon className="rotate270" sx={{color: "rgb(232, 238, 238)"}} fontSize="small"/>
 					</IconButton>
+				</LtTooltip>
+				<LtTooltip title="UnMarked" placement="top" className="tool-tip-options" disableInteractive>
 					<IconButton
 						onClick={() => {removeFavorite(element.id)}}
+						size="small"
 					>
-                        <DeleteIcon sx={{color: "rgb(232, 238, 238)"}}/>
+                        <BookmarkRemoveIcon sx={{color: "rgb(232, 238, 238)"}} fontSize="small"/>
 					</IconButton>
+				</LtTooltip>
 				</div>
 			</div>
 		</div>

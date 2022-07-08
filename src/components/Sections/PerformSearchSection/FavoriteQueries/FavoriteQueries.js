@@ -10,8 +10,10 @@ import {
 	Stack, 
 	Skeleton, 
 	IconButton, 
-	Divider
+	Divider,
+	Tooltip
 }  from '@mui/material';
+import { LtTooltip } from '../../../../commons/uiStyles';
 import { 
   Search,
   SearchIconWrapper,
@@ -41,6 +43,8 @@ const noResultFound       = <div className="noComponentSelected-box">
 								<p className="noComponentSelected-title">No Results Found</p>
 							</div>;
 
+const sectionHelperText = "In this section you will be able to visualize the elements marked in the table of stored queries. Currently localStorage is being used, try not to delete it to avoid losing the queries."							
+
 
 /*
  * localStorage => 
@@ -52,12 +56,15 @@ const noResultFound       = <div className="noComponentSelected-box">
 
 function FavoriteQueries({addItem}) {
 	const dispatch = useDispatch()
+	const [msg, handleMessage] = PopUpMessage()
 	const [loadingFavorites, setLoadingFavorites] = useState(true)
 	const [favorites, setFavorites] = useState([])
 	const [resultQueryFavorite, setResultQueryFavorite] = useState([])
+	const [sortToggle, setSortToggle] = useState(false);
 
-	// localStorage.setItem('favorites', JSON.stringify([{name: "hola?"}])) 
-
+	/*
+	 * get local storage data
+	 */
 	const getLocalStorage = async () => {
 		try {
 			return await JSON.parse(localStorage.getItem('favorites'))
@@ -66,6 +73,9 @@ function FavoriteQueries({addItem}) {
 		}
 	}
 
+	/*
+	 * set local storage to favorites
+	 */
 	const setLocalStorage = (data) => {
 		try {
 			localStorage.setItem('favorites', JSON.stringify(data))
@@ -74,6 +84,9 @@ function FavoriteQueries({addItem}) {
 		}
 	}
 
+	/*
+	 * load favorites querys
+	 */
 	const load = async () => {
 		try {
 			const data = await getLocalStorage()
@@ -84,6 +97,9 @@ function FavoriteQueries({addItem}) {
 		}
 	}
 
+	/*
+	 * create local storage if it doesn't exist'
+	 */
 	const createLocalStorage = () => {
 		try {
 			setLocalStorage([])
@@ -93,18 +109,46 @@ function FavoriteQueries({addItem}) {
 		}
 	}
 
+	/*
+	 * if already in
+	 */
+	const isFound = (array, newElement) => {
+		return array.some(element => {
+			console.log(element.id, newElement.id)
+			if (element.id === newElement.id)
+			  return true
+			return false
+		})
+	}
+
+	/*
+	 * add to local storage
+	 */
 	const addToLocalStorage = async (item) => {
 		try {
 			const data = await getLocalStorage()
-			const newSet = [...data, item]
-			setLocalStorage(newSet)
-			setFavorites(newSet)
+			const test = isFound(data, item)
+			console.log("test", test)
+			if(!isFound(data, item))
+			{
+				console.log("is not in")
+				const newSet = [...data, item]
+				setLocalStorage(newSet)
+				setFavorites(newSet)
+			}
+			else{
+				handleMessage({ 
+					message: "The query "+ item.name +" is already inside the favorite queries", 
+					type: 'info', 
+					persist: false,
+					preventDuplicate: false
+				})
+			}
 			setLoadingFavorites(false)	
 		} catch (error) {
 			console.log(error)
 		}
 	}
-
 
 	/*
 	 * get query by id
@@ -168,9 +212,27 @@ function FavoriteQueries({addItem}) {
 	/*
 	 * sort favorites
 	 */
-	const sortFavorites = async () => {
+	const sortFavorites = () => {
+		const lowerCase = val => val.toLowerCase()
+		function compareASC(a, b){
+			const a_ = lowerCase(a.name)
+			const b_ = lowerCase(b.name)
+			if (a_ < b_) return -1
+			if (a_ > b_) return 1
+		}
+		function compareDESC(a, b){
+			const a_ = lowerCase(a.name)
+			const b_ = lowerCase(b.name)
+			if (a_ > b_) return -1
+			if (a_ < b_) return 1
+		}
 		try {
-			setFavorites(favorites.sort())
+			const toggle = !sortToggle
+			setSortToggle(toggle)
+			const compare = (toggle) 
+				? (a, b) => compareASC(a, b) 
+				: (a, b) => compareDESC(a, b)
+			setFavorites(favorites.sort(compare))
 		} catch (error) {
 			console.log(error)
 		}
@@ -225,7 +287,6 @@ function FavoriteQueries({addItem}) {
 
     return(
 		<>
-		{/* <div className="favorite-title-box"> */}
 			<div className="favorite-sample-header">
 				<Stack direction="column" spacing={0}>
 					<Stack className="stack-row-components-title-buttons" direction="row">
@@ -265,9 +326,19 @@ function FavoriteQueries({addItem}) {
 					justifyContent="space-between"
 				>
 					<Stack>
-						<IconButton>
-							<HelpIcon sx={{color: '#e9e9e9'}}/>
-						</IconButton>
+						<LtTooltip
+							title={
+								<React.Fragment>
+									<b className="label-indHlp-tooltip">{sectionHelperText}</b>
+								</React.Fragment>
+							} 
+							placement="top" 
+							className="tool-tip-options"
+						>
+							<IconButton>
+								<HelpIcon sx={{color: '#e9e9e9'}}/>
+							</IconButton>
+						</LtTooltip>
 					</Stack>
 					<Stack
 						direction="row"
@@ -276,20 +347,33 @@ function FavoriteQueries({addItem}) {
 						divider={<Divider orientation="vertical" flexItem />}
 						spacing={1}
 					>
-						<IconButton
-							onClick={() => {sortFavorites()}}
+						<LtTooltip
+							title={(sortToggle) ? "DESC" : "ASC"}
+							placement="top" 
+							className="tool-tip-options"
+							disableInteractive
 						>
-							<SortByAlphaIcon sx={{color: '#e9e9e9'}}/>
-						</IconButton>
-						<IconButton
-							onClick={() => {removeAllFavorites()}}
+							<IconButton
+								onClick={() => {sortFavorites()}}
+							>
+								<SortByAlphaIcon sx={{color: '#e9e9e9'}}/>
+							</IconButton>
+						</LtTooltip>
+						<LtTooltip
+							title={"Delete all marked queries"}
+							placement="top" 
+							className="tool-tip-options"
+							disableInteractive
 						>
-							<DeleteSweepIcon sx={{color: '#e9e9e9'}}/>
-						</IconButton>
+							<IconButton
+								onClick={() => {removeAllFavorites()}}
+							>
+								<DeleteSweepIcon sx={{color: '#e9e9e9'}}/>
+							</IconButton>
+						</LtTooltip>
 					</Stack>
 				</Stack>
 			</div>
-		{/* </div> */}
 		</>
     );
 }
