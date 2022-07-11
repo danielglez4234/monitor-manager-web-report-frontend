@@ -11,7 +11,7 @@ const fnReplacePad = (val) => val.replace(/#/g, '%23');
  * log url request in console
  */
 const logUrl = (params, route, action) => {
-    console.log(`URL - ${action}: ${window.location.href.replace('3006', REACT_APP_SERVER_PORT)}/rest/${route}/${encodeURI(params).replace(/#/g,'%23')}`);
+    console.log(`URL - ${action}: ${window.location.href.replace('3006', REACT_APP_SERVER_PORT)}/rest/${route}/${params.replace(/#/g,'%23')}`);
 }
 
 /*

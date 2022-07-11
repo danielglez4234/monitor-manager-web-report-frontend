@@ -5,6 +5,7 @@ import {
 } from '../../../../../services/services';
 import { useDispatch } from 'react-redux';
 import { editingQuery, handleSelectedElemets } from '../../../../../actions';
+import { fnIsArray } from '../../../../standarFunctions'; // TODO: REFACTOR: temporal hotfix
 import { 
 	DataGrid,
 	GridToolbarContainer,
@@ -168,7 +169,7 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	const [openConfirm, setOpenConfirm] = useState(false)
 	const [openPreviewModal, setOpenPreviewModal] = useState(false);
 	const [monitorsListPreview, setMonitorsListPreview] = useState([]);
-	const [selectionModel, setSelectionModel] = useState([]);
+	// const [selectionModel, setSelectionModel] = useState([]);
 	// const [checked, setChecked] = useState(false); // TODO: => change to array
 
 	/*
@@ -277,7 +278,7 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 				item.options["prefix"] 	= item.prefix
 				item.options["unit"] 	= item.unit
 				item.options["decimal"] = item.decimal
-				item.options["pos"] 	= item.pos.slice(1, -1)
+				item.options["pos"] = (fnIsArray(item.id_monitor_description.type)) ? item.pos.slice(1, -1) : ""
 				monitorList.push({component_id, name, ...monitorData, options})
 			}
 			else{
@@ -286,7 +287,7 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 		})
 		return monitorList
 	}
-	
+
 	/*
 	 * start editing query
 	 */
@@ -559,11 +560,11 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 			}}
 			>
 			<DataGrid
-				checkboxSelection
-				onSelectionModelChange={(newSelectionModel) => {
-					setSelectionModel(newSelectionModel);
-				}}
-				selectionModel={selectionModel}
+				// checkboxSelection
+				// onSelectionModelChange={(newSelectionModel) => {
+				// 	setSelectionModel(newSelectionModel);
+				// }}
+				// selectionModel={selectionModel}
 				pagination
 				pageSize={11}
 				className="store-querys-table"
