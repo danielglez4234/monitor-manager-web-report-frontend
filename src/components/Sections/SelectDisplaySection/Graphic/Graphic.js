@@ -385,7 +385,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 		 * Set Series line weight and dashArray view
 		 */
 		let handleStroke;
-		let stroke = info[y].strokeWidth;
+		let stroke = info[y].stroke;
 		if      (stroke === "Medium") { handleStroke = 2 }
 		else if (stroke === "Light")  { handleStroke = 1 }
 		else if (stroke === "Bold")   { handleStroke = 3 }
@@ -393,7 +393,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 		else { handleStroke = 1 }
 
 		let handleCanvasArray;
-		let caNv = info[y].canvasWidth;
+		let caNv = info[y].canvas;
 		if      (caNv === "Dotted")        { handleCanvasArray = ["1"] }
 		else if (caNv === "Dashed")        { handleCanvasArray = ["3","3"] }
 		else if (caNv === "Large Dashed")  { handleCanvasArray = ["10"] }
