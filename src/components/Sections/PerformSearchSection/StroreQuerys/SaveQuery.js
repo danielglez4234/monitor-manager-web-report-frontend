@@ -133,7 +133,7 @@ function SaveQuery({timeQuery, editing}) {
 	/*
 	 * check the changes in queryName when editing
 	 */
-	const checkIfQueryEditing = (newValue) => {
+	const setValuesForEditing = (newValue) => {
 		setQueryName(newValue)
 		setifSameQueryName((newValue === editing.name))
 	}
@@ -198,8 +198,8 @@ function SaveQuery({timeQuery, editing}) {
 		const payload = createPayload()
 
 		const fnAction = (editing?.active && ifSameQueryName) 
-		? () => updateQuery(queryName, payload) 
-		: () => insertQuery(payload);
+			? () => updateQuery(queryName, payload) 
+			: () => insertQuery(payload);
 
 		Promise.resolve( fnAction() )
 		.then(() =>{
@@ -354,7 +354,7 @@ function SaveQuery({timeQuery, editing}) {
 					>
 							Reset
 					</Button> */}
-					<div>
+					{/* <div>
 						Edit Mode: ACTIVE
 					</div>
 					<div className="save-query-editing-message">
@@ -368,7 +368,7 @@ function SaveQuery({timeQuery, editing}) {
 						? editing.description
 						: infoUpdateDescription  // if description was edited, shows the current description without doing another petition to the server
 						}</i> 
-					</div>
+					</div> */}
 				</>
 				:
 				<Button
@@ -419,7 +419,7 @@ function SaveQuery({timeQuery, editing}) {
 										value={queryName}
 										onChange={(e) => {
 											(editing?.active) 
-											? checkIfQueryEditing(e.target.value)
+											? setValuesForEditing(e.target.value)
 											: setQueryName(e.target.value)
 										}}
 									/>

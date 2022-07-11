@@ -170,8 +170,10 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 	const [openConfirm, setOpenConfirm] = useState(false)
 	const [openPreviewModal, setOpenPreviewModal] = useState(false);
 	const [monitorsListPreview, setMonitorsListPreview] = useState([]);
+	
+	// table checkbox selsection
 	const [selectionModel, setSelectionModel] = useState([]);
-	// const [checked, setChecked] = useState(false); // TODO: => change to array
+	const [checkedRowsData, setCheckedRowsData] = useState([]);
 
 	/*
 	 * Confirm before Delete
@@ -306,16 +308,6 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 	}
 
 	/*
-	 * save query to local storage
-	 */
-	// useEffect(() => {
-		
-	// }, [checked]);
-	// const saveToLocalStorage = (val) => {
-	// 	localStorage.setItem("favorites", val)
-		
-	// }
-	/*
 	 * preview monitors button
 	 */
 	const previewButton = (cellValues) => {
@@ -406,13 +398,6 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 				>
 					<BookmarkAddIcon sx={{color: "#2fd38e"}}/>
 				</IconButton>
-
-				{/* <Checkbox
-					// checked={true}
-					onClick={(event) => {addItemtoLocalStorage(cellValues.row)}} // TODO: temporal
-					icon={<BookmarkBorder />}
-					checkedIcon={<Bookmark />} 
-				/> */}
 			</Tooltip>
 			</>
 		);
@@ -565,25 +550,16 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 				},
 			}}
 			>
-				{
-					    //  const selectedIDs = new Set(ids);
-						//  const selectedRowData = rows.filter((row) =>
-						//    selectedIDs.has(row.id.toString())
-						//  );
-						//  console.log(selectedRowData);
-				}
 			<DataGrid
 				checkboxSelection
 				disableSelectionOnClick
 				onSelectionModelChange={(ids) => {
 					const selectedIDs = new Set(ids);
-					console.log("selectedIDs", selectedIDs)
-					console.log("rows", rows)
 					const selectedRowData = rows.filter((row) =>
-					  selectedIDs.has(row.id.toString())
+						selectedIDs.has(row.id)
 					);
-					console.log("selectedRowData", selectedRowData)
-					setSelectionModel(ids);
+					setSelectionModel(ids)
+					setCheckedRowsData(selectedRowData)
 				}}
 				selectionModel={selectionModel}
 				pagination

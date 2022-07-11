@@ -90,6 +90,7 @@ function FavoriteQueries({addItem}) {
 	const load = async () => {
 		try {
 			const data = await getLocalStorage()
+			console.log("data", data)
 			setFavorites(data)
 			setLoadingFavorites(false)
 		} catch (error) {
@@ -114,7 +115,6 @@ function FavoriteQueries({addItem}) {
 	 */
 	const isFound = (array, newElement) => {
 		return array.some(element => {
-			console.log(element.id, newElement.id)
 			if (element.id === newElement.id)
 			  return true
 			return false
@@ -127,11 +127,9 @@ function FavoriteQueries({addItem}) {
 	const addToLocalStorage = async (item) => {
 		try {
 			const data = await getLocalStorage()
-			const test = isFound(data, item)
-			console.log("test", test)
 			if(!isFound(data, item))
 			{
-				console.log("is not in")
+				console.log("addToLocalStorage() => item", item)
 				const newSet = [...data, item]
 				setLocalStorage(newSet)
 				setFavorites(newSet)
@@ -161,6 +159,7 @@ function FavoriteQueries({addItem}) {
 	 * get monitor info
 	 */
 	const getMonitorInfo = (data) => {
+		console.log("getMonitorInfo() => data", data)
 		return data.monitorInfo
 	}
 
@@ -175,6 +174,7 @@ function FavoriteQueries({addItem}) {
 			else{
 				const monitors_ = getMonitorInfo(query[0])
 				const arrageList_ = arrageMonitors(monitors_)
+				console.log("loadMonitors() => ", monitors_, arrageList_)
 				dispatch(handleSelectedElemets('addMultiple', null, arrageList_, null))
 			}
 		} catch (error) {

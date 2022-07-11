@@ -29,7 +29,7 @@ export const arrageMonitors =  (data) => {
             item.options["unit"] 	= item.unit
             item.options["decimal"] = item.decimal
             // TODO: REFACTOR: el slice no debería ser necesario
-            item.options["pos"] 	= (fnIsArray(item.id_monitor_description.type)) ? item.pos.slice(1, -1) : ""
+            item.options["pos"] = (fnIsArray(item.id_monitor_description.type)) ? item.pos.slice(1, -1) : ""
             monitorList.push({
                 component_id, 
                 name, 
