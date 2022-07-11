@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState }  from 'react';
+import React, { useEffect, useState }  from 'react';
 
 import { useSelector }    from 'react-redux';
 import getGraphicoptions  from './getGraphicoptions';
 import * as $             from 'jquery';
-import { useSnackbar }    from 'notistack';
 
 import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
 import am5themes_Micro    from "@amcharts/amcharts5/themes/Micro";
@@ -19,7 +18,7 @@ import MoreHorizIcon      from '@mui/icons-material/MoreHoriz';
 import NearbyErrorIcon from '@mui/icons-material/NearbyError';
 
 import PopUpMessage from '../../../handleErrors/PopUpMessage';
-import { ConstructionOutlined } from '@mui/icons-material';
+// import { ConstructionOutlined } from '@mui/icons-material';
 
 
 
@@ -27,13 +26,12 @@ import { ConstructionOutlined } from '@mui/icons-material';
  * obtain the index of the element of the second matrix that matches it
  */
 const getIndexFromID = (fromArray, inArray) => {
-	const result = []
-	fromArray.map((val) => {
+	return fromArray.map((val) => {
 		const index = inArray.map(object => object.id).indexOf(val.id)
 		if(index !== -1)
-			result.push(index)
+			return index
+		return false
 	})
-	return result
 }
 
 
@@ -60,7 +58,7 @@ function Graphic() {
 	const buildGraphicValues = (date, _value, logarithm) => {
 		const time_sample = parseInt(date)
 		const value = (logarithm) ? Math.log10(parseFloat(_value)) : parseFloat(_value)
-		if (logarithm && value === 0 || isNaN(value)) {
+		if ((logarithm && value === 0) || isNaN(value)) {
 			handleMessage({ 
 				message: 'Error: Logarithm can\'t have zero values, disabled the Logarithm option and click reload', 
 				type: 'error', 
@@ -89,6 +87,7 @@ function Graphic() {
 				columns_.shift() // delete timeStampLong
 			}
 			const indexOfFrom_ = getIndexFromID(columns_, monitor)
+			console.log("indexOfFrom_", indexOfFrom_)
 			columns_.map((columns_row, index) => {
 				const optionsIndex = indexOfFrom_[index]
 				const options = (optionsIndex !== undefined) ?  monitor[optionsIndex].options : monitor[0].options
@@ -421,16 +420,16 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 		/*
 		 * Set bullets
 		 */
-		if (info[y].dotted) {
-			series.bullets.push(function() {
-				return am5.Bullet.new(root, {
-				sprite: am5.Circle.new(root, {
-					radius: 1.5,
-					fill: "#333"
-				})
-				});
-			});
-		}
+		// if (info[y].dotted) {
+		// 	series.bullets.push(function() {
+		// 		return am5.Bullet.new(root, {
+		// 		sprite: am5.Circle.new(root, {
+		// 			radius: 1.5,
+		// 			fill: "#333"
+		// 		})
+		// 		});
+		// 	});
+		// }
 
 		/*
 		 * Set Data to the Series
@@ -500,7 +499,7 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 			let series = itemContainer.dataItem.dataContext;
 
 			chart.series.each(function(chartSeries) {
-			if (chartSeries != series) {
+			if (chartSeries !== series) {
 				chartSeries.strokes.template.setAll({
 					strokeOpacity: 0.15,
 					stroke: am5.color(0x000000)
@@ -515,9 +514,8 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 
 		// When legend item container is unhovered, make all series as they are
 		legend.itemContainers.template.events.on("pointerout", function(e) {
-			let itemContainer = e.target;
-			let series = itemContainer.dataItem.dataContext;
-
+			// let itemContainer = e.target;
+			// let series = itemContainer.dataItem.dataContext;
 			chart.series.each(function(chartSeries) {
 			chartSeries.strokes.template.setAll({
 				strokeOpacity: 1,
