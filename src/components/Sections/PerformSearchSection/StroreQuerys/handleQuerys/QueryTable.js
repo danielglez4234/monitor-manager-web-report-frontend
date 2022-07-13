@@ -30,7 +30,6 @@ import {
 	DialogTitle, 
 	DialogActions, 
 	Tooltip,
-	Checkbox,
 	Modal
 } from '@mui/material';
 
@@ -39,7 +38,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import UploadIcon from '@mui/icons-material/Upload';
 import PreviewIcon from '@mui/icons-material/Preview';
 import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
-import { BookmarkBorder, Bookmark } from '@mui/icons-material';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import AddIcon from '@mui/icons-material/Add';
 
 import { arrageMonitors } from '../../manageMonitorData';
 import HEADS from './columnsHeads'
@@ -71,19 +71,7 @@ const StyledGridOverlay = styled('div')(({ theme }) => ({
 
 
 
-/*
- * CustomToolbar: up button section
- * filter, density
- */
-function CustomToolbar() {
-	return (
-	  <GridToolbarContainer>
-		{/* <GridToolbarColumnsButton /> */}
-		<GridToolbarFilterButton />
-		<GridToolbarDensitySelector />
-	  </GridToolbarContainer>
-	);
-}
+
 
 /*
  * CustomColumnMenu: column side button
@@ -176,13 +164,52 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 	const [checkedRowsData, setCheckedRowsData] = useState([]);
 
 	/*
+	 *
+	 */
+	/*
 	 * Confirm before Delete
 	 */
-    const handleOpenConfirmDelete = (id) => {
-		setQueryId(id)
-		setOpenConfirm(true)
+	const handleOpenConfirmDelete = (id) => {
+			setQueryId(id)
+			setOpenConfirm(true)
 	}
-    const handleCloseConfirmDelete = () => setOpenConfirm(false);
+	const handleCloseConfirmDelete = () => setOpenConfirm(false);
+
+
+	/*
+	 * CustomToolbar: up button section
+	 * filter, density, concat, delete selected
+	 */
+	function CustomToolbar() {
+		return (
+		<GridToolbarContainer>
+			{/* <GridToolbarColumnsButton /> */}
+			<GridToolbarFilterButton variant="contained" 
+				sx={{backgroundColor: "#555e6a", padding: "5px 16px", marginLeft: "5px", '&:hover': {background: 'rgb(51, 58, 68)'}}}
+			/>
+			<GridToolbarDensitySelector variant="contained" 
+				sx={{backgroundColor: "#637fa4", padding: "6px 16px", marginLeft: "5px", '&:hover': {background: '#4a5f7b'}}}
+			/>
+			<Button 
+				onClick={() =>{handleLoadQuery(rows)}}
+				disabled={(rows.length === 0)}
+				variant="contained"
+				sx={{backgroundColor: "#5fb2bb", marginLeft: "5px", '&:hover': {background: '#53989f'}}} 
+				startIcon={<AddIcon />}
+			>
+				concat
+			</Button>
+			{/* <Button 
+				onClick={() => {handleOpenConfirmDelete(selectionModel)}}
+				variant="contained" 
+				sx={{backgroundColor: "#df3f91", marginLeft: "5px", '&:hover': {background: '#ff4a4a'}}} 
+				startIcon={<DeleteForeverIcon />}
+			>
+				delete selected
+			</Button> */}
+		</GridToolbarContainer>
+		);
+	}
 
 	/*
 	 * calculate text width in the DOM
@@ -242,13 +269,28 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 			setLoadingQuerys(false)
 		})
 	}
+	
+	/*
+	 * set object from entries
+	 */
+	// TODO: objeto constuctor -> buscar
+	const setObjectFromEntries = (arr) => {
+		try {
+			const objA_ = []
+			arr.map((e) => objA_.push({id: e}))
+			return objA_
+		} catch (error) {
+			console.log(error)
+		}
+	}
 
 	/*
 	 * delete query
 	 */
 	const deleteQueryFromServer = (id) => {
 		setLoadingQuerys(true)
-		Promise.resolve(deleteQuery(id))
+		const payload  = (typeof id === "object") && setObjectFromEntries(id)
+		Promise.resolve(deleteQuery(id, payload))
 		.then((res) => {
 			loadQuerys()
 			console.log("Query Deleted Correctly!!")
@@ -261,23 +303,26 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 			setLoadingQuerys(false)
 		})
 	}
-	
+
 	/*
 	 * start editing query
 	 */
 	const handleLoadQuery = (query, edit) => {
-		const monitors_ = arrageMonitors(query.row.monitorInfo)
-		delete query.row["monitorInfo"]
-		// if(concatMonitors){
-			// dispatch(handleSelectedElemets('concatMultiple', null, monitors_, null))
-		// }
-		// else{
+		let monitors_ = []
+		if(Array.isArray(query)){
+			for (let i = 0; i < checkedRowsData.length; i++) {
+				monitors_.push(arrageMonitors(checkedRowsData[i].monitorInfo))
+			}
+			dispatch(handleSelectedElemets('concatMultiple', null, monitors_.flat(), null))
+		}else{
+			monitors_ = arrageMonitors(query.row.monitorInfo)
 			dispatch(handleSelectedElemets('addMultiple', null, monitors_, null))
-			handleCloseSaveQuery()
-			if(edit) dispatch(editingQuery({active: true, ...query.row}))
-		// }
+		}
+		handleCloseSaveQuery()
+		if(edit) dispatch(editingQuery({active: true, ...query.row}))
 	}
 
+	// TODO: handle
 	const previewQuery = (monitorList) => {
 		console.log("monitorList", monitorList)
 		setMonitorsListPreview(monitorList)
@@ -287,6 +332,7 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 		setMonitorsListPreview([])
 		setOpenPreviewModal(false)
 	}
+
 	/*
 	 * get cell row value id
 	 */
@@ -330,6 +376,12 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 			</Tooltip>
 		);
 	}
+
+	// const test = Object.assign({}, ["1", "23", "34"])
+	// let double = ["1", "23", "34"].forEach((element, index) => {
+	// 	obj['id'] = element;
+	// });
+	// console.log(test, double)
 	
 	/*
 	 * set action iconButtons
@@ -502,11 +554,16 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 			aria-describedby="alert-dialog-description"
 		>
 			<DialogTitle className="store-query-confirm-delete-text">
-				{`Are you sure you want to delete this query?`}
+				{`Are you sure you want to proceed with this action?`}
 			</DialogTitle>
 			<DialogActions>
 				<Button onClick={handleCloseConfirmDelete}>Cancel</Button>
-				<Button onClick={e => {deleteQueryFromServer(queryId); handleCloseConfirmDelete();}} autoFocus color="error">
+				<Button onClick={e => {
+					deleteQueryFromServer(queryId); 
+					handleCloseConfirmDelete();
+				}} 
+				autoFocus color="error"
+				>
 					Delete
 				</Button>
 			</DialogActions>

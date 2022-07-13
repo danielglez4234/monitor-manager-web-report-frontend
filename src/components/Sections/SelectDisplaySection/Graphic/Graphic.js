@@ -87,7 +87,7 @@ function Graphic() {
 				columns_.shift() // delete timeStampLong
 			}
 			const indexOfFrom_ = getIndexFromID(columns_, monitor)
-			console.log("indexOfFrom_", indexOfFrom_)
+			
 			columns_.map((columns_row, index) => {
 				const optionsIndex = indexOfFrom_[index]
 				const options = (optionsIndex !== undefined) ?  monitor[optionsIndex].options : monitor[0].options

@@ -1,3 +1,15 @@
+/*
+  * delete duplicates entries
+  + TODO: global
+  */
+  const preventDuplicates = (array) => {
+    return array.filter((value, index, self) =>
+      index === self.findIndex((t) => (
+        t.id === value.id
+      ))
+    )
+  }
+
 const selectedMonitorsReducer = (state = [], action) => {
   switch(action.type) {
     case 'add':
@@ -10,12 +22,12 @@ const selectedMonitorsReducer = (state = [], action) => {
 
 
     case 'addMultiple':
-      return state = action.data
+      return state = preventDuplicates(action.data)
 
 
     case 'concatMultiple':
-      // const removeDuplicates = action.data.filter((item) => item)
-      return action.data.concat(state)
+      const data = action.data.concat(state)
+      return preventDuplicates(data)
 
 
     case 'remove':

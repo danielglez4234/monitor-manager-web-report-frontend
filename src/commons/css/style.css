@@ -57,6 +57,11 @@ code {
   flex-direction: row;
 }
 
+.flex-column{
+  display: flex;
+  flex-direction: column;
+}
+
 .hide-sections{ display: none !important}
 
 .rotate90{
@@ -2568,6 +2573,7 @@ table.save-query-table-monitor-list tr:nth-child(odd)
   height: 96%;
   background-color: white;
 }
+
 
 .store-query-confirm-delete .MuiPaper-root{
   width: 350px !important;
