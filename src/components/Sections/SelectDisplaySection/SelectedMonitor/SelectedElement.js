@@ -75,62 +75,21 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	/*
 	 * STATES
 	 */
-	const [logarithm, setLogarithm] = useState(
-		monitorData?.options?.logarithm ? monitorData?.options?.logarithm : false
-	)
-	
-	const [curved, setCurved] = useState(
-		monitorData?.options?.curved ? monitorData?.options?.curved : false
-	)
-
-	const [filled, setFilled] = useState(
-		monitorData?.options?.filled ? monitorData?.options?.filled : false
-	)
-
-	const [enabled_color, setEnabled_color] = useState(
-		monitorData?.options?.enabled_color ? monitorData?.options?.enabled_color : false
-	)
-
-	const [limit_max, setLimit_max] = useState(
-		monitorData?.options?.limit_max ? monitorData?.options?.limit_max : ""
-	)
-
-	const [limit_min, setLimit_min] = useState(
-		monitorData?.options?.limit_min ? monitorData?.options?.limit_min : ""
-	)
-
-	const [color, setColor] = useState(
-		monitorData?.options?.color ? monitorData?.options?.color : ""
-	)
-
-	const [pos, setPos] = useState(
-		monitorData?.options?.pos ? monitorData?.options?.pos : ""
-	)
-	
-	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0];
-	const [graphic_type, setGraphic_type] = useState(
-		monitorData?.options?.graphic_type ? monitorData?.options?.graphic_type : isEnumOrMonitor
-	)
-
-	const [stroke, setStroke] = useState(
-		monitorData?.options?.stroke ? monitorData?.options?.stroke : strokeOpts[0]
-	)
-
-	const [canvas, setCanvas] = useState(
-		monitorData?.options?.canvas ? monitorData?.options?.canvas : canvasOpts[0]
-	)
-
-	const [unit, setUnit] = useState(
-		monitorData?.options?.unit ? monitorData?.options?.unit : unitOpt[0]
-	)
-
-	const [prefix, setPrefix] = useState(
-		monitorData?.options?.prefix ? monitorData?.options?.prefix : prefixOpt[0]
-	)
-
-	const [decimal, setDecimal] = useState(
-		monitorData?.options?.decimal ? monitorData?.options?.decimal : patternOpts[0]
-	)
+	const [logarithm, setLogarithm] 		= useState(monitorData?.options?.logarithm 		|| false)
+	const [curved, setCurved] 				= useState(monitorData?.options?.curved 		|| false)
+	const [filled, setFilled] 				= useState(monitorData?.options?.filled 		|| false)
+	const [enabled_color, setEnabled_color] = useState(monitorData?.options?.enabled_color 	|| false)
+	const [limit_max, setLimit_max] 		= useState(monitorData?.options?.limit_max 		|| "")
+	const [limit_min, setLimit_min] 		= useState(monitorData?.options?.limit_min 		|| "")
+	const [color, setColor] 				= useState(monitorData?.options?.color 			|| "")
+	const [pos, setPos] 					= useState(monitorData?.options?.pos 			|| "")
+	const isEnumOrMonitor 					= (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0];
+	const [graphic_type, setGraphic_type] 	= useState(monitorData?.options?.graphic_type 	|| isEnumOrMonitor)
+	const [stroke, setStroke] 				= useState(monitorData?.options?.stroke 		|| strokeOpts[0])
+	const [canvas, setCanvas] 				= useState(monitorData?.options?.canvas 		|| canvasOpts[0])
+	const [unit, setUnit] 					= useState(monitorData?.options?.unit 			|| unitOpt[0])
+	const [prefix, setPrefix] 				= useState(monitorData?.options?.prefix 		|| prefixOpt[0])
+	const [decimal, setDecimal] 			= useState(monitorData?.options?.decimal 		|| patternOpts[0])
 
 
 

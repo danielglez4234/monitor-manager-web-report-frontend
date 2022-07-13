@@ -11,7 +11,7 @@ const fnReplacePad = (val) => val.replace(/#/g, '%23');
  * log url request in console
  */
 const logUrl = (params, route, action) => {
-    console.log(`URL - ${action}: ${window.location.href.replace('3006', REACT_APP_SERVER_PORT)}/rest/${route}/${encodeURI(params).replace(/#/g,'%23')}`);
+    console.log(`URL - ${action}: ${window.location.href.replace('3006', REACT_APP_SERVER_PORT)}/rest/${route}/${params.replace(/#/g,'%23')}`);
 }
 
 /*
@@ -97,7 +97,6 @@ export const getQuery = async (id) => {
  * POST a new query
  */
 export const insertQuery = async (payload) => {
-    logUrl(payload, "query", "POST");
     const res = await axios.post(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/`, payload, {header: httpHeaderOptions});
     return res.data;
 }
@@ -107,7 +106,6 @@ export const insertQuery = async (payload) => {
  */
 export const updateQuery = async (name, payload) => {
     const replacePad = fnReplacePad(encodeURI(name));
-    logUrl(replacePad, "query", "PUT");
     const res = await axios.put(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${replacePad}`, payload, {header: httpHeaderOptions});
     return res.data;
 }
@@ -115,8 +113,8 @@ export const updateQuery = async (name, payload) => {
 /*
  * DELETE query
  */
-export const deleteQuery = async (id) => {
+export const deleteQuery = async (id, payload) => {
     const replacePad = fnReplacePad(encodeURI(id));
-    const res = await axios.delete(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${replacePad}`, {header: httpHeaderOptions});
+    const res = await axios.delete(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${replacePad}`, payload, {header: httpHeaderOptions});
     return res.data;
 }
