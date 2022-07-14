@@ -57,7 +57,7 @@ function PerformQuery(props) {
 		sampling: 0
 	})
 
-	// TODO: temposeral
+	// TODO: temporal
 	const [addItem, setAddItem] = useState(null)
 
 	/*
