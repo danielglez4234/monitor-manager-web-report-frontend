@@ -278,7 +278,7 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 				item.options["prefix"] 	= item.prefix
 				item.options["unit"] 	= item.unit
 				item.options["decimal"] = item.decimal
-				item.options["pos"] = (fnIsArray(item.id_monitor_description.type)) ? item.pos.slice(1, -1) : ""
+				item.options["pos"] = (item?.pos && fnIsArray(item.id_monitor_description.type)) ? item.pos.slice(1, -1) : ""
 				monitorList.push({component_id, name, ...monitorData, options})
 			}
 			else{
