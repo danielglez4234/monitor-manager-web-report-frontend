@@ -76,7 +76,8 @@ export default function buildUrl(monitors, timeAndSampling, pagination) {
             if (fnIsScalar(type)){
                 queryRest += id
             }else if (fnIsArray(type)){
-                if (index === '/' || index === null){
+
+                if (index === '/' || index === null || index === ""){
                     queryRest += id + "[[-1]]"
                 }else{
                     queryRest += id + "[" + index + "]"
