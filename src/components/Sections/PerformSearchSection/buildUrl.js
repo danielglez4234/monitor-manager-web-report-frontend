@@ -53,7 +53,7 @@ const buildOptions = (opt) => {
 const buildTimeAndSampling = (tm) => {
     const beginDate = tm.beginDate.replace(/\s{1}/,"@")+".000"
     const endDate 	= tm.endDate.replace(/\s{1}/,"@")+".000"
-    const sampling  = tm.sampling
+    const sampling  = "&sampling="+tm.sampling
     return { beginDate, endDate, sampling }
 }
 
@@ -96,7 +96,7 @@ export default function buildUrl(monitors, timeAndSampling, pagination) {
         const tm = buildTimeAndSampling(timeAndSampling)
         const _pagination = getPagination(pagination)
         
-        return tm.beginDate+"/"+tm.endDate+"/"+tm.sampling+"?"+queryRest+_pagination
+        return tm.beginDate+"/"+tm.endDate+"/?"+queryRest+tm.sampling+_pagination
     } catch (error) {
         console.error(error)
     }
