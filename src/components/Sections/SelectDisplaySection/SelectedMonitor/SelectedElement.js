@@ -90,6 +90,7 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	const [unit, setUnit] 					= useState(monitorData?.options?.unit 			|| unitOpt[0])
 	const [prefix, setPrefix] 				= useState(monitorData?.options?.prefix 		|| prefixOpt[0])
 	const [decimal, setDecimal] 			= useState(monitorData?.options?.decimal 		|| patternOpts[0])
+	const [sumaryType, setSumaryType] 		= useState(monitorData?.options?.sumary 		|| []);
 
 
 
@@ -260,6 +261,87 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 						}}></div>
 					<Box className={`setting-selectd-monitor-options-box display-none id-mon-sett` + id} id="mon-settings-sx" sx={{boxShadow: 3}}>
 					<div className="monitor-selected-select-contain">
+
+
+
+
+
+
+
+
+
+
+
+
+					{/* 
+
+						BOXPLOT
+
+					*/}
+
+
+					<div className="monitor-selected-select-box">
+						<div className="checkbox-monitor-selected">
+							<div className="label-monitor-settings">BoxPlot:</div>
+							<div className="input-settings-checkbox">
+								<label className="label-cont-inputchecbox settings-checkbox-presnetation">
+									Enabled
+									<input
+										className={"checkboxMo checkboxMo-monitor logarithm logarithm"+id} // REFACTOR:
+										name="logarithm"
+										type="checkbox"
+										onChange={(e) => {setLogarithm(e.target.checked)}}
+										value={logarithm}
+										onClick={() => {checkLog(!logarithm, id)}}
+									/>
+									<span className="checkmark"></span>
+								</label>
+							</div>
+						</div>
+
+						<div className="limtis-monnitor-settings-box">
+							<Autocomplete
+								disablePortal
+								disabled={logarithm}
+								className="input-limits-grafic-options input-select-unit"
+								name="deimnalPattern"
+								disableClearable
+								options={["1", "12", "dfs", "1", "12", "dfs"]}
+								onChange={(e, newValue) => {
+									setSumaryType(newValue);
+								}}
+								value={sumaryType}
+								renderInput={(params) => (
+									<TextField
+										{...params}
+										className={"unit-type"}
+										InputProps={{
+										...params.InputProps,
+										}}
+									/>
+								)}
+							/>
+						</div>
+					</div>
+
+
+
+					{/* 
+
+						END BOXPLOT
+
+					*/}
+
+
+
+
+
+
+
+
+
+
+
 						<div className="monitor-selected-select-box">
 
 						<div className="checkbox-monitor-selected">
