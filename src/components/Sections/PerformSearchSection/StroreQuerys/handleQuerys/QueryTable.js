@@ -44,6 +44,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { arrageMonitors } from '../../manageMonitorData';
 import HEADS from './columnsHeads'
 import PopUpMessage from '../../../../handleErrors/PopUpMessage';
+import { Grid } from '@material-ui/core';
 
 const StyledGridOverlay = styled('div')(({ theme }) => ({
 	display: 'flex',
@@ -157,6 +158,8 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 	const [queryId, setQueryId] = useState(null)
 	const [openConfirm, setOpenConfirm] = useState(false)
 	const [openPreviewModal, setOpenPreviewModal] = useState(false);
+
+	const [previewQueryName, setPreviewQueryName] = useState(null);
 	const [monitorsListPreview, setMonitorsListPreview] = useState([]);
 	
 	// table checkbox selsection
@@ -169,8 +172,8 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 	/*
 	 * Confirm before Delete
 	 */
-	const handleOpenConfirmDelete = (id) => {
-			setQueryId(id)
+	const handleOpenConfirmDelete = (query_name) => {
+			setQueryId(query_name)
 			setOpenConfirm(true)
 	}
 	const handleCloseConfirmDelete = () => setOpenConfirm(false);
@@ -192,21 +195,22 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 			/>
 			<Button 
 				onClick={() =>{handleLoadQuery(rows)}}
-				disabled={(rows.length === 0)}
+				disabled={(rows.length === 0 || selectionModel.length === 0)}
 				variant="contained"
 				sx={{backgroundColor: "#5fb2bb", marginLeft: "5px", '&:hover': {background: '#53989f'}}} 
 				startIcon={<AddIcon />}
 			>
 				concat
 			</Button>
-			{/* <Button 
-				onClick={() => {handleOpenConfirmDelete(selectionModel)}}
+			<Button 
+				onClick={() => {handleOpenConfirmDelete(checkedRowsData)}}
+				disabled={(rows.length === 0 || selectionModel.length === 0)}
 				variant="contained" 
-				sx={{backgroundColor: "#df3f91", marginLeft: "5px", '&:hover': {background: '#ff4a4a'}}} 
+				sx={{backgroundColor: "#df3f91", marginLeft: "5px", '&:hover': {background: '#c13b80'}}} 
 				startIcon={<DeleteForeverIcon />}
 			>
 				delete selected
-			</Button> */}
+			</Button>
 		</GridToolbarContainer>
 		);
 	}
@@ -273,12 +277,9 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 	/*
 	 * set object from entries
 	 */
-	// TODO: objeto constuctor -> buscar
-	const setObjectFromEntries = (arr) => {
+	const setObjectFromEntries = (arr, field) => {
 		try {
-			const objA_ = []
-			arr.map((e) => objA_.push({id: e}))
-			return objA_
+			return arr.map((e) => e[field])
 		} catch (error) {
 			console.log(error)
 		}
@@ -287,13 +288,26 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 	/*
 	 * delete query
 	 */
-	const deleteQueryFromServer = (id) => {
+	const deleteQueryFromServer = (name) => {
 		setLoadingQuerys(true)
-		const payload  = (typeof id === "object") && setObjectFromEntries(id)
-		Promise.resolve(deleteQuery(id, payload))
-		.then((res) => {
+		const obj = (typeof name === "object") ? setObjectFromEntries(name, "name") : name
+
+		let params = new URLSearchParams()
+		if(Array.isArray(obj))
+			for (let i = 0; i < obj.length; i++) {params.append('name', obj[i])}
+		else
+			params.append('name', obj);
+
+		Promise.resolve(deleteQuery(params))
+		.then(() => {
 			loadQuerys()
 			console.log("Query Deleted Correctly!!")
+			handleMessage({
+				message: "Query Deleted Correctly!!",
+				type: "success",
+				persist: false,
+				preventDuplicate: false
+			})
 		})
 		.catch((error) => {
 			console.error(error)
@@ -311,20 +325,21 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 		let monitors_ = []
 		if(Array.isArray(query)){
 			for (let i = 0; i < checkedRowsData.length; i++) {
-				monitors_.push(arrageMonitors(checkedRowsData[i].monitorInfo))
+				monitors_.push(arrageMonitors(getMonitorInfo(checkedRowsData[i])))
 			}
 			dispatch(handleSelectedElemets('concatMultiple', null, monitors_.flat(), null))
 		}else{
-			monitors_ = arrageMonitors(query.row.monitorInfo)
+			monitors_ = arrageMonitors(getMonitorInfo(query))
 			dispatch(handleSelectedElemets('addMultiple', null, monitors_, null))
 		}
 		handleCloseSaveQuery()
 		if(edit) dispatch(editingQuery({active: true, ...query.row}))
 	}
 
+
+
 	// TODO: handle
 	const previewQuery = (monitorList) => {
-		console.log("monitorList", monitorList)
 		setMonitorsListPreview(monitorList)
 		setOpenPreviewModal(true)
 	}
@@ -344,7 +359,9 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 	}
 
 	const getMonitorInfo = (val) => {
-		if(val?.row?.monitorInfo)
+		if(val?.monitorInfo)
+			return val.monitorInfo
+		else if(val?.row?.monitorInfo)
 			if(val.row.monitorInfo.length > 0)
 				return val.row.monitorInfo
 			else
@@ -368,20 +385,15 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 					color="primary"
 					aria-label="load"
 					onClick={(event) => {
-						previewQuery(getMonitorInfo(cellValues))
+						setPreviewQueryName(getQueryId(cellValues))
+						previewQuery(arrageMonitors(getMonitorInfo(cellValues)))
 					}}
 				>
-					<PreviewIcon/>
+					<PreviewIcon sx={{color: "#31769f"}}/>
 				</IconButton>
 			</Tooltip>
 		);
 	}
-
-	// const test = Object.assign({}, ["1", "23", "34"])
-	// let double = ["1", "23", "34"].forEach((element, index) => {
-	// 	obj['id'] = element;
-	// });
-	// console.log(test, double)
 	
 	/*
 	 * set action iconButtons
@@ -455,6 +467,9 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 		);
 	}
 
+	/*
+	 * get action botons cells
+	 */
 	const getButtonsCell = (type) => {
 		return {
 			renderCell: (cellValues) => {
@@ -543,7 +558,6 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 			preventDuplicate: true
 		})
 	}
-
 	return (
 		<>
 		<Dialog
@@ -569,33 +583,55 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 			</DialogActions>
 		</Dialog>
 
-		<Modal
-			// open={openPreviewModal}
-			open={false}
-			onClose={closePreviewQuery}
-			aria-labelledby="modal-modal-title"
-			aria-describedby="modal-modal-description"
-		>
-		<Box>
-			{
-				(monitorsListPreview.length > 0) ? 
-					monitorsListPreview.map((val) => {
-						return (
-							<Typography id="modal-modal-title" variant="h6" component="h2">
-								{val.magnitude}
-							</Typography>
-						);
-					})
-				: ""
-			}
-			<Typography id="modal-modal-title" variant="h6" component="h2">
-				Text in a modal
-			</Typography>
-			<Typography id="modal-modal-description" sx={{ mt: 2 }}>
-				Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-			</Typography>
-		</Box>
-		</Modal>
+			<Modal
+				// keepMounted
+				open={openPreviewModal}
+				onClose={closePreviewQuery}
+				aria-labelledby="modal-modal-title"
+				aria-describedby="modal-modal-description"
+				className="store-query-preview-modal"
+			>
+				<Box className="store-query-preview-content">
+					<Grid item xs={12} sm={12} md={12}>
+						{
+							previewQueryName
+						}
+					</Grid>
+					<Grid container spacing={0} className="save-query-list-box">
+						<Grid item xs={12} sm={12} md={12}>
+							<table id="drop-area" className="save-query-table-monitor-list">
+								<tbody>
+									{
+										(monitorsListPreview === "") ? <td></td>
+										:
+										monitorsListPreview.map((value, index) => {
+											return (
+												<tr key={index} className="save-query-table-tr">
+													<td>
+														<div className="save-query-table-item-header">
+															<p className="sv-component">{value.component}</p>
+															<p className="sv-prefix">
+																{(value?.prefix === "Default") ? "--": value.prefix} 
+															</p>
+															<p className="sv-unit"> 
+																{(value?.unit === "Default") ? "--": value.unit}
+															</p>
+														</div>
+														<div className="save-query-table-item-title">
+															{value.magnitude}
+														</div>
+													</td>
+												</tr>
+											)
+										})
+									}
+								</tbody>
+							</table>
+						</Grid>
+					</Grid>
+					<Button onClick={closePreviewQuery}>Close Modal</Button>
+				</Box>
+			</Modal>
 
 		<Box
 			sx={{
