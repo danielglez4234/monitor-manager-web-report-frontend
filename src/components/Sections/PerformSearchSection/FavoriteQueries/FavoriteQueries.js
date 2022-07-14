@@ -90,7 +90,6 @@ function FavoriteQueries({addItem}) {
 	const load = async () => {
 		try {
 			const data = await getLocalStorage()
-			console.log("data", data)
 			setFavorites(data)
 			setLoadingFavorites(false)
 		} catch (error) {
@@ -159,14 +158,13 @@ function FavoriteQueries({addItem}) {
 	 * get monitor info
 	 */
 	const getMonitorInfo = (data) => {
-		console.log("getMonitorInfo() => data", data)
 		return data.monitorInfo
 	}
 
 	/*
 	 * load monitors
 	 */
-	const loadMonitors = (id) => {
+	const loadMonitors = (type,id) => {
 		try {
 			const query = getQueryById(id)
 			if(query.length > 1)
@@ -174,8 +172,7 @@ function FavoriteQueries({addItem}) {
 			else{
 				const monitors_ = getMonitorInfo(query[0])
 				const arrageList_ = arrageMonitors(monitors_)
-				console.log("loadMonitors() => ", monitors_, arrageList_)
-				dispatch(handleSelectedElemets('addMultiple', null, arrageList_, null))
+				dispatch(handleSelectedElemets(type, null, arrageList_, null))
 			}
 		} catch (error) {
 			console.log(error)

@@ -4,6 +4,7 @@ import { LtTooltip } from '../../../../commons/uiStyles'
 import InventoryIcon from '@mui/icons-material/Inventory';
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 const FavoriteElement = ({element, loadMonitors, removeFavorite}) => {
 	return(
@@ -19,9 +20,17 @@ const FavoriteElement = ({element, loadMonitors, removeFavorite}) => {
 				</div>
 
 				<div className="monitorItem-title-div favoriteItem-title-actions-icons">
+				<LtTooltip title="Concat" placement="top" className="tool-tip-options" disableInteractive>
+					<IconButton
+						onClick={() => {loadMonitors("concatMultiple", element.id)}}
+						size="small"
+					>
+						<AddCircleIcon sx={{color: "rgb(232, 238, 238)"}} fontSize="small"/>
+					</IconButton>
+				</LtTooltip>
 				<LtTooltip title="Load" placement="top" className="tool-tip-options" disableInteractive>
 					<IconButton
-						onClick={() => {loadMonitors(element.id)}}
+						onClick={() => {loadMonitors("addMultiple", element.id)}}
 						size="small"
 					>
 						<DownloadForOfflineIcon className="rotate270" sx={{color: "rgb(232, 238, 238)"}} fontSize="small"/>

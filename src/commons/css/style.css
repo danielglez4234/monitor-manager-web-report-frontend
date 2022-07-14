@@ -1903,7 +1903,7 @@ font-size: 13px !important;
 
 .css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root.Mui-selected {
     background-color: rgba(25, 118, 210, 0.08);
-    justify-content: center !important;
+    /* justify-content: center !important; */
 }
 
 .css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root {
@@ -2194,7 +2194,7 @@ font-size: 13px !important;
 .favoriteItem-title-actions-icons{
   display:flex;
   background-color: #515760;
-  width:80px;
+  width:110px;
   border-top-left-radius: 18.9px;
   border-bottom-left-radius: 18.9px;
   padding-left: 10px;
@@ -2583,6 +2583,21 @@ table.save-query-table-monitor-list tr:nth-child(odd)
   font-size: 16px !important;
   color:rgba(0, 0, 0, 0.6);
 }
+
+.store-query-preview-modal{
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.store-query-preview-content{
+  background-color: #fff;
+  height: 100%;
+  box-shadow: 0 0 10px #333;
+  padding: 25px;
+}
+
 
 
 
