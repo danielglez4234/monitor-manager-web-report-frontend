@@ -191,7 +191,7 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 				sx={{backgroundColor: "#555e6a", padding: "5px 16px", marginLeft: "5px", '&:hover': {background: 'rgb(51, 58, 68)'}}}
 			/>
 			<GridToolbarDensitySelector variant="contained" 
-				sx={{backgroundColor: "#637fa4", padding: "6px 16px", marginLeft: "5px", '&:hover': {background: '#4a5f7b'}}}
+				sx={{backgroundColor: "#67b9cc", padding: "6px 16px", marginLeft: "5px", '&:hover': {background: '#5ea9bb'}}}
 			/>
 			<Button 
 				onClick={() =>{handleLoadQuery(rows)}}
@@ -593,11 +593,16 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 			>
 				<Box className="store-query-preview-content">
 					<Grid item xs={12} sm={12} md={12}>
-						{
-							previewQueryName
-						}
+						<p className="store-query-preview-name">
+							Name: {previewQueryName}
+						</p>
 					</Grid>
-					<Grid container spacing={0} className="save-query-list-box">
+					<Grid item xs={12} sm={12} md={12} className="save-query-list-info-label">
+							<Grid container spacing={0} sx={{backgroundColor: "rgb(40, 46, 57)", borderBottom: "3px solid #85e1d0", padding: "3px 0px 3px 15px"}}>
+								<Grid item md={12}>Monitors Settings</Grid>
+							</Grid>
+					</Grid>
+					<Grid container spacing={0} className="save-query-list-box save-list-store-query">
 						<Grid item xs={12} sm={12} md={12}>
 							<table id="drop-area" className="save-query-table-monitor-list">
 								<tbody>

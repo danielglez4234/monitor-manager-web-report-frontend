@@ -13,13 +13,10 @@ const { REACT_APP_IDISPLAYLENGTH } = process.env
  * build pagination params
  */
 const getPagination = (pagination) => {
-    const pageParam = "&page=" 
+    const pageParam = "&page=" + ((pagination?.active || pagination?.download) ? pagination.actualPage-1 : 0)
     const length 	= "&length=" + REACT_APP_IDISPLAYLENGTH
-    if(pagination?.active || pagination?.download)
-        return pageParam + (pagination.actualPage-1) + length
-	return pageParam + 0 + length
+    return pageParam + length
 }
-
 /*
  * build monitor prefix, unit and decimal options
  */
@@ -76,7 +73,7 @@ export default function buildUrl(monitors, timeAndSampling, pagination) {
             if (fnIsScalar(type)){
                 queryRest += id
             }else if (fnIsArray(type)){
-                if (index === '/' || index === null){
+                if (index === '/' || index === null || index === ""){
                     queryRest += id + "[[-1]]"
                 }else{
                     queryRest += id + "[" + index + "]"
