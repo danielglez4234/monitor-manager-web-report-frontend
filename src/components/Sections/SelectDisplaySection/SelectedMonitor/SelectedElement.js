@@ -1,6 +1,7 @@
 // --- Dependecies
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import CandlestickChartIcon from '@mui/icons-material/CandlestickChart';
 import * as $ from 'jquery';
 import {
   fnIsArray,
@@ -220,17 +221,35 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 
 				<Stack className="monitor-seleted-item" direction="row">
 					<div className="monitor-selected-item-title-box">
-						<p className="monitor-selected-item-title monitor-name">
+						<p className="monitor-selected-item-title">
 							{
 								(!fnIsMagnitude(monitorData.type) && !fnIsState(monitorData.type)) ?
 								<>
 									<LtTooltip
+										disableInteractive
 										title={ 
-										<React.Fragment>
-											<b className="label-indHlp-tooltip">{"Descirption:"}</b><br />
-											<span className="indHlp-vis-desc">{ monitorData.description }</span>
-										</React.Fragment>
-											
+											<React.Fragment>
+												<b className="label-indHlp-tooltip">{"This graphic has a summary!!"}</b>
+											</React.Fragment>
+										}
+										placement="bottom" className="tool-tip-options-description">
+										<CandlestickChartIcon className="description-info-icon sumary-info-icon" />
+									</LtTooltip>
+								</>
+								: ""
+							}
+						</p>
+						<p className="monitor-selected-item-title">
+							{
+								(!fnIsMagnitude(monitorData.type) && !fnIsState(monitorData.type)) ?
+								<>
+									<LtTooltip
+										disableInteractive
+										title={ 
+											<React.Fragment>
+												<b className="label-indHlp-tooltip">{"Descirption:"}</b><br />
+												<span className="indHlp-vis-desc">{ monitorData.description }</span>
+											</React.Fragment>
 										}
 										placement="right" className="tool-tip-options-description">
 										<InfoRoundedIcon className="description-info-icon" />

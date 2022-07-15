@@ -768,6 +768,13 @@ table.table-selected-monitors tr:nth-child(odd)
   cursor: pointer;
 }
 
+.sumary-info-icon{
+  color:#0ee !important;
+  font-size: 23px !important;
+  margin-right: 5px;
+  top: 0px;
+}
+
 
 .monitor-seleted-item{
   border-top: 0px;
@@ -841,7 +848,7 @@ table.table-selected-monitors tr:nth-child(odd)
 
 
 .monitor-selected-item-title-box{
-  display: inline-block !important;
+  display: flex;
   margin-left: 10px;
   font-family: "RobotoMono-Regular";
   flex: 1;
@@ -2598,6 +2605,13 @@ table.save-query-table-monitor-list tr:nth-child(odd)
   padding: 25px;
 }
 
+.store-query-preview-name{
+  font-family: "RobotoMono-Bold";
+}
+
+.save-list-store-query{
+  margin: 0;
+}
 
 
 
