@@ -1,6 +1,6 @@
 // --- Dependecies
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import CandlestickChartIcon from '@mui/icons-material/CandlestickChart';
 import * as $ from 'jquery';
 import {
@@ -10,13 +10,14 @@ import {
 }
 from '../../../standarFunctions';
 import { LtTooltip } from '../../../../commons/uiStyles';
-import {Stack, IconButton, Box, TextField, Autocomplete } from '@mui/material';
+import {Stack, IconButton, Box, TextField, Autocomplete, FormControlLabel, Checkbox } from '@mui/material';
 import CloseIcon           from '@mui/icons-material/Close';
 import HelpIcon            from '@mui/icons-material/Help';
 import InfoRoundedIcon     from '@mui/icons-material/InfoRounded';
 import GetMonitordIconType from './GetMonitordIconType';
 import GetIndexArrayModal  from './GetIndexArrayModal';
 import GetUnitSelecttype   from './GetUnitSelecttype';
+import GetSummarySelect    from './GetSummarySelect';
 import TuneIcon            from '@mui/icons-material/Tune';
 import AnnouncementIcon    from '@mui/icons-material/Announcement';
 
@@ -48,14 +49,10 @@ const applyChangesWarning = <LtTooltip
 /*
  * If the button is alredy active when a new monitor is selected, apply the changes
  */
-let lessDetailIfActive;
-if ($('#lessDetail-icon').hasClass('color-menu-active')) {
-	lessDetailIfActive = 'display-none'
-}
 
 /*
- * Handle monitor settings options OPEN popover
- */
+* Handle monitor settings options OPEN popover
+*/
 const handleClickOpenSettings = (id) => {
 	const offset = $('.id-TuneIcon-sett' + id).offset()
 	$('.id-mon-sett' + id).toggleClass('display-none').offset({ top: offset.top, right: offset.right})
@@ -66,33 +63,50 @@ const checkLog 		   = (value, id) => {$(".logarithm"+id).prop('checked', value)}
 const checkCurved 	   = (value, id) => {$(".curved"+id).prop('checked', value)}
 const checkFilled 	   = (value, id) => {$(".filled"+id).prop('checked', value)}
 const checkEnableColor = (value, id) => {$(".enabled_color"+id).prop('checked', value)}
+const checkBoxplot	   = (value, id) => {$(".boxplot"+id).prop('checked', value)}
+const checkShowCollapse= (value, id) => {$(".collapseValues"+id).prop('checked', value)}
 
 
-function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
+
+function SelectedElement({ id, monitorData, _blop, menuHandle, diActivateReload}) {
 	const loadWhileGetData = useSelector(state => state.loadingGraphic)
 	const editing = useSelector(state => state.editingQuery) // refactor =>  eliminar editing
 	const [disableWhileSearching, setDisableWhileSearching] = useState(false)
+	
+	let lessDetailIfActive
+	if ($('#lessDetail-icon').hasClass('color-menu-active')) {
+		lessDetailIfActive = 'display-none'
+	}
 
 	/*
 	 * STATES
 	 */
+	// checkbox inputs
 	const [logarithm, setLogarithm] 		= useState(monitorData?.options?.logarithm 		|| false)
 	const [curved, setCurved] 				= useState(monitorData?.options?.curved 		|| false)
 	const [filled, setFilled] 				= useState(monitorData?.options?.filled 		|| false)
 	const [enabled_color, setEnabled_color] = useState(monitorData?.options?.enabled_color 	|| false)
+
+	// string inputs
 	const [limit_max, setLimit_max] 		= useState(monitorData?.options?.limit_max 		|| "")
 	const [limit_min, setLimit_min] 		= useState(monitorData?.options?.limit_min 		|| "")
 	const [color, setColor] 				= useState(monitorData?.options?.color 			|| "")
 	const [pos, setPos] 					= useState(monitorData?.options?.pos 			|| "")
-	const isEnumOrMonitor 					= (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0];
+
+	// autocomplete inputs
+	const isEnumOrMonitor 					= (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0]
 	const [graphic_type, setGraphic_type] 	= useState(monitorData?.options?.graphic_type 	|| isEnumOrMonitor)
 	const [stroke, setStroke] 				= useState(monitorData?.options?.stroke 		|| strokeOpts[0])
 	const [canvas, setCanvas] 				= useState(monitorData?.options?.canvas 		|| canvasOpts[0])
 	const [unit, setUnit] 					= useState(monitorData?.options?.unit 			|| unitOpt[0])
 	const [prefix, setPrefix] 				= useState(monitorData?.options?.prefix 		|| prefixOpt[0])
 	const [decimal, setDecimal] 			= useState(monitorData?.options?.decimal 		|| patternOpts[0])
-	const [sumaryType, setSumaryType] 		= useState(monitorData?.options?.sumary 		|| []);
-
+	
+	// Boxplot
+	const [boxplot, setBoxplot] 			= useState(false)
+	const [summaryIntervals, setSummaryIntervals] = useState("")
+	const [showSummaryValues, setShowSummaryValues] = useState(false)
+	const [collapseList, setCollapseList] 	= useState("")
 
 
 	// => refactor functions
@@ -101,6 +115,8 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 			checkCurved(monitorData?.options?.curved, id)
 			checkFilled(monitorData?.options?.filled, id)
 			checkEnableColor(monitorData?.options?.enabled_color, id)
+			checkBoxplot(monitorData?.options?.boxplot, id)
+			checkShowCollapse(monitorData?.options?.collapseValues, id)
 	}, [editing]);
 
 	/*
@@ -109,6 +125,7 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	const getOptions = () => {
 		return {
 			options: {
+				boxplot: boxplot,
 				logarithm: logarithm,
 				curved: curved,
 				filled: filled,
@@ -140,6 +157,7 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	const saveOptions = () => {
 		menuHandle('saveOptions', id, getOptions())
 	}
+	// saveOptions()
 
 	/*
 	 * store the selected monitor options in the redux variable
@@ -189,7 +207,7 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 								{
 								(fnIsMagnitude(monitorData.type)) ?              
 									<span>MagnitudeType: { (monitorData?.magnitudeType?.name) ? monitorData.magnitudeType.name : ""} - </span>
-								:             
+								:
 									<span>unit: <span className="default-unit">{ monitorData.unit }</span> - </span>
 								}
 							</>
@@ -280,92 +298,43 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 						}}></div>
 					<Box className={`setting-selectd-monitor-options-box display-none id-mon-sett` + id} id="mon-settings-sx" sx={{boxShadow: 3}}>
 					<div className="monitor-selected-select-contain">
-
-
-
-
-
-
-
-
-
-
-
-
 					{/* 
-
 						BOXPLOT
-
 					*/}
-
-
-					<div className="monitor-selected-select-box">
-						<div className="checkbox-monitor-selected">
-							<div className="label-monitor-settings">BoxPlot:</div>
-							<div className="input-settings-checkbox">
-								<label className="label-cont-inputchecbox settings-checkbox-presnetation">
-									Enabled
-									<input
-										className={"checkboxMo checkboxMo-monitor logarithm logarithm"+id} // REFACTOR:
-										name="logarithm"
-										type="checkbox"
-										onChange={(e) => {setLogarithm(e.target.checked)}}
-										value={logarithm}
-										onClick={() => {checkLog(!logarithm, id)}}
-									/>
-									<span className="checkmark"></span>
-								</label>
-							</div>
-						</div>
-
-						<div className="limtis-monnitor-settings-box">
-							<Autocomplete
-								disablePortal
-								disabled={logarithm}
-								className="input-limits-grafic-options input-select-unit"
-								name="deimnalPattern"
-								disableClearable
-								options={["1", "12", "dfs", "1", "12", "dfs"]}
-								onChange={(e, newValue) => {
-									setSumaryType(newValue);
-								}}
-								value={sumaryType}
-								renderInput={(params) => (
-									<TextField
-										{...params}
-										className={"unit-type"}
-										InputProps={{
-										...params.InputProps,
-										}}
-									/>
-								)}
-							/>
-						</div>
-					</div>
-
-
-
-					{/* 
-
+						<GetSummarySelect 
+							boxplot={boxplot}
+							setBoxplot={setBoxplot}
+							checkBoxplot={checkBoxplot}
+							summaryIntervals={summaryIntervals}
+							setSummaryIntervals={setSummaryIntervals}
+							showSummaryValues={showSummaryValues}
+							setShowSummaryValues={setShowSummaryValues}
+							checkShowCollapse={checkShowCollapse}
+							collapseList={collapseList}
+							setCollapseList={setCollapseList}
+						/>
+					{/*
 						END BOXPLOT
-
 					*/}
-
-
-
-
-
-
-
-
-
-
-
 						<div className="monitor-selected-select-box">
 
 						<div className="checkbox-monitor-selected">
 							<div className="label-monitor-settings">Presentation:</div>
 							<div className="input-settings-checkbox">
+
+
+								<FormControlLabel 
+									className={"checkboxMo checkboxMo-monitor"}
+									label="loGthm test"
+									control={
+										<Checkbox 
+											size="small"
+											checked={logarithm} 
+										/>
+									}
+								 />
+
+
 								<label className="label-cont-inputchecbox settings-checkbox-presnetation">
 									logarithm
 									<input

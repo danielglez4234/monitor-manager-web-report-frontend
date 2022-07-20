@@ -128,15 +128,22 @@ function MonitorList({diActivateReload}) {
 		}
 	}, [monitor])
 
-	const saveOptions = () => {
-
+	const _blop = (id, options) => {
+		monitor.map(obj => {
+			if (obj.id === id) {
+				console.log("id", id)
+				obj["options"] = options
+				console.log("obj",obj)
+			}
+			return obj
+		})
 	}
-
 
 	/*
 	 * handle all menu global state acions from monitorSelected
 	 */
 	const menuHandle = (type, id, options) => {
+		// monitor = getMonitorById(id)
 		dispatch(handleSelectedElemets(type, id, null, options))
 	}
 
@@ -164,7 +171,7 @@ function MonitorList({diActivateReload}) {
 						size="small" 
 						variant="contained" 
 						startIcon={<CachedIcon />}
-						onClick={() =>{ saveOptions()}}
+						onClick={() =>{ _blop()}}
 					>
 						Aply Options
 					</Button>

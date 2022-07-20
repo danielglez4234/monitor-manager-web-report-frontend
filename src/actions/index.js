@@ -1,3 +1,7 @@
+// TODO: REFACTOR: 
+// export only one action that references all the types
+
+
 export const handleSelectedElemets = (type, id, data, options) => {
 	return{
 		type: type,
