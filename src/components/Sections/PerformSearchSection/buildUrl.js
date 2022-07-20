@@ -15,8 +15,9 @@ const { REACT_APP_IDISPLAYLENGTH } = process.env
 const getPagination = (pagination) => {
     const pageParam = "&page=" 
     const length 	= "&length=" + REACT_APP_IDISPLAYLENGTH
-    if(pagination?.active || pagination?.download)
-        return pageParam + (pagination.actualPage-1) + length
+    // if(pagination?.active || pagination?.download){
+    //     return pageParam + (pagination.actualPage-1) + length
+    // }
 	return pageParam + 0 + length
 }
 
