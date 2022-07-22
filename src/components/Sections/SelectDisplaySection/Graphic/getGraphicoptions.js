@@ -3,7 +3,7 @@ import * as $  from 'jquery';
 // NOTE: eliminar esta función
 // TODO: 
 // el estado de las opciones generales tiene que venir desde el mismo componente "ButtonGeneralOptions.js"
-// NOTE: el estado de las opciones de los monitores ya esta siendo manejada a travez de redux
+// NOTE: el estado de las opciones de los monitores ya está siendo manejada a través de redux
 // de momento esta función se sigue utilizando
 
 /*
