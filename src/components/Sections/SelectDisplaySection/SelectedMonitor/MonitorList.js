@@ -87,20 +87,6 @@ import SelectedElement      from './SelectedElement'
 		$(".input-limits-grafic-options").val('')
 	}
 
-	/*
-		* Check all the corresponding checkboxes when you click the selected all 
-		*/
-	const checkAllCheckboxes = (selectedCheckbox) => {
-		var checkboxAll       = $("." + selectedCheckbox + "-all")
-		var checkboxMonitors  = $("." + selectedCheckbox);
-
-		if (checkboxAll.is(":checked")) {
-			checkboxMonitors.prop('checked', true)
-		}else {
-			checkboxMonitors.prop('checked', false)
-		}
-	}
-
 
 function MonitorList({diActivateReload}) {
     const dispatch = useDispatch();
@@ -119,7 +105,7 @@ function MonitorList({diActivateReload}) {
 			setOnSelect(false)
 			setCountMonitors(monitor.length)
 			setSelectedElements(monitor)
-				// blinkAnimation()
+				blinkAnimation()
 		}
 		else 
 		{
@@ -128,12 +114,14 @@ function MonitorList({diActivateReload}) {
 		}
 	}, [monitor])
 
-	const _blop = (id, options) => {
+	/*
+	 * save monitor options
+	 */
+	const saveOptions = (id, options) => {
 		monitor.map(obj => {
 			if (obj.id === id) {
-				console.log("id", id)
+				delete obj["options"]
 				obj["options"] = options
-				console.log("obj",obj)
 			}
 			return obj
 		})
@@ -143,16 +131,15 @@ function MonitorList({diActivateReload}) {
 	 * handle all menu global state acions from monitorSelected
 	 */
 	const menuHandle = (type, id, options) => {
-		// monitor = getMonitorById(id)
 		dispatch(handleSelectedElemets(type, id, null, options))
 	}
 
 
     return ( 
-        <div  className="selected-monitors-section">
+        <div className="selected-monitors-section">
 			<div className="selected-monitors-select-all">
 			<div className="selected-monitors-select-all-title"> Selected Monitors </div>
-				<label onClick={() =>{ checkAllCheckboxes("logarithm") }} className="label-cont-inputchecbox select-all-checkbox">logarithm
+				{/* <label onClick={() =>{ checkAllCheckboxes("logarithm") }} className="label-cont-inputchecbox select-all-checkbox">logarithm
 					<input type="checkbox" className="checkboxMo checkboxMo-monitor logarithm-all" />
 				<span className="checkmark"></span>
 				</label>
@@ -163,15 +150,15 @@ function MonitorList({diActivateReload}) {
 				<label onClick={() =>{ checkAllCheckboxes("filled") }} className="label-cont-inputchecbox select-all-checkbox">filled
 					<input type="checkbox" className="checkboxMo checkboxMo-monitor filled-all" />
 				<span className="checkmark"></span>
-				</label>
+				</label> */}
 				{
-                    (true) ? "" : 
+                    (true) ? "" : // testing
 					<Button 
 						className="selected-monitors-save-options"
 						size="small" 
 						variant="contained" 
 						startIcon={<CachedIcon />}
-						onClick={() =>{ _blop()}}
+						onClick={() =>{ saveOptions()}}
 					>
 						Aply Options
 					</Button>
@@ -180,13 +167,35 @@ function MonitorList({diActivateReload}) {
 
 			<div className="menu-monitorSelected-contain">
 				<div className="table-selected-monitors-options">
-					<LtTooltip onClick={() => { resetOptions() }} title="Reset Options" placement="left" className="tool-tip-options">
+					<LtTooltip 
+						onClick={() => { 
+							resetOptions() 
+						}} 
+						title="Reset Options" 
+						placement="left" 
+						className="tool-tip-options"
+					>
 						<SettingsBackupRestoreIcon className="table-selected-clearAll-icon reset-menu-icon"/>
 					</LtTooltip>
-					<LtTooltip onClick={() => { menuHandle('removeAll', null, null); diActivateReload() }} title="Clear All" placement="left" className="tool-tip-options">
+					<LtTooltip 
+						onClick={() => { 
+							menuHandle('removeAll', null, null); 
+							diActivateReload() 
+						}} 
+						title="Clear All" 
+						placement="left" 
+						className="tool-tip-options"
+					>
 						<ClearAllIcon className="table-selected-clearAll-icon"/>
 					</LtTooltip>
-					<LtTooltip onClick={() => { lessDatails() }} title="Less Details" placement="left" className="tool-tip-options">
+					<LtTooltip 
+						onClick={() => {
+							lessDatails()
+						}}
+						title="Less Details"
+						placement="left"
+						className="tool-tip-options"
+					>
 						<DetailsIcon id="lessDetail-icon" className="table-selected-clearAll-icon lessDetail-icon"/>
 					</LtTooltip>
 				</div>
@@ -198,10 +207,11 @@ function MonitorList({diActivateReload}) {
 							{
 								elements.map((element) =>
 									<SelectedElement
-										key           = { element.id  }
-										id            = { element.id }
-										monitorData   = { element }
-										menuHandle    = { menuHandle }
+										key           	 = { element.id  }
+										id            	 = { element.id }
+										monitorData   	 = { element }
+										saveOptions	  	 = { saveOptions }
+										menuHandle    	 = { menuHandle }
 										diActivateReload = { diActivateReload }
 									/>
 								)
@@ -219,15 +229,21 @@ function MonitorList({diActivateReload}) {
                     }
                 </div>
                 <KeyboardDoubleArrowDownIcon 
-                    onClick={() => { handleExpandSection("visibilityLarge-icon", 400) }} 
+                    onClick={() => { 
+						handleExpandSection("visibilityLarge-icon", 400) 
+					}} 
                     className="section-selected-extends-icons rotback visibilityLarge-icon"
                 />
                 <ExpandMoreIcon 
-                    onClick={() => { handleExpandSection("visibilityMiddle-icon", 98) }} 
+                    onClick={() => { 
+						handleExpandSection("visibilityMiddle-icon", 98) 
+					}} 
                     className="section-selected-extends-icons rotback activeExpandColor visibilityMiddle-icon" 
                 />
                 <ArrowDropUpSharpIcon 
-                    onClick={() => { handleExpandSection("visibilityOff-icon", 0) }} 
+                    onClick={() => { 
+						handleExpandSection("visibilityOff-icon", 0) 
+					}} 
                     className="section-selected-extends-icons rotback visibilityOff-icon" 
                 />
             </div>

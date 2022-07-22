@@ -41,6 +41,7 @@ function Graphic() {
 	const monitor 			   = useSelector(state => state.monitor)
 	const reload               = useSelector(state => state.reload)
 	const searchErrors         = useSelector(state => state.searchErrors)
+	let root // graphic root variable initialization
 
 	const [nodataRecive, setNodataRecive] = useState(false);
 	const [error, setError] = useState(false);
@@ -82,11 +83,16 @@ function Graphic() {
 	 */
 	const buildBoxplotGraphicValues = (date, _value, collapseBind) => {
 		try {
-			const instance = {}
-			const time_sample = parseInt(date)
-			for (const [key, value] of Object.entries(collapseBind))
-				instance[key] = parseFloat(_value[value])
-			return { time_sample, ...instance }
+			if(Array.isArray(_value)) {
+				const instance = {}
+				const time_sample = parseInt(date)
+				for (const [key, value] of Object.entries(collapseBind))
+					instance[key] = parseFloat(_value[value])
+				return { time_sample, ...instance }
+			}
+			else{
+				showErrorMessage("The data type is not valid!! please contact the administrator to fix this")
+			}
 		} catch (error) {
 			console.log(error)
 		}
@@ -111,7 +117,6 @@ function Graphic() {
 			
 			columns_.map((columns_row, index) => {
 				const optionsIndex = indexOfFrom_[index]
-				console.log(optionsIndex)
 				const options = (optionsIndex !== undefined) ? monitor[optionsIndex].options : monitor[0].options
 				
 				const data = []
@@ -161,7 +166,20 @@ function Graphic() {
 		}
 	}
 
-
+/*
+ * get root selected theme
+ */
+const getRootTheme = () => {
+	try {
+		const graphicOptions = getGraphicoptions()
+		const setThemes = []
+		if (graphicOptions.general.animations) { setThemes.push(am5themes_Animated.new(root)) }
+		if (graphicOptions.general.microTheme) { setThemes.push(am5themes_Micro.new(root)) }
+		return setThemes
+	} catch (error) {
+		console.log(error)
+	}
+}
 
   /*
    *  Chart initialization
@@ -170,8 +188,6 @@ function Graphic() {
    *       - the same for [reload] the function will be updated with the new data
    +   - The root element of amchart cannot be duplicated, we avoid this by using the 'retun () => {...}' method to execute the 'dispose()' when the component is unmount
    */
-let root;
-
 useEffect(() => {
     root = am5.Root.new("chartdiv") // Create root element =ref=> <div id="chartdiv"></div>
     root.fps = 40
@@ -187,13 +203,7 @@ useEffect(() => {
 		}
 		else if (getResponse.responseData.samples.length > 0)
 		{
-			const graphicOptions = getGraphicoptions()
-
-			const setThemes = []
-			if (graphicOptions.general.animations) { setThemes.push(am5themes_Animated.new(root)) }
-			if (graphicOptions.general.microTheme) { setThemes.push(am5themes_Micro.new(root)) }
-			root.setThemes(setThemes)
-
+			root.setThemes(getRootTheme())
 			const graphicData = arrangeData(getResponse)
 
 			if(graphicData !== undefined)
@@ -276,17 +286,18 @@ const getMillisecondBaseCount = (info) => {
 /*
  * Set properties configuration to a series function
  */
-const configuration = (dateAxis, valueAxis, info, gaps, tooltip) => {
+const seriesConfiguration = (data) => {
 	try {
-		const name = info.name
-		const color = info.color
-		const curved = info.curved
-		const unitAbbr = info.unit_abbr
+		const generalOptions = getGraphicoptions()
+		const gaps = generalOptions.general.connect
+		const tooltip = generalOptions.general.tooltip
+		const name = data.name
+		const color = data.color
+		const curved = data.curved
+		const unitAbbr = data.unit_abbr
 		const properties = {
 			name: name,
 			connect: !gaps,
-			xAxis: dateAxis,
-			yAxis: valueAxis,
 			valueYField: "value",
 			valueXField: "time_sample",
 			calculateAggregates: true,
@@ -320,13 +331,11 @@ const configuration = (dateAxis, valueAxis, info, gaps, tooltip) => {
 /*
  * get CandlestickSeries default config
  */
-const getDefaultCandlestickSeriesConfig = (dateAxis, valueAxis) => {
+const boxplotSeriesConfiguration = (name) => {
 	return {
-		fill: root.interfaceColors.get("background"),
-		stroke: root.interfaceColors.get("background"),
-		name: "MDXI",
-		xAxis: dateAxis,
-		yAxis: valueAxis,
+		fill: "#333",
+		stroke: "#333",
+		name: name,
 		valueYField: "q1",
 		openValueYField: "q3",
 		lowValueYField: "min",
@@ -334,18 +343,19 @@ const getDefaultCandlestickSeriesConfig = (dateAxis, valueAxis) => {
 		valueXField: "time_sample",
 		tooltip: am5.Tooltip.new(root, {
 			pointerOrientation: "horizontal",
-			labelText: "open: {openValueY}\nlow: {lowValueY}\nhigh: {highValueY}\nclose: {valueY},\nmean: {mean}"
+			labelText: "open: {openValueY}\nlow: {lowValueY}\nhigh: {highValueY}\nclose: {valueY},\nmediana: {mediana}"
 		})
 	}
 }
+
 /*
- * get boxplot mean values default options
+ * get boxplot mean values default options // mediana series
  */
-// mediana series
-const addMedianaSeries = (chart, dateAxis, valueAxis) => {
-	chart.series.push(
+const addMedianaSeriesDefaultConf = (chart, dateAxis, valueAxis) => {
+	return chart.series.push(
 		am5xy.StepLineSeries.new(root, {
-			stroke: root.interfaceColors.get("background"),
+			stroke: "#d1d8d9",
+			name: "mediana",
 			xAxis: dateAxis,
 			yAxis: valueAxis,
 			valueYField: "mediana",
@@ -355,19 +365,30 @@ const addMedianaSeries = (chart, dateAxis, valueAxis) => {
 	);
 }
 
-
-
 /*
- * Get series Type
+ * get series
  */
-const getSeriesType = (chart, type, config) => {
+const getSeries = (chart, dateAxis, valueAxis, data) => {
 	try {
-		if(type === "Step Line Series")
-			return chart.series.push(am5xy.StepLineSeries.new(root, config))
-		else if(type === "Boxplot")
+		let config
+		const isBoxplot = data?.boxplot
+		const seriesType = data.graphicType
+
+		if(isBoxplot)
+			config = boxplotSeriesConfiguration(data.name)
+		else
+			config = seriesConfiguration(data)
+		
+		config["xAxis"] = dateAxis
+		config["yAxis"] = valueAxis
+
+		if(isBoxplot)
 			return chart.series.push(am5xy.CandlestickSeries.new(root, config))
+		else if(seriesType === "Step Line Series")
+			return chart.series.push(am5xy.StepLineSeries.new(root, config))
 		else
 			return chart.series.push(am5xy.LineSeries.new(root, config))
+
 	} catch (error) {
 		console.log(error)
 	}
@@ -438,26 +459,16 @@ const getLegendHeight = (length) => {
 const generateGraphic = (info) =>{
    	// Initialize variables for chart
 	let [chart, dateAxis, valueAxis, series, legend, scrollbarX, scrollbarY] = [] // [] => this represents undefined
-    // let chart;
-    // let dateAxis;
-    // let valueAxis;
-    // let series;
-    // let legend;
-    // let scrollbarX;
-    // let scrollbarY;
-
 	// Initialize variables for general options
-	const generalOptions = getGraphicoptions()
-	const grid = !generalOptions.general.grid
-	const limitMIN = generalOptions.general.limitMIN
-	const limitMAX = generalOptions.general.limitMAX
-	const groupData = generalOptions.general.groupData
-	const gaps = generalOptions.general.connect
-	const tooltip = generalOptions.general.tooltip
-	const microTheme = !generalOptions.general.microTheme
-	const showLegends = generalOptions.general.legends
+	const generalOptions 	 = getGraphicoptions()
+	const grid 				 = !generalOptions.general.grid
+	const limitMIN 			 = generalOptions.general.limitMIN
+	const limitMAX 			 = generalOptions.general.limitMAX
+	const groupData 		 = generalOptions.general.groupData
+	const microTheme 		 = !generalOptions.general.microTheme
+	const showLegends 		 = generalOptions.general.legends
 	const legendContainerPos = generalOptions.general.legendContainerPos
-	const sciNotation = (generalOptions.general.scientificNotation) ? "e" : ""
+	const sciNotation 		 = (generalOptions.general.scientificNotation) ? "e" : ""
 
     /*
      * Set the root format number for received values depending on whether the number is integer or not
@@ -505,6 +516,7 @@ const generateGraphic = (info) =>{
 		baseInterval: {
 			timeUnit: "millisecond",
 			count: getMillisecondBaseCount(info)
+			// count: 10000000
 		},
 		renderer: getXRenderer(grid)
     }))
@@ -514,64 +526,50 @@ const generateGraphic = (info) =>{
      */
     dateAxis.get("dateFormats")["millisecond"] = "HH:mm:ss.SSS"
 
-    /*
-     * --- --- --- --- --- --- Add All series --- --- --- --- --- --- ---
-     */
-	/*
-	 * Create series
-	 */
+    // --- --- --- --- --- --- Add All series --- --- --- --- --- --- ---
+    
 	for (let y = 0; y < info.length; y++) {
-		/*
-		 * Set Graphic type and config
-		 */
-		const graphtype = info[y].graphic_type
-
-		let config
-		if(info?.boxplot){
-			config = getDefaultCandlestickSeriesConfig(dateAxis, valueAxis)
-			addMedianaSeries(chart, dateAxis, valueAxis)
-		}else{
-			config = configuration(dateAxis, valueAxis, info[y], gaps, tooltip)
-		}
+		// Set Graphic data
+		const data_ = info[y]
 		
-		/*
-		 * Set Series type
-		 */
-		series = getSeriesType(chart, graphtype, config)
+		// Set Series
+		series = getSeries(chart, dateAxis, valueAxis, data_)
 
-		/*
-		 * Set Series line weight and dashArray view
-		 */
-		series.strokes.template.setAll({
-			strokeWidth: getLineStroke(info[y].stroke),
-			strokeDasharray: getLineCanvas(info[y].canvas)
-		})
+		// if a boxplot exist the way to show the mediana is using the steps series type
+		if(data_?.boxplot){
+			addMedianaSeriesDefaultConf(
+				chart, 
+				dateAxis, 
+				valueAxis
+			).data.setAll(data_.data)
+		}
+		else{
+			// Set Series line weight and dashArray view // this doesn't work with boxplot series type
+			series.strokes.template.setAll({
+				strokeWidth: getLineStroke(data_.stroke),
+				strokeDasharray: getLineCanvas(data_.canvas)
+			})
+		}
 
-		/*
-		 * Set filled
-		 */
-		if (info[y].filled) {
+		// Set filled
+		if (data_.filled) {
 			series.fills.template.setAll({
 				visible: true,
 				fillOpacity: 0.3
 			});
 		}
 
-		/*
-		 * Set up data processor to parse string dates
-		 */
+		// Set up data processor to parse string dates		
 		series.data.processor = am5.DataProcessor.new(root, {
 			dateFormat: "yyyy-MM-dd HH:mm:ss.SSS",
 			dateFields: ["time_sample"]
 		});
 		
-		/*
-		 * set series DATA
-		 */
-		series.data.setAll(info[y].data);
-		//  series.data.setAll(dataTest);
-
-    } // --- --- --- --- --- end for 'Add All series ' --- --- --- --- --- --- ---
+		// Set series DATA
+		series.data.setAll(data_.data);
+    } 	
+	
+	// --- --- --- --- --- end for 'Add All series ' --- --- --- --- --- --- ---
 
 
 	// TODO:
@@ -622,33 +620,37 @@ const generateGraphic = (info) =>{
 			legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, legendSettings)) 
 		}
 
-		//  When hovering over the legend element container, all series are dimmed except the one hovered over.
-		legend.itemContainers.template.events.on("pointerover", function(e) {
-			let itemContainer = e.target;
-			//  As the list of series is data from a legend, dataContext is the series
-			let series = itemContainer.dataItem.dataContext;
+		// TODO: NOT_WORKING: el evento hover salta un excepción con el tipo de gráfica boxplot
+		// if(){
+			//  When hovering over the legend element container, all series are dimmed except the one hovered over.
+			legend.itemContainers.template.events.on("pointerover", function(e) {
+				let itemContainer = e.target;
+				//  As the list of series is data from a legend, dataContext is the series
+				let series = itemContainer.dataItem.dataContext;
 
-			chart.series.each(function(chartSeries) {
-			if (chartSeries !== series) {
-				chartSeries.strokes.template.setAll({
-					strokeOpacity: 0.15,
-					stroke: am5.color(0x000000)
-				});
-			} else {
-				chartSeries.strokes.template.setAll({});
-			}
+				chart.series.each(function(chartSeries) {
+				if (chartSeries !== series) {
+					chartSeries.strokes.template.setAll({
+						strokeOpacity: 0.15,
+						stroke: am5.color(0x000000)
+					});
+				} else {
+					chartSeries.strokes.template.setAll({});
+				}
+				})
 			})
-		})
 
-		// When legend item container is unhovered, make all series as they are
-		legend.itemContainers.template.events.on("pointerout", function(e) {
-			chart.series.each(function(chartSeries) {
-				chartSeries.strokes.template.setAll({
-					strokeOpacity: 1,
-					stroke: chartSeries.get("fill")
+			// When legend item container is unhovered, make all series as they are
+			legend.itemContainers.template.events.on("pointerout", function(e) {
+				chart.series.each(function(chartSeries) {
+					chartSeries.strokes.template.setAll({
+						strokeOpacity: 1,
+						stroke: chartSeries.get("fill")
+					});
 				});
-			});
-		})
+			})
+		// }
+
 		// align legends content in the container
 		legend.itemContainers.template.set("width", am5.p100);
 		legend.valueLabels.template.setAll({

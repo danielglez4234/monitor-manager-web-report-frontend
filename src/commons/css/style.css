@@ -14,6 +14,64 @@ code {
     monospace;
 }
 
+/*
+--------------------------------------------------------------------------------------
+CSS INDIVIDUALS TAGS
+--------------------------------------------------------------------------------------
+*/
+
+/*
+* DISPLAYS
+*/
+.hide-sections{ display: none !important}
+.display-block{ display: block !important; }
+.display-none{ display: none !important; }
+.flex{ display: flex !important; }
+.flex-row{ display: flex; flex-direction: row; }
+.flex-column{ display: flex; flex-direction: column; }
+
+/*
+ * ROTATIONS
+ */
+.rotate90{ transform: rotate(90deg); }
+.rotate180{ transform: rotate(180deg); }
+.rotate270{ transform: rotate(270deg); }
+
+/*
+ * POSITIONS
+ */
+.position-static{ position: static !important; }
+.position-absolute{ position: absolute !important; z-index: 20; }
+
+/*
+ * 
+ */
+.wrong-set-input{ border: 4px double #f23e3e !important; }
+
+/*
+ * COLORS
+ */
+.gray-iconcolor{ color:#a2aeb3 !important; }
+.red-iconcolor{ color:#ff4a4a !important; }
+.blue-iconcolor{ color:#5fb2bb !important; }
+
+/*
+--------------------------------------------------------------------------------------
+*** END *** CSS INDIVIDUALS TAGS
+--------------------------------------------------------------------------------------
+*/
+
+
+
+
+
+
+
+
+
+
+
+
 .amcharts-amexport-item {
   border: 1px solid #999292;
   background-color: #d1d8d9 !important;
@@ -44,49 +102,13 @@ code {
   margin-top: 175px;
 }
 
-.display-block{
-  display: block !important;
-}
 
-.display-none{
-  display: none !important;
-}
-
-.flex-row{
-  display: flex;
-  flex-direction: row;
-}
-
-.flex-column{
-  display: flex;
-  flex-direction: column;
-}
-
-.hide-sections{ display: none !important}
-
-.rotate90{
-  transform: rotate(90deg);
-}
-.rotate180{
-  transform: rotate(180deg);
-}
-.rotate270{
-  transform: rotate(270deg);
-}
 
 .divide-vertical-left{
   border-left: 2px dashed lightgray !important;
 }
 
 
-.position-static{
-  position: static !important;
-}
-
-.position-absolute{
-  position: absolute !important;
-  z-index: 20;
-}
 
 
 .highlight-drop-zone{
@@ -110,19 +132,6 @@ code {
   color:white;
 }
 
-.wrong-set-input{
-  border: 4px double #f23e3e !important;
-}
-
-.gray-iconcolor{
-  color:#a2aeb3 !important;
-}
-.red-iconcolor{
-  color:#ff4a4a !important;
-}
-.blue-iconcolor{
-  color:#5fb2bb !important;
-}
 
 /* .tool-tip-options{
   
@@ -802,8 +811,6 @@ table.table-selected-monitors tr:nth-child(odd)
 .input-settings-checkbox{
   display: flex;
   flex-direction: column;
-  margin-bottom: 27px;
-  margin-top: 10px;
 }
 
 .settings-checkbox-presnetation{
@@ -2185,6 +2192,7 @@ font-size: 13px !important;
   width: 100%;
   /* height: 100%; */
   flex:1;
+  border-left: 3px solid #333a44;
 }
 
 .favorites-over-div-items{
