@@ -12,13 +12,18 @@ const { REACT_APP_IDISPLAYLENGTH } = process.env
 /*
  * build pagination params
  */
-const getPagination = (pagination) => {
-    const pageParam = "&page=" 
-    const length 	= "&length=" + REACT_APP_IDISPLAYLENGTH
-    // if(pagination?.active || pagination?.download){
-    //     return pageParam + (pagination.actualPage-1) + length
-    // }
-	return pageParam + 0 + length
+const getPagination = (pagination, isDownload) => {
+    let handlepage
+    const actualPage = pagination.actualPage
+    if(!pagination?.active || isDownload){
+        handlepage = (isDownload && pagination.actualPage !== 1 && pagination.actualPage !== 0) ? actualPage-1 : 0
+    }
+    else{
+        handlepage = 0
+    }
+    const page = "&page=" + handlepage
+    const length = "&length=" + REACT_APP_IDISPLAYLENGTH
+    return page + length
 }
 
 /*
@@ -61,7 +66,7 @@ const buildTimeAndSampling = (tm) => {
 /*
  * buid url params // => main
  */
-export default function buildUrl(monitors, timeAndSampling, pagination) {
+export default function buildUrl(monitors, timeAndSampling, pagination, isDownload) {
     try {
         let queryRest = String()
         const mlength = monitors.length
@@ -96,7 +101,7 @@ export default function buildUrl(monitors, timeAndSampling, pagination) {
             }
         }
         const tm = buildTimeAndSampling(timeAndSampling)
-        const _pagination = getPagination(pagination)
+        const _pagination = getPagination(pagination, isDownload)
         
         return tm.beginDate+"/"+tm.endDate+"/"+tm.sampling+"?"+queryRest+_pagination
     } catch (error) {

@@ -205,7 +205,7 @@ function PerformQuery(props) {
 				getSamplesFromServer()
 			}
 			else{
-				return buildUrl(monitor, timeQuery, pagination)
+				return buildUrl(monitor, timeQuery, pagination, true)
 			}
 			return true
 		}
