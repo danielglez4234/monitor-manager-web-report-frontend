@@ -12,10 +12,17 @@ const { REACT_APP_IDISPLAYLENGTH } = process.env
 /*
  * build pagination params
  */
-const getPagination = (pagination) => {
-    const pageParam = "&page=" + ((pagination?.active || pagination?.download) ? pagination.actualPage-1 : 0)
-    const length 	= "&length=" + REACT_APP_IDISPLAYLENGTH
-    return pageParam + length
+const getPagination = (pagination, isDownload) => {
+    let handlepage
+    if(!pagination?.active || isDownload){ // pagination?.active === false
+        handlepage = (isDownload && pagination.actualPage !== 1) ? pagination.actualPage-1 : 0
+    }
+    else{
+        handlepage = 0
+    }
+    const page = "&page=" + handlepage
+    const length = "&length=" + REACT_APP_IDISPLAYLENGTH
+    return page + length
 }
 /*
  * build monitor prefix, unit and decimal options
@@ -25,7 +32,9 @@ const buildOptions = (opt) => {
     const unit    = (opt.unit    !== "Default") ? opt.unit    : false
     const prefix  = (opt.prefix  !== "Default") ? opt.prefix  : false
     const decimal = (opt.decimal !== "Default") ? opt.decimal : false
-    if (unit || decimal){
+    const boxplot = opt?.boxplot
+    if (unit || decimal)
+    {
         queryOpt += "{"
         if(unit){
             queryOpt += "unit:" + unit
@@ -38,6 +47,10 @@ const buildOptions = (opt) => {
                 queryOpt += ","
             }
             queryOpt += "decimal:" + decimal
+        }
+        if(boxplot){
+            const sumary = ", sumary"
+            queryOpt += (opt?.collapsevalues) ? `${sumary}: [${opt.collapsevalues}]` : sumary
         }
         queryOpt += "}"
     }
@@ -57,7 +70,7 @@ const buildTimeAndSampling = (tm) => {
 /*
  * buid url params // => main
  */
-export default function buildUrl(monitors, timeAndSampling, pagination) {
+export default function buildUrl(monitors, timeAndSampling, pagination, isDownload) {
     try {
         let queryRest = String()
         const mlength = monitors.length
@@ -91,7 +104,7 @@ export default function buildUrl(monitors, timeAndSampling, pagination) {
             }
         }
         const tm = buildTimeAndSampling(timeAndSampling)
-        const _pagination = getPagination(pagination)
+        const _pagination = getPagination(pagination, isDownload)
         
         return tm.beginDate+"/"+tm.endDate+"/?"+queryRest+tm.sampling+_pagination
     } catch (error) {
