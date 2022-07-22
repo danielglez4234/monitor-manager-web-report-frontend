@@ -14,8 +14,6 @@ import {
 	setSamples,
 	getUrl
 } from '../../../actions';
-
-import loadingSls    from '../../../commons/img/loadingSls.svg';
 import {
 	Stack,
 	Button,
@@ -32,6 +30,8 @@ import ButtonGeneralOptions from './OptionsBarSection/ButtonGeneralOptions';
 import PopUpMessage         from '../../handleErrors/PopUpMessage';
 import ButtonMagnitudeReference from './OptionsBarSection/ButtonMagnitudeReference'
 // import RangeThresholdsOptions from './OptionsBarSection/RangeThresholdsOptions';
+
+const { REACT_APP_IDISPLAYLENGTH } = process.env
 
 /*
  * css loading cube
@@ -53,7 +53,7 @@ const cubeSpinnerImg = () => {
 }
 
 
-function ListSelectedMonitor(props) {
+function ListSelectedMonitor() {
 	const dispatch             = useDispatch();
 	const [msg, handleMessage] = PopUpMessage();
 
@@ -202,7 +202,7 @@ function ListSelectedMonitor(props) {
 			.then(res => {
 				const totalArraysRecive  = res.samples.length
 				const totalRecords       = res.reportInfo.totalSamples
-				const totalPerPage       = props.urliDisplayLength
+				const totalPerPage       = REACT_APP_IDISPLAYLENGTH
 				const sampling_period    = getResponse.sampling_period
 				dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
 					if (totalArraysRecive === 0) 

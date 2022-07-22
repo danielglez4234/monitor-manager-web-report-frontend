@@ -30,6 +30,8 @@ import PopUpMessage      from '../../handleErrors/PopUpMessage';
 import buildUrl		 	 from './buildUrl'
 
 
+const { REACT_APP_IDISPLAYLENGTH } = process.env
+
 /*
  * Hide Component and monitor list
  */
@@ -38,7 +40,7 @@ const hideAndShowSection = () => {
 	$('.arrow-showPerfomSection').toggleClass('hide-sections')
 }
 
-function PerformQuery(props) {
+function PerformQuery() {
 	const dispatch             = useDispatch()
 	const [msg, handleMessage] = PopUpMessage()
 
@@ -87,9 +89,8 @@ function PerformQuery(props) {
 	 * 'loadWhileGetData' will be set to true when the data has arrived, and then the buttons will be active again
 	 */
 	useEffect(() => {
-		if (loadWhileGetData) {
-			setLoadingSearch(false);
-		}
+		if (loadWhileGetData)
+			setLoadingSearch(false)
 	}, [loadWhileGetData])
 
 	/*
@@ -113,23 +114,23 @@ function PerformQuery(props) {
 		.then(res => { 
 			const totalArraysRecive  = res.samples.length
 			const totalRecords       = res.reportInfo.totalSamples
-			const totalPerPage       = props.urliDisplayLength
+			const totalPerPage       = REACT_APP_IDISPLAYLENGTH
 
 			dispatch(setSamples(res, timeQuery.sampling))
 			dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
-			console.log("\n \
-				MonitorsMagnitude Data was recibe successfully!! \n \
-				Sampling Period Choosen: " + timeQuery.sampling + " microsegundos \n \
-				Arrays Recived: " + totalArraysRecive + " \n \
-				total Records: " + totalRecords + " \n \
-				----------------------------------------------------------------"
+			console.log(`\
+				MonitorsMagnitude Data was recibe successfully!!\n \
+				Sampling Period Choosen: ${timeQuery.sampling} microsegundos\n \
+				Arrays Recived: ${totalArraysRecive}\n \
+				total Records: ${totalRecords}\n \
+				----------------------------------------------------------------`
 			)
 		})
 		.catch(error => {
 			const error_message = (error.response?.data) ? error.response.data.toString() : "Unsupported error";
 			const error_status = (error.response?.status) ? error.response.status : "Unknown"
 			showErrorMessage('Error: ' + error_message + " - Code " + error_status)
-		console.error(error)
+			console.error(error)
 		})
 		.finally(() => {
 			dispatch(setloadingButton(true))
@@ -168,12 +169,17 @@ function PerformQuery(props) {
 	 * dispatch acction if submit was correct
 	 */
 	const dispatchActionsOnSubmit = () => {
-		const perform = true; // initial state use to check searched monitors selected comparation
-		dispatch(setActualPage(false, 0, 0)) // reset pagination if it is already display
-		const searchedMonitors = monitor.map(e => e["id"]) // save the monitors id's that where choosen for the search
-		dispatch(hadleSearch(perform, timeQuery.beginDate, timeQuery.endDate, timeQuery.sampling, searchedMonitors))
-		dispatch(setloadingButton(false))
-		dispatch(loadGraphic(true))
+		try {
+			const perform = true; // initial state use to check searched monitors selected comparation
+			const searchedMonitors = monitor.map(e => e["id"]) // save the monitors id's that where choosen for the search
+	
+			dispatch(setActualPage(false, 0, 0)) // reset pagination if it is already display
+			dispatch(hadleSearch(perform, timeQuery.beginDate, timeQuery.endDate, timeQuery.sampling, searchedMonitors))
+			dispatch(setloadingButton(false))
+			dispatch(loadGraphic(true))
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	/*
@@ -182,8 +188,8 @@ function PerformQuery(props) {
 	const checkOnSubmit = (button_click) => {
 		// convert to unix 
 		// we use this to get a better control over the correct validation of the dates
-		const unixBeginDate = convertToUnix(timeQuery["beginDate"])
-		const unixEndDate = convertToUnix(timeQuery["endDate"])
+		const unixBeginDate = convertToUnix(timeQuery.beginDate)
+		const unixEndDate = convertToUnix(timeQuery.endDate)
 
 		// handle all errors from the date inputs
 		if (timeQuery.beginDate === '' || timeQuery.endDate === ''){
@@ -209,7 +215,7 @@ function PerformQuery(props) {
 				getSamplesFromServer()
 			}
 			else{
-				return buildUrl(monitor, timeQuery, pagination)
+				return buildUrl(monitor, timeQuery, pagination, true) // true to identified download
 			}
 			return true
 		}
@@ -302,7 +308,6 @@ function PerformQuery(props) {
 
 						{ // Only_Download data component // TODO: change file name
 							<DownloadEmailData
-								service ={props.serviceIP}
 								checkOnSubmit={checkOnSubmit}
 							/>
 						}
@@ -320,8 +325,7 @@ function PerformQuery(props) {
 								/>
 								{
 									(editing?.active) ? "" :
-										<ViewHandleQuery 
-											editing={editing}
+										<ViewHandleQuery
 											addItemtoLocalStorage={addItemtoLocalStorage} // TODO: temporal
 										/>
 								}

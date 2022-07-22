@@ -19,21 +19,18 @@ import PageNotFound         from './components/handleErrors/PageNotFound';
 
 
 const store = createStore(
-  allReducers,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-);
-
-const { REACT_APP_SERVICES_IP }     = process.env;
-const { REACT_APP_IDISPLAYLENGTH }  = process.env;
+  	allReducers,
+  	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+)
 
 function App() {
-  	const notistackRef = React.createRef();
+  	const notistackRef = React.createRef()
 
 	/*
 	 * handle close Snackbar messages
 	 */
 	const onClickDismiss = key => () => {
-		notistackRef.current.closeSnackbar(key);
+		notistackRef.current.closeSnackbar(key)
 	}
 
 	return (
@@ -55,11 +52,8 @@ function App() {
 								<Header />
 								<div className="content">
 									<ListComponentMonitor />
-									<ListSelectedMonitor urliDisplayLength={REACT_APP_IDISPLAYLENGTH} /> {/* refactor prop */}
-									<PerformQuery         
-										serviceIP={REACT_APP_SERVICES_IP}
-										urliDisplayLength={REACT_APP_IDISPLAYLENGTH}
-									/>
+									<ListSelectedMonitor />
+									<PerformQuery />
 								</div>
 							</div>
 						} />
