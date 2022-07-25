@@ -16,7 +16,7 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 
-import PopUpMessage                 from '../../../handleErrors/PopUpMessage';
+import HandleMessage                 from '../../../handleErrors/HandleMessage';
 
 
 const usesTyles = makeStyles({
@@ -68,7 +68,7 @@ function SaveQuery({timeQuery, editing}) {
 	const dispatch = useDispatch()
 	const classes = usesTyles()
 	const monitor = useSelector(state => state.monitor)
-	const [msg, handleMessage] = PopUpMessage()
+	const [msg, PopUpMessage] = HandleMessage()
 
 	const [disabled, setDisabled] = useState(true)
 	const [openSaveQuery, setOpenSaveQuery] = useState(false)
@@ -88,26 +88,6 @@ function SaveQuery({timeQuery, editing}) {
 		buildList()
 	}
 	const handleCloseSaveQuery = () => setOpenSaveQuery(false)
-
-	/*
-	 * Show Warning message snackbar
-	 */
-	const showWarningMessage = (message) => {
-		handleMessage({
-			message: message,
-			type: "warning",
-			persist: false,
-			preventDuplicate: false
-		})
-	}
-	const showErrorMessage = (message) => {
-		handleMessage({
-			message: message,
-			type: "error",
-			persist: true,
-			preventDuplicate: false
-		})
-	}
 
 	/*
 	 * check active save button
@@ -152,17 +132,17 @@ function SaveQuery({timeQuery, editing}) {
 	const onSubmit = () => {
 		try {
 			if(queryName === "" || queryName === undefined){
-				showWarningMessage("Name field cannot be empty")
+				PopUpMessage({type:'warning', message:'Name field cannot be empty'})
 			}
 			else if(!testRegex(queryName, REACT_APP_QUERY_NAME_PATTERN)){
-				showWarningMessage("name cannot have special characters other than '_-@.()'")
+				PopUpMessage({type:'warning', message:"name cannot have special characters other than '_-@.()'"})
 			}
 			else{
 				backDropLoadOpen()
 				fnSaveQuery()
 			}
 		} catch (error) {
-			showWarningMessage(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -217,17 +197,12 @@ function SaveQuery({timeQuery, editing}) {
 				setQueryDescription("")
 			}
 			handleCloseSaveQuery()
-			handleMessage({
-				message: "Query save successfully!",
-				type: "success",
-				persist: false,
-				preventDuplicate: false
-			})
+			PopUpMessage({type:'success', message:'Query save successfully!'})
 		})
 		.catch((error) =>{
 			console.error(error)
 			const error_message = (error?.response?.message) ? error.response.message : error.message
-			showErrorMessage(error_message)
+			PopUpMessage({type:'error', message:error_message})
 		}).finally(() => {
 			backDropLoadClose()
 		})
@@ -237,17 +212,21 @@ function SaveQuery({timeQuery, editing}) {
 	 * buil monitor data list
 	 */
 	const buildList = () => {
-		let list = []
-		for (let i = 0; i < monitor.length; i++) {
-			list.push({
-				component: monitor[i]?.name,
-				id: monitor[i]?.id,
-				magnitude: monitor[i]?.magnitude,
-				prefix: monitor[i]?.options?.prefix,
-				unit: monitor[i]?.options?.unit
-			});
+		try {
+			let list = []
+			for (let i = 0; i < monitor.length; i++) {
+				list.push({
+					component: monitor[i]?.name,
+					id: monitor[i]?.id,
+					magnitude: monitor[i]?.magnitude,
+					prefix: monitor[i]?.options?.prefix,
+					unit: monitor[i]?.options?.unit
+				});
+			}
+			setMonitorList(list)
+		} catch (error) {
+			PopUpMessage({type:'error', message:error})
 		}
-		setMonitorList(list)
 	}
 
 
@@ -303,7 +282,7 @@ function SaveQuery({timeQuery, editing}) {
 			})
 			return {monitorDescriptions, magnitudeDescriptions, states}
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 

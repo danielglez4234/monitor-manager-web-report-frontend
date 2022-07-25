@@ -26,7 +26,7 @@ import DownloadEmailData from './DownloadData/DownloadEmailData';
 import SaveQuery     	 from './StroreQuerys/SaveQuery';
 import ViewHandleQuery 	 from './StroreQuerys/handleQuerys/ViewHandleQuery';
 import FavoriteQueries	 from './FavoriteQueries/FavoriteQueries'
-import PopUpMessage      from '../../handleErrors/PopUpMessage';
+import HandleMessage      from '../../handleErrors/HandleMessage';
 import buildUrl		 	 from './buildUrl'
 
 
@@ -42,7 +42,7 @@ const hideAndShowSection = () => {
 
 function PerformQuery() {
 	const dispatch             = useDispatch()
-	const [msg, handleMessage] = PopUpMessage()
+	const [msg, PopUpMessage] = HandleMessage()
 
 	const monitor          = useSelector(state => state.monitor)
 	const loadWhileGetData = useSelector(state => state.loadingButton)
@@ -61,29 +61,6 @@ function PerformQuery() {
 
 	// TODO: temporal
 	const [addItem, setAddItem] = useState(null)
-
-	/*
-	 * Show Error
-	 */
-	const showErrorMessage = (mesage) => {
-		handleMessage({ 
-			message: mesage, 
-			type: 'error',
-			persist: true,
-			preventDuplicate: false
-		})
-	}
-	/*
-	 * handle warning message
-	 */
-	const showWarningMeggage = (message) => {
-		handleMessage({ 
-			message: message, 
-			type: 'warning', 
-			persist: false,
-			preventDuplicate: false
-		})
-	}
 	
 	/*
 	 * 'loadWhileGetData' will be set to true when the data has arrived, and then the buttons will be active again
@@ -129,7 +106,7 @@ function PerformQuery() {
 		.catch(error => {
 			const error_message = (error.response?.data) ? error.response.data.toString() : "Unsupported error";
 			const error_status = (error.response?.status) ? error.response.status : "Unknown"
-			showErrorMessage('Error: ' + error_message + " - Code " + error_status)
+			PopUpMessage({type:'error', message:'Error: '+error_message+" - Code "+error_status})
 			console.error(error)
 		})
 		.finally(() => {
@@ -152,7 +129,7 @@ function PerformQuery() {
 			else if(dateFieldName === "endDate")
 				setEndDateInput(date)
 		} catch (error) {
-			showErrorMessage(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 	
@@ -193,19 +170,19 @@ function PerformQuery() {
 
 		// handle all errors from the date inputs
 		if (timeQuery.beginDate === '' || timeQuery.endDate === ''){
-			showWarningMeggage('The Date Fields cannot be empty')
+			PopUpMessage({type:'warning', message:'The Date Fields cannot be empty'})
 			return false
 		}
 		else if (unixBeginDate > unixEndDate){
-			showWarningMeggage('The begin Date cannot be greater than end Date')
+			PopUpMessage({type:'warning', message:'The begin Date cannot be greater than end Date'})
 			return false
 		}
 		else if (timeQuery.beginDate === timeQuery.endDate){
-			showWarningMeggage('The begin and end Date cannot be the same')
+			PopUpMessage({type:'warning', message:'The begin and end Date cannot be the same'})
 			return false
 		}
 		else if (monitor[0] === undefined){
-			showWarningMeggage('There are no monitors selected')
+			PopUpMessage({type:'warning', message:'There are no monitors selected'})
 			return false
 		}
 		else{

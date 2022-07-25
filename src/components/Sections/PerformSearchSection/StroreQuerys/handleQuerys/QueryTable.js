@@ -43,7 +43,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 import { arrageMonitors } from '../../manageMonitorData';
 import HEADS from './columnsHeads'
-import PopUpMessage from '../../../../handleErrors/PopUpMessage';
+import HandleMessage from '../../../../handleErrors/HandleMessage';
 import { Grid } from '@material-ui/core';
 
 const StyledGridOverlay = styled('div')(({ theme }) => ({
@@ -150,7 +150,7 @@ function CustomPagination() {
 
 export default function QueryTable({addItemtoLocalStorage, openViewQuery, handleCloseSaveQuery}) {
 	const dispatch = useDispatch()
-	const [msg, handleMessage] = PopUpMessage()
+	const [msg, PopUpMessage] = HandleMessage()
 	const [rows, setRows] = useState([])
 	const [anchorEl, setAnchorEl] = useState(null)
 	const [rowPopOverValue, setRowPopOverValue] = useState("")
@@ -267,7 +267,7 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 		.catch((error) => {
 			console.error(error)
 			setRows([])
-			showErrorMessage("Error obtaining querys on the server.")
+			PopUpMessage({type:'error', message:'Error obtaining querys on the server.'})
 		})
 		.finally(() => {
 			setLoadingQuerys(false)
@@ -302,16 +302,11 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 		.then(() => {
 			loadQuerys()
 			console.log("Query Deleted Correctly!!")
-			handleMessage({
-				message: "Query Deleted Correctly!!",
-				type: "success",
-				persist: false,
-				preventDuplicate: false
-			})
+			PopUpMessage({type:'success', message:'Query Deleted Correctly!!'})
 		})
 		.catch((error) => {
 			console.error(error)
-			showErrorMessage("Error deleting the query on the server")
+			PopUpMessage({type:'error', message:'Error deleting the query on the server'})
 		})
 		.finally(() => {
 			setLoadingQuerys(false)
@@ -355,7 +350,7 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 		if(val?.row?.name)
 			return val.row.name
 		else
-			showErrorMessage("name is undefined")
+			PopUpMessage({type:'error', message:'name is undefined'})
 	}
 
 	const getMonitorInfo = (val) => {
@@ -365,9 +360,9 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 			if(val.row.monitorInfo.length > 0)
 				return val.row.monitorInfo
 			else
-				showErrorMessage("monitorInfo is empty")
+				PopUpMessage({type:'error', message:'monitorInfo is empty'})
 		else
-			showErrorMessage("monitorInfo is undefined")
+			PopUpMessage({type:'error', message:'monitorInfo is undefined'})
 	}
 
 	/*
@@ -547,17 +542,6 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 		}
 	}, [openViewQuery])
 	
-	/*
-	 * Show Warning message snackbar
-	 */
-	const showErrorMessage = (message) => { 
-		handleMessage({
-			message: message,
-			type: "error",
-			persist: true,
-			preventDuplicate: true
-		})
-	}
 	return (
 		<>
 		<Dialog

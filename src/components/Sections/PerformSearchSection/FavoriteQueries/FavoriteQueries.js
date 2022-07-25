@@ -27,7 +27,7 @@ import HelpIcon from '@mui/icons-material/Help';
 import FavoriteElement from './FavoriteElement'
 
 import { arrageMonitors } from '../manageMonitorData';
-import PopUpMessage    from '../../../handleErrors/PopUpMessage';
+import HandleMessage    from '../../../handleErrors/HandleMessage';
 
 
 
@@ -56,7 +56,7 @@ const sectionHelperText = "In this section you will be able to visualize the ele
 
 function FavoriteQueries({addItem}) {
 	const dispatch = useDispatch()
-	const [msg, handleMessage] = PopUpMessage()
+	const [msg, PopUpMessage] = HandleMessage()
 	const [loadingFavorites, setLoadingFavorites] = useState(true)
 	const [favorites, setFavorites] = useState([])
 	const [resultQueryFavorite, setResultQueryFavorite] = useState([])
@@ -134,12 +134,7 @@ function FavoriteQueries({addItem}) {
 				setFavorites(newSet)
 			}
 			else{
-				handleMessage({ 
-					message: "The query "+ item.name +" is already inside the favorite queries", 
-					type: 'info', 
-					persist: false,
-					preventDuplicate: false
-				})
+				PopUpMessage({type:'info', message:'The query '+item.name+' is already inside the favorite queries'})
 			}
 			setLoadingFavorites(false)	
 		} catch (error) {

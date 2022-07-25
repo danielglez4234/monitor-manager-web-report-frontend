@@ -26,7 +26,7 @@ import HelpOutlineIcon                from '@mui/icons-material/HelpOutline';
 import ReportGmailerrorredRoundedIcon from '@mui/icons-material/ReportGmailerrorredRounded';
 import ComponentElement               from './ComponentElement';
 import MonitorElement                 from './MonitorElement';
-import PopUpMessage                   from '../../handleErrors/PopUpMessage';
+import HandleMessage                   from '../../handleErrors/HandleMessage';
 
 
 /*
@@ -59,7 +59,7 @@ const error               = <div className="noComponentSelected-box">
 
 function ListComponentMonitor() {
 	const dispatch             = useDispatch()
-	const [msg, handleMessage] = PopUpMessage()
+	const [msg, PopUpMessage] = HandleMessage()
 
 	const monitorAlreadySelected  = useSelector(state => state.monitor)
 
@@ -92,12 +92,7 @@ function ListComponentMonitor() {
 		})
 		.catch(error => { 
 			setConnectionError(true)
-			handleMessage({ 
-				message: 'Error fetching components data on the Server', 
-				type: 'error', 
-				persist: true,
-				preventDuplicate: false
-			})
+			PopUpMessage({type:'error', message:'Error fetching components data on the Server'})
 			console.error(error)
 		})
 		.finally(() => { 
@@ -156,12 +151,7 @@ function ListComponentMonitor() {
 				setLoadingMonitors(false)
 			})
 			.catch(error => {
-				handleMessage({ 
-					message: 'Error fetching monitors data on the Server', 
-					type: 'error', 
-					persist: true,
-					preventDuplicate: true
-				})
+				PopUpMessage({type:'error', message:'Error fetching monitors data on the Server'})
 				console.error(error)
 			})
 		}
@@ -262,12 +252,7 @@ function ListComponentMonitor() {
      */
     const select = (monitorData) => {
 		if (idMonitorsAlreadySelected.length > 0 && idMonitorsAlreadySelected.filter(e => e["id"] === monitorData.id).length > 0){
-			handleMessage({ 
-				message: 'The monitor ' + monitorData.magnitude + ' is alredy selected', 
-				type: 'info', 
-				persist: false,
-				preventDuplicate: false
-			})
+			PopUpMessage({type:'info', message:'The monitor '+monitorData.magnitude+' is alredy selected'})
 		}
 		else{
 			dispatch(handleSelectedElemets('add', null, monitorData, null))

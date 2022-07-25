@@ -17,7 +17,7 @@ import LiveHelpIcon       from '@mui/icons-material/LiveHelp';
 import MoreHorizIcon      from '@mui/icons-material/MoreHoriz';
 import NearbyErrorIcon from '@mui/icons-material/NearbyError';
 
-import PopUpMessage from '../../../handleErrors/PopUpMessage';
+import HandleMessage from '../../../handleErrors/HandleMessage';
 // import { ConstructionOutlined } from '@mui/icons-material';
 
 
@@ -36,7 +36,7 @@ const getIndexFromID = (fromArray, inArray) => {
 
 
 function Graphic() {
-	const [msg, handleMessage] = PopUpMessage()
+	const [msg, PopUpMessage] = HandleMessage()
 	const getResponse          = useSelector(state => state.getResponse)
 	const monitor 			   = useSelector(state => state.monitor)
 	const reload               = useSelector(state => state.reload)
@@ -46,15 +46,6 @@ function Graphic() {
 	const [nodataRecive, setNodataRecive] = useState(false);
 	const [error, setError] = useState(false);
 
-	// TODO: handle global standar message
-	const showErrorMessage = (message) => {
-		handleMessage({
-			message: message,
-			type: 'error',
-			persist: false,
-			preventDuplicate: true
-		})
-	}
 	/*
 	 * if a data search error is sent
 	 */
@@ -70,7 +61,7 @@ function Graphic() {
 			const time_sample = parseInt(date)
 			const value = (logarithm) ? Math.log10(parseFloat(_value)) : parseFloat(_value)
 			if ((logarithm && value === 0) || isNaN(value))
-				showErrorMessage('Error: Logarithm can\'t have zero values, disabled the Logarithm option and click reload')
+				PopUpMessage({type:'error', message:'Error: Logarithm can\'t have zero values, disabled the Logarithm option and click reload'})
 			else
 				return { time_sample, value }
 		} catch (error) {
@@ -91,7 +82,7 @@ function Graphic() {
 				return { time_sample, ...instance }
 			}
 			else{
-				showErrorMessage("The data type is not valid!! please contact the administrator to fix this")
+				PopUpMessage({type:'error', message:'The data type is not valid!! please contact the administrator to fix this'})
 			}
 		} catch (error) {
 			console.log(error)
@@ -212,7 +203,7 @@ useEffect(() => {
 				setNodataRecive(false)
 			}
 			else
-				showErrorMessage("The data could not be processed, please contact the administrator to fix this.")
+				PopUpMessage({type:'error', message:'The data could not be processed, please contact the administrator to fix this.'})
 		}
 		else
 			setNodataRecive(true)

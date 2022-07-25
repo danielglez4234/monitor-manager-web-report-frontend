@@ -27,7 +27,7 @@ import ArrowDropUpIcon              from '@mui/icons-material/ArrowDropUp';
 import Graphic              from './Graphic/Graphic';
 import MonitorList			from './SelectedMonitor/MonitorList';
 import ButtonGeneralOptions from './OptionsBarSection/ButtonGeneralOptions';
-import PopUpMessage         from '../../handleErrors/PopUpMessage';
+import HandleMessage         from '../../handleErrors/HandleMessage';
 import ButtonMagnitudeReference from './OptionsBarSection/ButtonMagnitudeReference'
 // import RangeThresholdsOptions from './OptionsBarSection/RangeThresholdsOptions';
 
@@ -55,7 +55,7 @@ const cubeSpinnerImg = () => {
 
 function ListSelectedMonitor() {
 	const dispatch             = useDispatch();
-	const [msg, handleMessage] = PopUpMessage();
+	const [msg, PopUpMessage] = HandleMessage();
 
 	const monitor           = useSelector(state => state.monitor);
 	const getResponse       = useSelector(state => state.getResponse);
@@ -207,12 +207,7 @@ function ListSelectedMonitor() {
 				dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
 					if (totalArraysRecive === 0) 
 					{
-						handleMessage({
-							message: 'No data was collected on this page, this may happen if the monitor goes into FAULT state.', 
-							type: 'default', 
-							persist: true,
-							preventDuplicate: false
-						})
+						PopUpMessage({type:'default', message:'No data was collected on this page, this may happen if the monitor goes into FAULT state.'})
 					}
 					else
 					{
@@ -222,12 +217,7 @@ function ListSelectedMonitor() {
 					console.log("Data recibe successfully");
 				})
 				.catch(error => {
-					handleMessage({
-						message: 'Error: Request failed with status code 500', 
-						type: 'error', 
-						persist: true,
-						preventDuplicate: false
-					})
+					PopUpMessage({type:'error', message:error})
 					console.error(error)
 				})
 				.finally(() => {
@@ -258,12 +248,7 @@ function ListSelectedMonitor() {
 			setReferences(references)
 			setReferenceComponent(titles)
 		} catch (error) {
-			handleMessage({
-				message: error, 
-				type: 'error', 
-				persist: true,
-				preventDuplicate: false
-			})
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 

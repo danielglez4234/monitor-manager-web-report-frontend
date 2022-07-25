@@ -20,12 +20,12 @@ import { useTheme }      from '@mui/material/styles';
 
 // import EmailIcon    from '@mui/icons-material/Email';
 import DownloadIcon from '@mui/icons-material/Download';
-import PopUpMessage from '../../../handleErrors/PopUpMessage';
+import HandleMessage from '../../../handleErrors/HandleMessage';
 
 
 function DownloadEmailData({checkOnSubmit}){
 	// const emailForm = useRef();
-	const [msg, handleMessage] = PopUpMessage()
+	const [msg, PopUpMessage] = HandleMessage()
 
 	const ifSearching  = useSelector(state => state.loadingGraphic)
 
@@ -120,24 +120,14 @@ function DownloadEmailData({checkOnSubmit}){
 		Promise.resolve( getDownloadData(url) )
 		.then(res => {
 			console.log("** Downloaded successfully **")
-			handleMessage({ 
-				message: 'Data downloaded successfully', 
-				type: 'success', 
-				persist: false,
-				preventDuplicate: false
-			})
+			PopUpMessage({type:'success', message:'Data downloaded successfully'})
 			downloadToCsv(res)
 		})
 		.catch(error => {
 			console.error(error)
 			const error_message = (error?.response?.message) ? error.response.message : "Unsupported Error"
 			const error_status = (error?.status) ? error.status : "Unkwon"
-			handleMessage({
-				message: "Error: " + error_message + " - Code " + error_status,
-				type: 'error', 
-				persist: false,
-				preventDuplicate: false
-			})
+			PopUpMessage({type:'error', message:'Error: '+error_message+' - Code '+error_status})
 			console.log("** Fail to download **")
 			console.error(error)
 		})
