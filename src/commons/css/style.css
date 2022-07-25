@@ -808,6 +808,14 @@ table.table-selected-monitors tr:nth-child(odd)
   display: flex;
   flex-direction: column;
 }
+
+.checkbox-monitor-selected-label{
+  font-family: "RobotoMono-SemiBold";
+  font-size: 12px;
+  position: relative;
+  top: 1.5px;
+}
+
 .input-settings-checkbox{
   display: flex;
   flex-direction: column;

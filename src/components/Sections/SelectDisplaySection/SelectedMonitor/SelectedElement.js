@@ -16,7 +16,6 @@ import HelpIcon            from '@mui/icons-material/Help';
 
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import CheckBoxTwoToneIcon from '@mui/icons-material/CheckBoxTwoTone';
 
 import InfoRoundedIcon     from '@mui/icons-material/InfoRounded';
 import GetMonitordIconType from './GetMonitordIconType';
@@ -60,9 +59,6 @@ const handleClickOpenSettings = (id) => {
 	$('.close-settingsMon' + id).toggleClass('display-none')
 }
 
-const checkBoxplot	   = (value, id) => {$(".boxplot"+id).prop('checked', value)}
-const checkShowCollapse= (value, id) => {$(".collapseValues"+id).prop('checked', value)}
-
 
 
 function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateReload}) {
@@ -79,8 +75,8 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	 */
 	// checkbox inputs
 	const [logarithm, setLogarithm] 	  = useState(monitorData?.options?.logarithm 	 || false)
-	const [curved, setCurved] 			  = useState(monitorData?.options?.curved 	 || false)
-	const [filled, setFilled] 			  = useState(monitorData?.options?.filled 	 || false)
+	const [curved, setCurved] 			  = useState(monitorData?.options?.curved 	 	 || false)
+	const [filled, setFilled] 			  = useState(monitorData?.options?.filled 	 	 || false)
 	const [enabledColor, setEnabledColor] = useState(monitorData?.options?.enabled_color || false)
 
 	// string inputs
@@ -92,24 +88,26 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	// autocomplete inputs
 	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0]
 	const [graphicType, setGraphicType]   = useState(monitorData?.options?.graphicType || isEnumOrMonitor)
-	const [stroke, setStroke] 			  = useState(monitorData?.options?.stroke 	  || strokeOpts[0])
-	const [canvas, setCanvas] 			  = useState(monitorData?.options?.canvas 	  || canvasOpts[0])
-	const [unit, setUnit] 				  = useState(monitorData?.options?.unit 		  || unitOpt[0])
-	const [prefix, setPrefix] 			  = useState(monitorData?.options?.prefix 	  || prefixOpt[0])
-	const [decimal, setDecimal] 		  = useState(monitorData?.options?.decimal 	  || patternOpts[0])
+	const [stroke, setStroke] 			  = useState(monitorData?.options?.stroke 	   || strokeOpts[0])
+	const [canvas, setCanvas] 			  = useState(monitorData?.options?.canvas 	   || canvasOpts[0])
+	const [unit, setUnit] 				  = useState(monitorData?.options?.unit 	   || unitOpt[0])
+	const [prefix, setPrefix] 			  = useState(monitorData?.options?.prefix 	   || prefixOpt[0])
+	const [decimal, setDecimal] 		  = useState(monitorData?.options?.decimal 	   || patternOpts[0])
 	
 	// Boxplot
-	const [boxplot, setBoxplot] = useState(false)
-	const [summaryIntervals, setSummaryIntervals] = useState("")
-	const [showSummaryValues, setShowSummaryValues] = useState(false)
-	const [collapseList, setCollapseList] = useState("")
+	const [boxplot, setBoxplot] = useState({
+		isEnable: false,
+		onlyCollapseValues: false,
+		intervals: null,
+		collapseValues: null
+	});
 
 	/*
 	 * handle get options
 	 */
 	const getOptions = () => {
 		return {
-			boxplot: boxplot,
+			boxplot: boxplot.enable, // TODO: enable es temporal
 			logarithm: logarithm,
 			curved: curved,
 			filled: filled,
@@ -278,14 +276,6 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 						<GetSummarySelect 
 							boxplot={boxplot}
 							setBoxplot={setBoxplot}
-							checkBoxplot={checkBoxplot}
-							summaryIntervals={summaryIntervals}
-							setSummaryIntervals={setSummaryIntervals}
-							showSummaryValues={showSummaryValues}
-							setShowSummaryValues={setShowSummaryValues}
-							checkShowCollapse={checkShowCollapse}
-							collapseList={collapseList}
-							setCollapseList={setCollapseList}
 						/>
 					{/*
 						END BOXPLOT
@@ -295,31 +285,31 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 						<div className="checkbox-monitor-selected">
 							<div className="label-monitor-settings">Presentation:</div>
 							<div className="input-settings-checkbox">
-
 								<FormControlLabel
-									sx={{
-										fontFamily: "RobotoMono-SemiBold", // NOT_WORKING:
-										fontSize: 16
-									}}
-									label="logarithm"
+									sx={{ margin: "-2px 0px"}}
+									label={
+											<React.Fragment>
+												<b className="checkbox-monitor-selected-label">{"Logarithm"}</b>
+											</React.Fragment>
+									}		
 									control={
 										<Checkbox
 											sx={{ '&:hover': { bgcolor: 'transparent' }}}
 											size="small"
 											onChange={(e) => {setLogarithm(e.target.checked)}}
-											checkedIcon={<CheckBoxIcon sx={{color: "#ff0083 "}} /> }
+											checkedIcon={<CheckBoxIcon sx={{color: "#ea1884 "}} /> }
 											icon={<CheckBoxOutlineBlankIcon sx={{color: "#9396a4"}} />}
 											checked={logarithm} 
 										/>
 									}
 								/>
-
 								<FormControlLabel
-									sx={{
-										fontFamily: "RobotoMono-SemiBold",
-										fontSize: "12px"
-									}}
-									label="curved"
+									sx={{margin: "-2px 0px"}}
+									label={
+										<React.Fragment>
+											<b className="checkbox-monitor-selected-label">{"Curved"}</b>
+										</React.Fragment>
+									}
 									control={
 										<Checkbox
 											sx={{ '&:hover': { bgcolor: 'transparent' }}}
@@ -331,13 +321,13 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 										/>
 									}
 								/>
-
 								<FormControlLabel
-									sx={{
-										fontFamily: "RobotoMono-SemiBold",
-										fontSize: "12px"
-									}}
-									label="filled"
+									sx={{margin: "-2px 0px"}}
+									label={
+										<React.Fragment>
+											<b className="checkbox-monitor-selected-label">{"Filled"}</b>
+										</React.Fragment>
+									}
 									control={
 										<Checkbox
 											sx={{ '&:hover': { bgcolor: 'transparent' }}}
@@ -349,18 +339,6 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 										/>
 									}
 								/>
-								{/* <label className="label-cont-inputchecbox settings-checkbox-presnetation">
-									filled
-									<input
-										className={"checkboxMo checkboxMo-monitor filled filled"+id} // REFACTOR:
-										name="filled"
-										type="checkbox"
-										onChange={(e) => {setFilled(e.target.checked)}}
-										value={filled}
-										onClick={() => {checkFilled(!filled, id)}}
-									/>
-									<span className="checkmark"></span>
-								</label> */}
 							</div>
 						</div>
 

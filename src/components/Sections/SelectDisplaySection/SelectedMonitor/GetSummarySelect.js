@@ -1,22 +1,32 @@
-import { Fragment } from 'react';
-import {TextField, Autocomplete, CircularProgress } from '@mui/material';
+import React, {Fragment} from 'react';
+import {
+    TextField, 
+    Autocomplete, 
+    CircularProgress,
+    FormControlLabel,
+    Checkbox
+} from '@mui/material';
+import CheckBoxIcon from '@mui/icons-material/CheckBox'
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 
-const GetSummarySelect = ({
-    id,
-    boxplot, setBoxplot, checkBoxplot,
-    summaryIntervals, setSummaryIntervals,
-    showSummaryValues, setShowSummaryValues, checkShowCollapse,
-    collapseList, setCollapseList
-}) => {
+const GetSummarySelect = ({boxplot, setBoxplot}) => {
     const loading = Boolean()
     const summaryOptions = ["hola"]
+
+    const handleOnChange = (name, value) => {
+        setBoxplot(prevState => ({
+            ...prevState,
+            [name]: value
+        }))
+    }
+
     /*
      * Get summary Intervals
      */
     const getSummaryIntervals = () => {
         // Promise.resolve()
         // .then((res) => {
-        //     setSummaryIntervals(res)
+        //     setSummaryIntervals(handleOnChange("intervals", res))
         // })
         // .catch((error) => {
         //     console.log(error)
@@ -32,22 +42,32 @@ const GetSummarySelect = ({
             <div className="checkbox-monitor-selected">
                 <div className="label-monitor-settings">BoxPlot:</div>
                 <div className="input-settings-checkbox">
-                    <label className="label-cont-inputchecbox settings-checkbox-presnetation">
-                        {
-                            (showSummaryValues) ? 
-                                (boxplot) ? "Display" : "Only Values" 
-                            : "Display"
+                    <FormControlLabel
+                        sx={{margin: "-2px 0px"}}
+                        label={
+                            <Fragment>
+                                <b className="checkbox-monitor-selected-label">
+                                {
+                                    (!boxplot.onlyCollapseValues) ? "Display" : "Only Values"
+                                }
+                                </b>
+                            </Fragment>
                         }
-                        <input
-                            className={"checkboxMo checkboxMo-monitor boxplot"+ id}
-                            name="logarithm"
-                            type="checkbox"
-                            onChange={(e) => {setBoxplot(e.target.checked)}}
-                            value={boxplot}
-                            onClick={() => {checkBoxplot(!boxplot, id)}}
-                        />
-                        <span className="checkmark"></span>
-                    </label>
+                        control={
+                            <Checkbox
+                                sx={{ '&:hover': { bgcolor: 'transparent' }}}
+                                size="small"
+                                onChange={(e) => {
+                                    handleOnChange("isEnable", e.target.checked); 
+                                    if(boxplot.onlyCollapseValues)
+                                        handleOnChange("onlyCollapseValues", false)
+                                }}
+                                checkedIcon={<CheckBoxIcon sx={{color: "#52c8bd"}} /> }
+                                icon={<CheckBoxOutlineBlankIcon sx={{color: "#9396a4"}} />}
+                                checked={boxplot.isEnable} 
+                            />
+                        }
+                    />
                 </div>
             </div>
 
@@ -58,7 +78,7 @@ const GetSummarySelect = ({
                 <Autocomplete
                     disablePortal
                     disableClearable
-                    disabled={!boxplot}
+                    disabled={!boxplot.isEnable}
                     className="input-limits-grafic-options input-select-prefix prefix"
                     name="summaryIntervals"
                     onOpen={() => {
@@ -71,41 +91,51 @@ const GetSummarySelect = ({
                     // loading={loading}
                     options={summaryOptions}
                     onChange={(e, newValue) => {
-                        setSummaryIntervals(newValue);
+                        handleOnChange("intervals", newValue)
                     }}
-                    value={summaryIntervals}
+                    value={boxplot.intervals}
                     renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        className={""}
-                        InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                            <Fragment>
-                            {loading ? <CircularProgress size={16} className="cicularProgress-unit" /> : null}
-                            {params.InputProps.endAdornment}
-                            </Fragment>
-                        ),
-                        }}
-                    />
+                        <TextField
+                            {...params}
+                            className={""}
+                            InputProps={{
+                            ...params.InputProps,
+                                endAdornment: (
+                                    <Fragment>
+                                        {loading ? <CircularProgress size={16} className="cicularProgress-unit" /> : null}
+                                        {params.InputProps.endAdornment}
+                                    </Fragment>
+                                ),
+                            }}
+                        />
                     )}
                 />
             </div>
 
             <div className="checkbox-monitor-selected">
                 <div className="input-settings-checkbox">
-                    <label className="label-cont-inputchecbox settings-checkbox-presnetation">
-                        Collapse value
-                        <input
-                            className={"checkboxMo checkboxMo-monitor collapseValues"+ id}
-                            name="logarithm"
-                            type="checkbox"
-                            onChange={(e) => {setShowSummaryValues(e.target.checked)}}
-                            value={showSummaryValues}
-                            onClick={() => {checkShowCollapse(!showSummaryValues, id)}}
-                        />
-                        <span className="checkmark"></span>
-                    </label>
+                    <FormControlLabel
+                        sx={{margin: "-2px 0px"}}
+                        label={
+                            <Fragment>
+                                <b className="checkbox-monitor-selected-label">{"Collapse value"}</b>
+                            </Fragment>
+                        }
+                        control={
+                            <Checkbox
+                                sx={{ '&:hover': { bgcolor: 'transparent' }}}
+                                size="small"
+                                onChange={(e) => {
+                                    handleOnChange("onlyCollapseValues", e.target.checked)
+                                    if(boxplot.isEnable)
+                                        handleOnChange("isEnable", false)
+                                }}
+                                checkedIcon={<CheckBoxIcon sx={{color: "#52c8bd"}} /> }
+                                icon={<CheckBoxOutlineBlankIcon sx={{color: "#9396a4"}} />}
+                                checked={boxplot.onlyCollapseValues} 
+                            />
+                        }
+                    />
                 </div>
             </div>
 
@@ -116,7 +146,7 @@ const GetSummarySelect = ({
                 <Autocomplete
                     disablePortal
                     disableClearable
-                    disabled={!showSummaryValues}
+                    disabled={!boxplot.onlyCollapseValues}
                     className="input-limits-grafic-options input-select-prefix prefix"
                     name="summaryIntervals"
                     onOpen={() => {
@@ -129,27 +159,23 @@ const GetSummarySelect = ({
                     // loading={loading}
                     options={summaryOptions}
                     onChange={(e, newValue) => {
-                        setCollapseList(newValue)
-                        if(boxplot){
-                            setBoxplot(false)
-                            checkBoxplot(false, id)
-                        }
+                        handleOnChange("onlyCollapseValues", newValue)
                     }}
-                    value={collapseList}
+                    value={boxplot.collapseValues}
                     renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        className={""}
-                        InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                            <Fragment>
-                            {loading ? <CircularProgress size={16} className="cicularProgress-unit" /> : null}
-                            {params.InputProps.endAdornment}
-                            </Fragment>
-                        ),
-                        }}
-                    />
+                        <TextField
+                            {...params}
+                            className={""}
+                            InputProps={{
+                            ...params.InputProps,
+                                endAdornment: (
+                                    <Fragment>
+                                        {loading ? <CircularProgress size={16} className="cicularProgress-unit" /> : null}
+                                        {params.InputProps.endAdornment}
+                                    </Fragment>
+                                ),
+                            }}
+                        />
                     )}
                 />
             </div>
