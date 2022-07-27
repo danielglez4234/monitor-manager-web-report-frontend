@@ -58,7 +58,7 @@ const error               = <div className="noComponentSelected-box">
 
 
 function ListComponentMonitor() {
-	const dispatch             = useDispatch()
+	const dispatch            = useDispatch()
 	const [msg, PopUpMessage] = HandleMessage()
 
 	const monitorAlreadySelected  = useSelector(state => state.monitor)
@@ -88,7 +88,7 @@ function ListComponentMonitor() {
 			setConnectionError(false)
 			setData_components(res)
 			setResultQueryComponent(res)
-			console.log("Comoponet Data was recibe successfully")
+			console.log("Comoponent Data was recibe successfully")
 		})
 		.catch(error => { 
 			setConnectionError(true)
@@ -251,12 +251,10 @@ function ListComponentMonitor() {
      * dispatch variables to the global state action selectMonitor
      */
     const select = (monitorData) => {
-		if (idMonitorsAlreadySelected.length > 0 && idMonitorsAlreadySelected.filter(e => e["id"] === monitorData.id).length > 0){
+		if (idMonitorsAlreadySelected.length > 0 && idMonitorsAlreadySelected.filter(e => e["id"] === monitorData.id).length > 0)
 			PopUpMessage({type:'info', message:'The monitor '+monitorData.magnitude+' is alredy selected'})
-		}
-		else{
+		else
 			dispatch(handleSelectedElemets('add', null, monitorData, null))
-		}
     }
 
 
