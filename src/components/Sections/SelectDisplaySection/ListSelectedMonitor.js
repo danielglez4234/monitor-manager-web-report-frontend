@@ -14,6 +14,7 @@ import {
 	setSamples,
 	getUrl
 } from '../../../actions';
+import { isObjEmpty } from '../../standarFunctions';
 import {
 	Stack,
 	Button,
@@ -261,6 +262,7 @@ function ListSelectedMonitor() {
 	}
 
 
+
     return(
 		<div className="grafic-section">
 
@@ -299,16 +301,13 @@ function ListSelectedMonitor() {
 						<ButtonGeneralOptions />
 					}
 					{
-						(startloadingGraphic && getResponse.length > 0) ?
-							(getResponse?.responseData.length !== 0 && getResponse?.responseData?.samples.length > 0) ?
-								(references.length > 0) ?
+						(isObjEmpty(getResponse)) ? "" :
+							(isObjEmpty(getResponse?.responseData) && isObjEmpty(getResponse?.responseData?.samples)) ? "" :
+								(isObjEmpty(references)) ? "" :
 									<ButtonMagnitudeReference 
 										magnitudeTitles={referenceComponent}
 										magnitudeReferences={references}
 									/>
-								: ""
-							: ""
-						: ""
 					}
 					{
 						// <RangeThresholdsOptions />
@@ -317,7 +316,7 @@ function ListSelectedMonitor() {
 
 				{
 					(startloadingGraphic && pagination?.active === false) ? "" :
-					(totalResponseData.length === 0) ? "" :
+					(isObjEmpty(totalResponseData)) ? "" :
 					<>
 					<div className="displayTotal-responseData">
 						{

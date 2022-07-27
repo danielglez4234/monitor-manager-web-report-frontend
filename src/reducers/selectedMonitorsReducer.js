@@ -13,12 +13,7 @@
 const selectedMonitorsReducer = (state = [], action) => {
   switch(action.type) {
     case 'add':
-      return [
-        { 
-          ...action.data,
-        },
-        ...state
-      ]
+      return [ ...state, { ...action.data, }]
 
 
     case 'addMultiple':
@@ -26,7 +21,7 @@ const selectedMonitorsReducer = (state = [], action) => {
 
 
     case 'concatMultiple':
-      const data = action.data.concat(state)
+      const data = state.concat(action.data)
       return preventDuplicates(data)
 
 
@@ -40,9 +35,8 @@ const selectedMonitorsReducer = (state = [], action) => {
     
     case 'saveOptions':
       const newArr = state.map(obj => {
-        if (obj.id === action.id) {
-          return {...obj, ...action.options}
-        }
+        if (obj.id === action.id)
+          return { ...obj, ...action.options }
         return obj
       })
       return newArr

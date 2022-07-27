@@ -117,3 +117,19 @@ export const getCategory = (type) =>{
 		return "state";
 	}
 }
+
+/*
+ * check of object send is empty
+ */
+export const isObjEmpty = (x) => {
+	try {
+		if(Array.isArray(x))
+			return x.length === 0
+		else if(x instanceof Object)
+			return Object.keys(x).length === 0
+		else
+			return false
+	} catch (error) {
+		console.log(error)
+	}
+}
