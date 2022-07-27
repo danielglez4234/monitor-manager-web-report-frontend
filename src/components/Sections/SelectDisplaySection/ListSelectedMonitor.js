@@ -314,16 +314,16 @@ function ListSelectedMonitor(props) {
 						<ButtonGeneralOptions />
 					}
 					{
-						(startloadingGraphic && getResponse.length > 0) ?
-							(getResponse?.responseData.length !== 0 && getResponse?.responseData?.samples.length > 0) ?
-								(references.length > 0) ?
-									<ButtonMagnitudeReference 
-										magnitudeTitles={referenceComponent}
-										magnitudeReferences={references}
-									/>
+						(startloadingGraphic) ? "" :
+							(!getResponse?.responseData?.samples) ? "" :
+								(Object.keys(getResponse.responseData.samples).length > 0) ?
+									(references.length > 0) ?
+										<ButtonMagnitudeReference 
+											magnitudeTitles={referenceComponent}
+											magnitudeReferences={references}
+										/>
 								: ""
 							: ""
-						: ""
 					}
 					{
 						// <RangeThresholdsOptions />
