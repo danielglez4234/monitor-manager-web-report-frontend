@@ -69,7 +69,7 @@ function FavoriteQueries({addItem}) {
 		try {
 			return await JSON.parse(localStorage.getItem('favorites'))
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -80,7 +80,7 @@ function FavoriteQueries({addItem}) {
 		try {
 			localStorage.setItem('favorites', JSON.stringify(data))
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -93,7 +93,7 @@ function FavoriteQueries({addItem}) {
 			setFavorites(data)
 			setLoadingFavorites(false)
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -105,7 +105,7 @@ function FavoriteQueries({addItem}) {
 			setLocalStorage([])
 			load()
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -128,7 +128,6 @@ function FavoriteQueries({addItem}) {
 			const data = await getLocalStorage()
 			if(!isFound(data, item))
 			{
-				console.log("addToLocalStorage() => item", item)
 				const newSet = [...data, item]
 				setLocalStorage(newSet)
 				setFavorites(newSet)
@@ -138,7 +137,7 @@ function FavoriteQueries({addItem}) {
 			}
 			setLoadingFavorites(false)	
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -153,7 +152,10 @@ function FavoriteQueries({addItem}) {
 	 * get monitor info
 	 */
 	const getMonitorInfo = (data) => {
-		return data.monitorInfo
+		if(data?.monitorInfo)
+			return data.monitorInfo
+		else
+			PopUpMessage({type:'error', message:'monitorInfo is undefined'})
 	}
 
 	/*
@@ -170,7 +172,7 @@ function FavoriteQueries({addItem}) {
 				dispatch(handleSelectedElemets(type, null, arrageList_, null))
 			}
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -185,7 +187,7 @@ function FavoriteQueries({addItem}) {
 			setLocalStorage(filterData_)
 			load()
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -197,7 +199,7 @@ function FavoriteQueries({addItem}) {
 			setLocalStorage([])
 			setFavorites([])
 		} catch (error) {
-			console.log(error)	
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -226,7 +228,7 @@ function FavoriteQueries({addItem}) {
 				: (a, b) => compareDESC(a, b)
 			setFavorites(favorites.sort(compare))
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
