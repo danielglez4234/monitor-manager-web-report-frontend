@@ -11,7 +11,8 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 
 const GetSummarySelect = ({boxplot, setBoxplot}) => {
     const loading = Boolean()
-    const summaryOptions = ["hola"]
+    const summaryOptions = ["hola", "test", "prog", "foi", "djn"]
+    const collapseValuseOptions = ["max", "min", "q1", "q3", "mean"]
 
     const handleOnChange = (name, value) => {
         setBoxplot(prevState => ({
@@ -35,6 +36,8 @@ const GetSummarySelect = ({boxplot, setBoxplot}) => {
 
         // })
     }
+
+    
 
 
     return ( 
@@ -79,7 +82,7 @@ const GetSummarySelect = ({boxplot, setBoxplot}) => {
                     disablePortal
                     disableClearable
                     disabled={!boxplot.isEnable}
-                    className="input-limits-grafic-options input-select-prefix prefix"
+                    className="input-limits-grafic-options input-select-prefix"
                     name="summaryIntervals"
                     onOpen={() => {
                         if([].length < 2)
@@ -147,35 +150,15 @@ const GetSummarySelect = ({boxplot, setBoxplot}) => {
                     disablePortal
                     disableClearable
                     disabled={!boxplot.onlyCollapseValues}
-                    className="input-limits-grafic-options input-select-prefix prefix"
-                    name="summaryIntervals"
-                    onOpen={() => {
-                        if([].length < 2)
-                        {
-                            // setLoading(true);
-                            getSummaryIntervals();
-                        }
-                    }}
-                    // loading={loading}
-                    options={summaryOptions}
+                    className="input-limits-grafic-options input-select-prefix"
+                    name="onlyCollapseValues"
+                    options={collapseValuseOptions}
                     onChange={(e, newValue) => {
-                        handleOnChange("onlyCollapseValues", newValue)
+                        handleOnChange("collapseValues", newValue)
                     }}
                     value={boxplot.collapseValues}
                     renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            className={""}
-                            InputProps={{
-                            ...params.InputProps,
-                                endAdornment: (
-                                    <Fragment>
-                                        {loading ? <CircularProgress size={16} className="cicularProgress-unit" /> : null}
-                                        {params.InputProps.endAdornment}
-                                    </Fragment>
-                                ),
-                            }}
-                        />
+                        <TextField {...params} />
                     )}
                 />
             </div>
