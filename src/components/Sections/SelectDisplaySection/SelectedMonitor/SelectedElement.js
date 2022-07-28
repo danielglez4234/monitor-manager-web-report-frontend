@@ -107,7 +107,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	 */
 	const getOptions = () => {
 		return {
-			boxplot: boxplot.enable, // TODO: enable es temporal
+			boxplot: boxplot,
 			logarithm: logarithm,
 			curved: curved,
 			filled: filled,
@@ -116,7 +116,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 			graphicType: graphicType,
 			stroke: stroke,
 			canvas: canvas,
-			color: enabledColor ? color : "",
+			color: enabledColor && color,
 			pos: (fnIsArray(monitorData.type)) ? pos : null,
 			prefix: fnIfExistDefault(prefix),
 			unit: fnIfExistDefault(unit),

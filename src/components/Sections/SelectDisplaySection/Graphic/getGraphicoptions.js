@@ -10,46 +10,44 @@ import * as $  from 'jquery';
  * Get all options from the monitors selected
  */
 function getGraphicoptions(){
-	const selectConnect           = $(".conenctLines").is(":checked");
-	const selectLegends           = $(".legends").is(":checked");
-	const selectLegendContainer   = $("#BottonCont").is(":checked");
-	const selectLegendtrunkedName = $(".legendsMonitorName").is(":checked");
+	const connect            = $(".conenctLines").is(":checked");
+	const legends            = $(".legends").is(":checked");
+	const legendContainerPos = $("#BottonCont").is(":checked");
+	const legendTrunkName 	 = $(".legendsMonitorName").is(":checked");
 
-	const selectNumberFormat    = $(".numberFormat").val()
-	const selectSciNotation     = $(".scientific-notation").is(":checked");
+	const numberFormat    	 = $(".numberFormat").val()
+	const scientificNotation = $(".scientific-notation").is(":checked");
 
-	const selectTooltip         = $(".tooltip").is(":checked");
-	const selectGrid            = $(".grid").is(":checked");
-	const selectGroupData       = $(".groupData").is(":checked");
-	const selectAnimations      = $(".animations").is(":checked");
-	const selectMicroTheme      = $(".microTheme").is(":checked");
+	const tooltip         = $(".tooltip").is(":checked");
+	const grid            = $(".grid").is(":checked");
+	const groupData       = $(".groupData").is(":checked");
+	const animations      = $(".animations").is(":checked");
+	const microTheme      = $(".microTheme").is(":checked");
 
-	const generalMin            = $(".limitMin").val();
-	const selectlimitMIN        = (generalMin === "") ? false : parseFloat(generalMin);
-	const generalMax            = $(".limitMax").val();
-	const selectlimitMAX        = (generalMax === "") ? false : parseFloat(generalMax);
+	const generalMin      = $(".limitMin").val();
+	const limitMIN        = (generalMin === "") ? false : parseFloat(generalMin);
+	const generalMax	  = $(".limitMax").val();
+	const limitMAX        = (generalMax === "") ? false : parseFloat(generalMax);
 
-	const selectHowManyYAxis    = $(".howManyYAxis option:selected").text();
-	const selectHowManyXAxis    = $(".howManyXAxis option:selected").text();
+	const howManyYAxis    = $(".howManyYAxis option:selected").text();
+	const howManyXAxis    = $(".howManyXAxis option:selected").text();
 
 	return {
-		general: {
-			limitMIN:           selectlimitMIN,
-			limitMAX:           selectlimitMAX,
-			tooltip:            selectTooltip,
-			connect:            selectConnect,
-			groupData:          selectGroupData,
-			grid:               selectGrid,
-			animations:         selectAnimations,
-			microTheme:         selectMicroTheme,
-			legends:            selectLegends,
-			legendContainerPos: selectLegendContainer,
-			legendTrunkName:    selectLegendtrunkedName,
-			numberFormat:       selectNumberFormat,
-			scientificNotation: selectSciNotation,
-			howManyYAxis:       selectHowManyYAxis,
-			howManyXAxis:       selectHowManyXAxis,
-		}
+		limitMIN,
+		limitMAX,
+		tooltip,
+		connect,
+		groupData,
+		grid,
+		animations,
+		microTheme,
+		legends,
+		legendContainerPos,
+		legendTrunkName,
+		numberFormat,
+		scientificNotation,
+		howManyYAxis,
+		howManyXAxis
 	}
 }
 export default getGraphicoptions;

@@ -10,7 +10,6 @@ import * as am5exporting  from "@amcharts/amcharts5/plugins/exporting";
 import * as am5           from "@amcharts/amcharts5";
 import * as am5xy         from "@amcharts/amcharts5/xy";
 import * as d3            from "d3-shape";
-// import * as am5pie        from "@amcharts/amcharts5/percent";
 
 import InsertChartIcon    from '@mui/icons-material/InsertChart';
 import LiveHelpIcon       from '@mui/icons-material/LiveHelp';
@@ -18,9 +17,110 @@ import MoreHorizIcon      from '@mui/icons-material/MoreHoriz';
 import NearbyErrorIcon from '@mui/icons-material/NearbyError';
 
 import HandleMessage from '../../../handleErrors/HandleMessage';
-// import { ConstructionOutlined } from '@mui/icons-material';
 
 
+// const data_test = [
+// 	{
+// 	  time_sample: "2019-08-01 13:00:00.000",
+// 	  q3: 132.3,
+// 	  max: 136.96,
+// 	  min: 131.15,
+// 	  q1: 136.49,
+// 	  median: 135.96,
+// 	  mean: (135.9 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:05:00.000",
+// 	  q3: 135.26,
+// 	  max: 135.95,
+// 	  min: 131.5,
+// 	  q1: 131.85,
+// 	  median: 133.95,
+// 	  mean: (133.9 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:10:00.000",
+// 	  q3: 129.9,
+// 	  max: 133.27,
+// 	  min: 128.3,
+// 	  q1: 132.25,
+// 	  median: 130.40,
+// 	  mean: (130.40 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:15:00.000",
+// 	  q3: 132.94,
+// 	  max: 136.24,
+// 	  min: 132.63,
+// 	  q1: 135.03,
+// 	  median: 134.27,
+// 	  mean: (134.27 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:20:00.000",
+// 	  q3: 136.76,
+// 	  max: 137.86,
+// 	  min: 132.0,
+// 	  q1: 134.01,
+// 	  median: 135.27,
+// 	  mean: (135.27 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:25:00.000",
+// 	  q3: 131.11,
+// 	  max: 133.0,
+// 	  min: 125.09,
+// 	  q1: 126.39,
+// 	  median: 129.27,
+// 	  mean: (129.27 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:30:00.000",
+// 	  q3: 130.11,
+// 	  max: 133.0,
+// 	  min: 125.09,
+// 	  q1: 127.39,
+// 	  median: 129.27,
+// 	  mean: (129.27 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:35:00.000",
+// 	  q3: 125.11,
+// 	  max: 126.0,
+// 	  min: 121.09,
+// 	  q1: 122.39,
+// 	  median: 124.27,
+// 	  mean: (124.2 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:40:00.000",
+// 	  q3: 131.11,
+// 	  max: 133.0,
+// 	  min: 122.09,
+// 	  q1: 124.39,
+// 	  median: 130.27,
+// 	  mean: 130.27
+// 	}
+//   ];
+
+
+
+const PROCESSOR = {
+	numericField: "value",
+	dateField: "time_sample",
+	lowValueField: "min",
+	highValueField: "max",
+	q1ValueField: "q1",
+	q3ValueField: "q3",
+	meanValueField: "mean",
+	meadianValueField: "median"
+}
+const FORMATER = {
+	dateFormat: "yyyy-MM-dd HH:mm:ss.SSS",
+	timeFormat: "HH:mm:ss.SSS",
+	numberFormat: "#",
+	timeInterval: "millisecond"
+}
 
 /*
  * obtain the index of the element of the second matrix that matches it
@@ -36,7 +136,7 @@ const getIndexFromID = (fromArray, inArray) => {
 
 
 function Graphic() {
-	const [msg, PopUpMessage] = HandleMessage()
+	const [msg, PopUpMessage]  = HandleMessage()
 	const getResponse          = useSelector(state => state.getResponse)
 	const monitor 			   = useSelector(state => state.monitor)
 	const reload               = useSelector(state => state.reload)
@@ -58,14 +158,17 @@ function Graphic() {
 	 */
 	const buildGraphicValues = (date, _value, logarithm) => {
 		try {
-			const time_sample = parseInt(date)
 			const value = (logarithm) ? Math.log10(parseFloat(_value)) : parseFloat(_value)
 			if ((logarithm && value === 0) || isNaN(value))
 				PopUpMessage({type:'error', message:'Error: Logarithm can\'t have zero values, disabled the Logarithm option and click reload'})
-			else
-				return { time_sample, value }
+			else{
+				return { 
+					[PROCESSOR.dateField]: parseInt(date), 
+					[PROCESSOR.numericField]: value 
+				}
+			}
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -137,7 +240,7 @@ function Graphic() {
 				})
 				// if "Only monitor name" is checked
 				let _name = columns_row.name
-				if(graphicOptions.general.legendTrunkName)
+				if(graphicOptions.legendTrunkName)
 				{
 					_name = _name.split("/")
 					_name = _name[_name.length - 1]
@@ -164,8 +267,8 @@ const getRootTheme = () => {
 	try {
 		const graphicOptions = getGraphicoptions()
 		const setThemes = []
-		if (graphicOptions.general.animations) { setThemes.push(am5themes_Animated.new(root)) }
-		if (graphicOptions.general.microTheme) { setThemes.push(am5themes_Micro.new(root)) }
+		if (graphicOptions.animations) { setThemes.push(am5themes_Animated.new(root)) }
+		if (graphicOptions.microTheme) { setThemes.push(am5themes_Micro.new(root)) }
 		return setThemes
 	} catch (error) {
 		console.log(error)
@@ -280,8 +383,8 @@ const getMillisecondBaseCount = (info) => {
 const seriesConfiguration = (data) => {
 	try {
 		const generalOptions = getGraphicoptions()
-		const gaps = generalOptions.general.connect
-		const tooltip = generalOptions.general.tooltip
+		const gaps = generalOptions.connect
+		const tooltip = generalOptions.tooltip
 		const name = data.name
 		const color = data.color
 		const curved = data.curved
@@ -289,8 +392,8 @@ const seriesConfiguration = (data) => {
 		const properties = {
 			name: name,
 			connect: !gaps,
-			valueYField: "value",
-			valueXField: "time_sample",
+			valueYField: PROCESSOR.numericField,
+			valueXField: PROCESSOR.dateField,
 			calculateAggregates: true,
 			legendLabelText: "{name}: ",
 			legendRangeLabelText: "{name}: ",
@@ -302,7 +405,7 @@ const seriesConfiguration = (data) => {
 		const setTooltip = am5.Tooltip.new(root, {
 			exportable: false,
 			pointerOrientation: "horizontal",
-			labelText: `[bold]{name}[/]\n{valueX.formatDate('yyyy-MM-dd HH:mm:ss.SSS')}\n[bold]{valueY}[/] ${unitAbbr}`
+			labelText: `[bold]{name}[/]\n{valueX.formatDate('${FORMATER.dateFormat}')}\n[bold]{valueY}[/] ${unitAbbr}`
 		})
 	
 		if (tooltip)
@@ -327,58 +430,82 @@ const boxplotSeriesConfiguration = (name) => {
 		fill: "#333",
 		stroke: "#333",
 		name: name,
-		valueYField: "q1",
-		openValueYField: "q3",
-		lowValueYField: "min",
-		highValueYField: "max",
-		valueXField: "time_sample",
+		valueYField: PROCESSOR.q1ValueField,
+		openValueYField: PROCESSOR.q3ValueField,
+		lowValueYField: PROCESSOR.lowValueField,
+		highValueYField: PROCESSOR.highValueField,
+		valueXField: PROCESSOR.dateField,
 		tooltip: am5.Tooltip.new(root, {
 			pointerOrientation: "horizontal",
-			labelText: "open: {openValueY}\nlow: {lowValueY}\nhigh: {highValueY}\nclose: {valueY},\nmediana: {mediana}"
+			labelText: "open: {openValueY}\nlow: {lowValueY}\nhigh: {highValueY}\nclose: {valueY},\nmedian: {median}\nmean: {mean}"
 		})
 	}
 }
 
 /*
- * get boxplot mean values default options // mediana series
+ * // median series
+ * get boxplot median values default options 
  */
-const addMedianaSeriesDefaultConf = (chart, dateAxis, valueAxis) => {
-	return chart.series.push(
+const addMedianSeriesDefaultConf = (props) => {
+	return props.chart.series.push(
 		am5xy.StepLineSeries.new(root, {
 			stroke: "#d1d8d9",
-			name: "mediana",
-			xAxis: dateAxis,
-			yAxis: valueAxis,
-			valueYField: "mediana",
-			valueXField: "time_sample",
+			name: PROCESSOR.meadianValueField,
+			xAxis: props.dateAxis,
+			yAxis: props.valueAxis,
+			valueYField: PROCESSOR.meadianValueField,
+			valueXField: PROCESSOR.dateField,
 			noRisers: true
 		})
-	);
+	)
+}
+
+/*
+ * // mean series
+ * get boxplot mean values default options 
+ */
+const addMeanSeriesDefaultConf = (props) => {
+	let meanSeries = props.chart.series.push(
+		am5xy.StepLineSeries.new(root, {
+			stroke: "#d1d8d9",
+			// name: "josué " +PROCESSOR.meanValueField,
+			xAxis: props.dateAxis,
+			yAxis: props.valueAxis,
+			valueYField: PROCESSOR.meanValueField,
+			valueXField: PROCESSOR.dateField,
+			noRisers: true
+		})
+	)
+	meanSeries.strokes.template.setAll({
+		strokeDasharray: [2, 2],
+		strokeWidth: 2
+	})
+	return meanSeries
 }
 
 /*
  * get series
  */
-const getSeries = (chart, dateAxis, valueAxis, data) => {
+const getSeries = (props, data) => {
 	try {
 		let config
-		const isBoxplot = data?.boxplot
+		const isBoxplotEnabled = data?.boxplot?.isEnable
 		const seriesType = data.graphicType
 
-		if(isBoxplot)
+		if(isBoxplotEnabled)
 			config = boxplotSeriesConfiguration(data.name)
 		else
 			config = seriesConfiguration(data)
 		
-		config["xAxis"] = dateAxis
-		config["yAxis"] = valueAxis
+		config["xAxis"] = props.dateAxis
+		config["yAxis"] = props.valueAxis
 
-		if(isBoxplot)
-			return chart.series.push(am5xy.CandlestickSeries.new(root, config))
+		if(isBoxplotEnabled)
+			return props.chart.series.push(am5xy.CandlestickSeries.new(root, config))
 		else if(seriesType === "Step Line Series")
-			return chart.series.push(am5xy.StepLineSeries.new(root, config))
+			return props.chart.series.push(am5xy.StepLineSeries.new(root, config))
 		else
-			return chart.series.push(am5xy.LineSeries.new(root, config))
+			return props.chart.series.push(am5xy.LineSeries.new(root, config))
 
 	} catch (error) {
 		console.log(error)
@@ -452,20 +579,20 @@ const generateGraphic = (info) =>{
 	let [chart, dateAxis, valueAxis, series, legend, scrollbarX, scrollbarY] = [] // [] => this represents undefined
 	// Initialize variables for general options
 	const generalOptions 	 = getGraphicoptions()
-	const grid 				 = !generalOptions.general.grid
-	const limitMIN 			 = generalOptions.general.limitMIN
-	const limitMAX 			 = generalOptions.general.limitMAX
-	const groupData 		 = generalOptions.general.groupData
-	const microTheme 		 = !generalOptions.general.microTheme
-	const showLegends 		 = generalOptions.general.legends
-	const legendContainerPos = generalOptions.general.legendContainerPos
-	const sciNotation 		 = (generalOptions.general.scientificNotation) ? "e" : ""
-
+	const grid 				 = !generalOptions.grid
+	const limitMIN 			 = generalOptions.limitMIN
+	const limitMAX 			 = generalOptions.limitMAX
+	const groupData 		 = generalOptions.groupData
+	const microTheme 		 = !generalOptions.microTheme
+	const showLegends 		 = generalOptions.legends
+	const legendContainerPos = generalOptions.legendContainerPos
+	
     /*
-     * Set the root format number for received values depending on whether the number is integer or not
-     */
+	* Set the root format number for received values depending on whether the number is integer or not
+	*/
+	const sciNotation = (generalOptions.scientificNotation) ? "e" : ""
     root.numberFormatter.setAll({
-		numberFormat: "#" + sciNotation,
+		numberFormat: FORMATER.numberFormat + sciNotation,
     });
 
     /*
@@ -478,7 +605,6 @@ const generateGraphic = (info) =>{
      */
     chart = root.container.children.push(
 		am5xy.XYChart.new(root, {
-			// focusable: true,
 			panY: false,
 			wheelY: "zoomX",
 			maxTooltipDistance: 0
@@ -491,7 +617,6 @@ const generateGraphic = (info) =>{
      * ***WARNING*** on this version the exponential format is up to 7, this does not work in the plugin: 1e-8, +etc...
      */
     valueAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-		// logarithmic: true,
 		extraTooltipPrecision: 1,
 		min: limitMIN,
 		max: limitMAX,
@@ -505,9 +630,9 @@ const generateGraphic = (info) =>{
 		groupData: groupData,
 		maxDeviation: 0,
 		baseInterval: {
-			timeUnit: "millisecond",
-			count: getMillisecondBaseCount(info)
-			// count: 10000000
+			timeUnit: FORMATER.timeInterval,
+			// count: getMillisecondBaseCount(info)
+			count: 250000
 		},
 		renderer: getXRenderer(grid)
     }))
@@ -515,24 +640,24 @@ const generateGraphic = (info) =>{
     /*
      * Format the date depending on the time unit to be displayed
      */
-    dateAxis.get("dateFormats")["millisecond"] = "HH:mm:ss.SSS"
+    dateAxis.get("dateFormats")[FORMATER.timeInterval] = FORMATER.timeFormat
 
     // --- --- --- --- --- --- Add All series --- --- --- --- --- --- ---
     
 	for (let y = 0; y < info.length; y++) {
 		// Set Graphic data
 		const data_ = info[y]
+		const graphProps = {chart, dateAxis, valueAxis}
 		
 		// Set Series
-		series = getSeries(chart, dateAxis, valueAxis, data_)
+		series = getSeries(graphProps, data_)
 
-		// if a boxplot exist the way to show the mediana is using the steps series type
+		// if a boxplot exist the way to show the median is using the steps series type
 		if(data_?.boxplot){
-			addMedianaSeriesDefaultConf(
-				chart, 
-				dateAxis, 
-				valueAxis
-			).data.setAll(data_.data)
+			addMedianSeriesDefaultConf(graphProps).data.setAll(data_.data)
+			// addMedianSeriesDefaultConf(graphProps).data.setAll(data_test)
+			addMeanSeriesDefaultConf(graphProps).data.setAll(data_.data)
+			// addMeanSeriesDefaultConf(graphProps).data.setAll(data_test)
 		}
 		else{
 			// Set Series line weight and dashArray view // this doesn't work with boxplot series type
@@ -543,7 +668,7 @@ const generateGraphic = (info) =>{
 		}
 
 		// Set filled
-		if (data_.filled) {
+		if (data_?.filled) {
 			series.fills.template.setAll({
 				visible: true,
 				fillOpacity: 0.3
@@ -552,12 +677,13 @@ const generateGraphic = (info) =>{
 
 		// Set up data processor to parse string dates		
 		series.data.processor = am5.DataProcessor.new(root, {
-			dateFormat: "yyyy-MM-dd HH:mm:ss.SSS",
-			dateFields: ["time_sample"]
+			dateFormat: FORMATER.timeInterval,
+			dateFields: [PROCESSOR.dateField]
 		});
 		
 		// Set series DATA
-		series.data.setAll(data_.data);
+		series.data.setAll(data_.data)
+		// series.data.setAll(data_test)
     } 	
 	
 	// --- --- --- --- --- end for 'Add All series ' --- --- --- --- --- --- ---
@@ -612,7 +738,7 @@ const generateGraphic = (info) =>{
 		}
 
 		// TODO: NOT_WORKING: el evento hover salta un excepción con el tipo de gráfica boxplot
-		// if(){
+		if(false){
 			//  When hovering over the legend element container, all series are dimmed except the one hovered over.
 			legend.itemContainers.template.events.on("pointerover", function(e) {
 				let itemContainer = e.target;
@@ -640,7 +766,7 @@ const generateGraphic = (info) =>{
 					});
 				});
 			})
-		// }
+		}
 
 		// align legends content in the container
 		legend.itemContainers.template.set("width", am5.p100);
@@ -661,7 +787,9 @@ const generateGraphic = (info) =>{
 		xAxis: dateAxis
 	}));
 
-
+	/*
+	 * if microTheme is active
+	 */
 	if (microTheme) {
 		valueAxis.set("tooltip", am5.Tooltip.new(root, {
 			themeTags: ["axis"]
@@ -697,9 +825,9 @@ const generateGraphic = (info) =>{
 	am5exporting.Exporting.new(root, {
 		menu: am5exporting.ExportingMenu.new(root, {}),
 		// dataSource: getResponse.responseData.samples,
-		numericFields: ["value"],
-		dateFields: ["time_sample"],
-		dateFormat: "yyyy-MM-dd HH:mm:ss.SSS",
+		numericFields: [PROCESSOR.numericField],
+		dateFields: [PROCESSOR.dateField],
+		dateFormat: FORMATER.dateFormat,
 		dataFields: {
 			value: "Value",
 			time_sample: "Date"

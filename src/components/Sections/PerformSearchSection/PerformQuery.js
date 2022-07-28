@@ -182,7 +182,7 @@ function PerformQuery() {
 			return false
 		}
 		else if (monitor[0] === undefined){
-			PopUpMessage({type:'warning', message:'There are no monitors selected'})
+			PopUpMessage({type:'warning', message:'There are no selected monitors'})
 			return false
 		}
 		else{

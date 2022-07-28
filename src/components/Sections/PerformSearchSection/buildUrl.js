@@ -24,6 +24,7 @@ const getPagination = (pagination, isDownload) => {
     const length = "&length=" + REACT_APP_IDISPLAYLENGTH
     return page + length
 }
+
 /*
  * build monitor prefix, unit and decimal options
  */
@@ -32,7 +33,8 @@ const buildOptions = (opt) => {
     const unit    = (opt.unit    !== "Default") ? opt.unit    : false
     const prefix  = (opt.prefix  !== "Default") ? opt.prefix  : false
     const decimal = (opt.decimal !== "Default") ? opt.decimal : false
-    const boxplot = opt?.boxplot
+    const boxplot = opt?.boxplot?.isEnable
+    const collapseValues = opt?.boxplot?.collapseValues
     if (unit || decimal)
     {
         queryOpt += "{"
@@ -50,7 +52,7 @@ const buildOptions = (opt) => {
         }
         if(boxplot){
             const sumary = ", sumary"
-            queryOpt += (opt?.collapsevalues) ? `${sumary}: [${opt.collapsevalues}]` : sumary
+            queryOpt += (collapseValues) ? `${sumary}: [${collapseValues}]` : sumary
         }
         queryOpt += "}"
     }
@@ -58,12 +60,23 @@ const buildOptions = (opt) => {
 }
 
 /*
+ * get format date
+ */
+const getFormatDate = (date) => {
+    try {
+        return date.replace(/\s{1}/,"@")
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+/*
  * build time range and sampling params
  */
 const buildTimeAndSampling = (tm) => {
-    const beginDate = tm.beginDate.replace(/\s{1}/,"@")+".000"
-    const endDate 	= tm.endDate.replace(/\s{1}/,"@")+".000"
-    const sampling  = "&sampling="+tm.sampling
+    const beginDate = getFormatDate(tm.beginDate) + ".000"
+    const endDate 	= getFormatDate(tm.endDate) + ".000"
+    const sampling  = "&sampling=" + tm.sampling
     return { beginDate, endDate, sampling }
 }
 
@@ -106,7 +119,7 @@ export default function buildUrl(monitors, timeAndSampling, pagination, isDownlo
         const tm = buildTimeAndSampling(timeAndSampling)
         const _pagination = getPagination(pagination, isDownload)
         
-        return tm.beginDate+"/"+tm.endDate+"/?"+queryRest+tm.sampling+_pagination
+        return tm.beginDate + "/" + tm.endDate + "/?" + queryRest + tm.sampling + _pagination
     } catch (error) {
         console.error(error)
     }
