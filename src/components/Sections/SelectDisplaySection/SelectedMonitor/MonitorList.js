@@ -20,7 +20,8 @@ import KeyboardDoubleArrowDownIcon  from '@mui/icons-material/KeyboardDoubleArro
 
 import CachedIcon from '@mui/icons-material/Cached';
 
-import SelectedElement      from './SelectedElement'
+// import SelectedElement      from './SelectedElement'
+import OptionsModal from './OptionsTabs/OptionsModal'
 
 
     /*
@@ -206,7 +207,15 @@ function MonitorList({diActivateReload}) {
 							<tbody>
 							{
 								elements.map((element) =>
-									<SelectedElement
+									// <SelectedElement
+									// 	key           	 = { element.id  }
+									// 	id            	 = { element.id }
+									// 	monitorData   	 = { element }
+									// 	saveOptions	  	 = { saveOptions }
+									// 	menuHandle    	 = { menuHandle }
+									// 	diActivateReload = { diActivateReload }
+									// />
+									<OptionsModal
 										key           	 = { element.id  }
 										id            	 = { element.id }
 										monitorData   	 = { element }

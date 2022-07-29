@@ -54,7 +54,7 @@ const cubeSpinnerImg = () => {
 }
 
 
-function ListSelectedMonitor() {
+function SelectDisplay() {
 	const dispatch             = useDispatch();
 	const [msg, PopUpMessage] = HandleMessage();
 
@@ -386,4 +386,4 @@ function ListSelectedMonitor() {
     );
 
 }
-export default ListSelectedMonitor;
+export default SelectDisplay;
