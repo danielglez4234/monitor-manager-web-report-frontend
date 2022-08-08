@@ -507,8 +507,6 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 							// 	dimension_y={ monitorData.dimension_y }
 							// />
 							<GetIndexArrayModal
-								id={ 8259 }
-								type={ "D" }
 								pos={pos}
 								setPos={setPos}
 								applyChangesWarning={ applyChangesWarning }

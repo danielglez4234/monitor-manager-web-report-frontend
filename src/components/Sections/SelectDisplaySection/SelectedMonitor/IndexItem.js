@@ -9,7 +9,7 @@ const BUTTON_TOGGLE = {
     disable: "outlined"
 }
 
-const IndexItem = ({isActive, indexNumber, selectedIndexes, setSelectedIndexes, defaultPos}) => {
+const IndexItem = ({isActive, indexNumber, selectedIndexes, setSelectedIndexes, defaultPos, setRanges}) => {
     const classes = usesTyles()
     const active = isActive
 
@@ -22,15 +22,20 @@ const IndexItem = ({isActive, indexNumber, selectedIndexes, setSelectedIndexes, 
      * tooggle select and deselect actions
      */
    const tooggleSelect = () => {
-        if(selectedIndexes[0] === defaultPos) // if default state if set delete it
+        if(selectedIndexes[0] === defaultPos){ // if default state if set delete it
+            console.log("holewpidfnasofcbaoñsuibgc")
             selectedIndexes.shift()
+        }
 
         if(selectedIndexes.length === 0)
             setSelectedIndexes(defaultPos)
-        else if(!active)
+        else if(!active){
+            setRanges([ ...selectedIndexes, indexNumber])
             setSelectedIndexes(prevState => ([ ...prevState, indexNumber ]))
+        }
         else{
             const deselect = filterItems(selectedIndexes, indexNumber)
+            setRanges(deselect)
             setSelectedIndexes(deselect)
         }
     }

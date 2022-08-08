@@ -87,13 +87,26 @@ import SelectedElement      from './SelectedElement'
 		$(".input-limits-grafic-options").val('')
 	}
 
+	const test = [
+		{
+			id: 324,
+			type: "D",
+			dimension_y: "8",
+			dimension_x: "2",
+			magnitude: "test_2",
+			component: "sdf",
+			unit: "guat"
+		}
+	]
+
 
 function MonitorList({diActivateReload}) {
     const dispatch = useDispatch();
     const monitor = useSelector(state => state.monitor)
 
     const [countMonitors, setCountMonitors] = useState(0);
-	const [elements, setSelectedElements] = useState([]);
+	// const [elements, setSelectedElements] = useState([]);
+	const [elements, setSelectedElements] = useState(test);
 	const [onSelect, setOnSelect] = useState(true);
 
 	/*
@@ -200,8 +213,8 @@ function MonitorList({diActivateReload}) {
 					</LtTooltip>
 				</div>
 				<div id="resizable" data-bottom="true" className="selected-monitors-box">
-					{
-					(onSelect) ? initialInfoText :
+					{/* { */}
+					{/* (onSelect) ? initialInfoText : */}
 						<table id="drop-area" className="table-selected-monitors">
 							<tbody>
 							{
@@ -218,7 +231,7 @@ function MonitorList({diActivateReload}) {
 							}
 							</tbody>
 						</table>
-					}
+					{/*  } */}
 				</div>
 			</div>
             <div className="selected-monitors-extends-buttons">

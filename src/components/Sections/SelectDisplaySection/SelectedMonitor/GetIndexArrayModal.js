@@ -1,30 +1,78 @@
 import React, { useState } from 'react';
-import {
-  fnIsSimpleArray,
-  fnIsDoubleArray
-}
-from '../../../standarFunctions';
 import { LtTooltip } from '../../../../commons/uiStyles/components';
 import HelpIcon                   from '@mui/icons-material/Help';
-import SettingsBackupRestoreIcon  from '@mui/icons-material/SettingsBackupRestore';
 import IndexItem from './IndexItem';
 
+/*
+ * return range and single indexes template
+ */
+function getTemplate(ma_){
+	if(ma_.length > 1){
+		const initial = ma_[0]
+		const last = ma_[ma_.length - 1]
+		return "["+initial+"-"+last+"]"
+	}
+	else{
+		const single = ma_[0]
+		return "["+single+"]"
+	}
+}
+
+
+/*
+ * TODO: make global function
+ */
+const sortDESC = (a, b) => {
+	if (a < b) return -1
+	if (a > b) return 1
+}
+
+/*
+ * create ranges 
+ */
+const getRanges = (arr_) => {
+	arr_.sort((a, b) => sortDESC(a, b))
+	const new_arrange_ = []
+	let range_ = []
+
+	for (let x = 0; x < arr_.length; x++) {
+
+		const num = arr_[x]
+		const nextNumber = num + 1
+
+			if(arr_.includes(nextNumber)){
+				range_.push(num)
+			}
+			else{
+				range_.push(num)
+				new_arrange_.push(getTemplate(range_))
+				range_ = []
+			}
+	}
+	return new_arrange_
+}
+
+
+
 const GetIndexArrayModal = ({pos, setPos, applyChangesWarning, dimension_x, dimension_y}) => {
-	const defaultPos = ["All"]
+	const defaultPos = ["All"] // this gets translate later to [-1]
 	const availablePositions = dimension_x * dimension_y
-	const allPositions = Array.from(Array(availablePositions).keys());
+	const allPositions = Array.from(Array(availablePositions).keys())
 	
 	const [openIndexModal, setOpenIndexModal]     = useState(false)
-	const [enableResetIndex, setEnableResetIndex] = useState(true)
 
-	const positions = (pos === "" || pos === null) ? defaultPos : pos
-	const [selectedIndexes, setSelectedIndexes] = useState(positions)
+	// const positions = (pos === "" || pos === null) ? defaultPos : pos
+	const positions = [0]
+
+
+	const [selectedIndexes, setSelectedIndexes] = useState(positions) // TODO: invert names and calls
+	const [activeIndexes, setActiveIndexes] = useState(getRanges(positions))
 	
 	/*
 	 * create ranges if necessary
 	 */
-	const createRanges = (arr) => {
-		
+	const setRanges = (arr_) => {
+		setActiveIndexes(getRanges(arr_))
 	}
 
    	/*
@@ -35,7 +83,18 @@ const GetIndexArrayModal = ({pos, setPos, applyChangesWarning, dimension_x, dime
 	/*
 	 * reset to default state
 	 */
-	const reset = () => setSelectedIndexes(defaultPos);
+	const reset = () => {
+		setRanges(defaultPos)
+		setSelectedIndexes(defaultPos)
+	}
+
+	/*
+	 * select all positions
+	 */
+	const selectAll = () => {
+		setRanges(allPositions)
+		setSelectedIndexes(allPositions)
+	}
 
 
 	return(
@@ -63,36 +122,18 @@ const GetIndexArrayModal = ({pos, setPos, applyChangesWarning, dimension_x, dime
 		{/* 
 		* SHOW Index selected and reset button
 		*/}
-		<LtTooltip title={JSON.stringify(selectedIndexes)} enterDelay={900} leaveDelay={100} placement="left" className="tool-tip-options">
+		<LtTooltip title={JSON.stringify(activeIndexes)} enterDelay={900} leaveDelay={100} placement="left" className="tool-tip-options">
 			<div className="array-index-box">
-					{
-						selectedIndexes.map((element) => 
-							<div 
-								onClick={() => { openModal() }} 
-								className="array-index-button-box"
-							>
-									<span className={`array-index-button-text`}>
-									{
-										element
-									}
-									</span>
-							</div>
-						)
-					}
-				{
-				(enableResetIndex) ?
-					<div
-						onClick={() => {
-							setEnableResetIndex(false);
-							reset()
-							setPos(null)
-						}}
-						className="clear-choose-index-box"
+					<div 
+						onClick={() => { openModal() }} 
+						className="array-index-button-box"
 					>
-						<SettingsBackupRestoreIcon className="clear-choose-icon"/>
+							<span className={`array-index-button-text`}>
+							{
+								activeIndexes
+							}
+							</span>
 					</div>
-				: ""
-				}
 			</div>
 		</LtTooltip>
 
@@ -109,11 +150,11 @@ const GetIndexArrayModal = ({pos, setPos, applyChangesWarning, dimension_x, dime
 					>
 						<span>Reset</span>
 					</div>
-					<div
-						onClick={() => {
-							reset()
+					<div 
+						onClick={() => { 
+							selectAll() 
 						}}
-						className="index-choose-button index-choose-add"
+						className="index-choose-button index-choose-reset"
 					>
 						<span>Select All</span>
 					</div>
@@ -128,6 +169,7 @@ const GetIndexArrayModal = ({pos, setPos, applyChangesWarning, dimension_x, dime
 								selectedIndexes = { selectedIndexes }
 								setSelectedIndexes = { setSelectedIndexes }
 								defaultPos = { defaultPos }
+								setRanges = { setRanges }
 							/>
 						)
 					}
