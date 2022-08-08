@@ -16,7 +16,7 @@ import {
   Search,
   SearchIconWrapper,
   StyledInputBase 
-} from '../../../commons/uiStyles';
+} from '../../../commons/uiStyles/components';
 import CachedIcon 					  from '@mui/icons-material/Cached';
 import SearchIcon                     from '@mui/icons-material/Search';
 import SnippetFolderIcon              from '@mui/icons-material/SnippetFolder';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { IconButton } from '@mui/material';
-import { LtTooltip } from '../../../../commons/uiStyles'
+import { LtTooltip } from '../../../../commons/uiStyles/components'
 import InventoryIcon from '@mui/icons-material/Inventory';
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';

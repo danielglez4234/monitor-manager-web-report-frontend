@@ -8,7 +8,7 @@ import * as $  from 'jquery';
 import {
     IconButton, Button
 } from '@mui/material'
-import { LtTooltip } from '../../../../commons/uiStyles'
+import { LtTooltip } from '../../../../commons/uiStyles/components'
 
 import DataUsageIcon                from '@mui/icons-material/DataUsage';
 import SettingsBackupRestoreIcon    from '@mui/icons-material/SettingsBackupRestore';
