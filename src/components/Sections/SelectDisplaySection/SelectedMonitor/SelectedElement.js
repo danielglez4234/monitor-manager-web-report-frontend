@@ -9,7 +9,7 @@ import {
   fnIsState
 }
 from '../../../standarFunctions';
-import { LtTooltip } from '../../../../commons/uiStyles';
+import { LtTooltip } from '../../../../commons/uiStyles/components';
 import {Stack, IconButton, Box, TextField, Autocomplete, FormControlLabel, Checkbox } from '@mui/material';
 import CloseIcon           from '@mui/icons-material/Close';
 import HelpIcon            from '@mui/icons-material/Help';
@@ -461,7 +461,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 									<LtTooltip
 									title={
 										<React.Fragment>
-										<b className="label-indHlp-tooltip">{"Instructions:"}</b><br />
+										<b className="label-indHlp-tooltip">{"Info:"}</b><br />
 										<span className="indHlp-vis">{"This option set how many decimals places"}</span><br />
 										<span className="indHlp-vis">{"you want to display in the value."}</span><br />
 										</React.Fragment>
@@ -493,18 +493,27 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 						</div>
 						<div className="indexInput-tooltip-contain">
 						{
-						(!fnIsArray(monitorData.type))
-						?
-							''
-						:
+						// (!fnIsArray(monitorData.type))
+						// ?
+						// 	''
+						// :
+							// <GetIndexArrayModal
+							// 	id={ id }
+							// 	type={ monitorData.type }
+							// 	pos={pos}
+							// 	setPos={setPos}
+							// 	applyChangesWarning={ applyChangesWarning }
+							// 	dimension_x={ monitorData.dimension_x }
+							// 	dimension_y={ monitorData.dimension_y }
+							// />
 							<GetIndexArrayModal
-								id={ id }
-								type={ monitorData.type }
+								id={ 8259 }
+								type={ "D" }
 								pos={pos}
 								setPos={setPos}
 								applyChangesWarning={ applyChangesWarning }
-								dimension_x={ monitorData.dimension_x }
-								dimension_y={ monitorData.dimension_y }
+								dimension_x={ "8" }
+								dimension_y={ "8" }
 							/>
 						}
 						</div>
