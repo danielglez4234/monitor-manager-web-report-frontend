@@ -128,3 +128,21 @@ export const deleteQuery = async (params) => {
     const res = await axios.delete(`${REACT_APP_SERVICES_IP}/WebReport/rest/query?${replacePad}`, {header: headers});
     return res.data;
 }
+
+
+/*
+-------------------------------
+*
+* SUMMARY ROUTES
+*
+-------------------------------
+*/
+
+/*
+ * GET INTERVALS OF
+ */
+export const getSummaryIntervals = async (name) => {
+    const replacePad = fnReplacePad(encodeURI(name))
+    const res = await axios.get(`${REACT_APP_SERVICES_IP}/WebReport/rest/summary?${replacePad}`, {header: headers});
+    return res.data;
+}
