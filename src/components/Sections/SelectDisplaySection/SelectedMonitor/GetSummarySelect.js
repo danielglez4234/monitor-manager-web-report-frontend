@@ -50,9 +50,10 @@ const GetSummarySelect = ({boxplot, setBoxplot}) => {
                         label={
                             <Fragment>
                                 <b className="checkbox-monitor-selected-label">
-                                {
-                                    (!boxplot.onlyCollapseValues) ? "Display" : "Only Values"
-                                }
+                                {/* { */}
+                                    {/* (!boxplot.onlyCollapseValues) ? "Display" : "Only Values" */}
+                                {/* } */}
+                                    Display
                                 </b>
                             </Fragment>
                         }

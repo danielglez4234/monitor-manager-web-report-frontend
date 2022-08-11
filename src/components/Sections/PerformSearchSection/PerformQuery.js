@@ -27,7 +27,8 @@ import SaveQuery     	 from './StroreQuerys/SaveQuery';
 import ViewHandleQuery 	 from './StroreQuerys/handleQuerys/ViewHandleQuery';
 import FavoriteQueries	 from './FavoriteQueries/FavoriteQueries'
 import HandleMessage      from '../../handleErrors/HandleMessage';
-import buildUrl		 	 from './buildUrl'
+import buildUrl		 	 from './buildUrl';
+import { usesTyles } from '../../../commons/uiStyles/usesTyles';
 
 
 const { REACT_APP_IDISPLAYLENGTH } = process.env
@@ -41,6 +42,7 @@ const hideAndShowSection = () => {
 }
 
 function PerformQuery() {
+	const classes = usesTyles()
 	const dispatch             = useDispatch()
 	const [msg, PopUpMessage] = HandleMessage()
 
@@ -275,6 +277,7 @@ function PerformQuery() {
 								}}
 								loading={loadingSearch}
 								loadingPosition="start"
+								// className={classes.perfrom_query_button_search}
 								className="perfrom-query-button-search"
 								variant="contained"
 								startIcon={<PlayCircleFilledWhiteIcon/>}
