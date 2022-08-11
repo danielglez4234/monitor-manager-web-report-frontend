@@ -19,89 +19,89 @@ import NearbyErrorIcon from '@mui/icons-material/NearbyError';
 import HandleMessage from '../../../handleErrors/HandleMessage';
 
 
-// const data_test = [
-// 	{
-// 	  time_sample: "2019-08-01 13:00:00.000",
-// 	  q3: 132.3,
-// 	  max: 136.96,
-// 	  min: 131.15,
-// 	  q1: 136.49,
-// 	  median: 135.96,
-// 	  mean: (135.9 -1)
-// 	},
-// 	{
-// 	  time_sample: "2019-08-01 13:05:00.000",
-// 	  q3: 135.26,
-// 	  max: 135.95,
-// 	  min: 131.5,
-// 	  q1: 131.85,
-// 	  median: 133.95,
-// 	  mean: (133.9 -1)
-// 	},
-// 	{
-// 	  time_sample: "2019-08-01 13:10:00.000",
-// 	  q3: 129.9,
-// 	  max: 133.27,
-// 	  min: 128.3,
-// 	  q1: 132.25,
-// 	  median: 130.40,
-// 	  mean: (130.40 -1)
-// 	},
-// 	{
-// 	  time_sample: "2019-08-01 13:15:00.000",
-// 	  q3: 132.94,
-// 	  max: 136.24,
-// 	  min: 132.63,
-// 	  q1: 135.03,
-// 	  median: 134.27,
-// 	  mean: (134.27 -1)
-// 	},
-// 	{
-// 	  time_sample: "2019-08-01 13:20:00.000",
-// 	  q3: 136.76,
-// 	  max: 137.86,
-// 	  min: 132.0,
-// 	  q1: 134.01,
-// 	  median: 135.27,
-// 	  mean: (135.27 -1)
-// 	},
-// 	{
-// 	  time_sample: "2019-08-01 13:25:00.000",
-// 	  q3: 131.11,
-// 	  max: 133.0,
-// 	  min: 125.09,
-// 	  q1: 126.39,
-// 	  median: 129.27,
-// 	  mean: (129.27 -1)
-// 	},
-// 	{
-// 	  time_sample: "2019-08-01 13:30:00.000",
-// 	  q3: 130.11,
-// 	  max: 133.0,
-// 	  min: 125.09,
-// 	  q1: 127.39,
-// 	  median: 129.27,
-// 	  mean: (129.27 -1)
-// 	},
-// 	{
-// 	  time_sample: "2019-08-01 13:35:00.000",
-// 	  q3: 125.11,
-// 	  max: 126.0,
-// 	  min: 121.09,
-// 	  q1: 122.39,
-// 	  median: 124.27,
-// 	  mean: (124.2 -1)
-// 	},
-// 	{
-// 	  time_sample: "2019-08-01 13:40:00.000",
-// 	  q3: 131.11,
-// 	  max: 133.0,
-// 	  min: 122.09,
-// 	  q1: 124.39,
-// 	  median: 130.27,
-// 	  mean: 130.27
-// 	}
-//   ];
+const data_test = [
+	{
+	  time_sample: "2019-08-01 13:00:00.000",
+	  q3: 132.3,
+	  max: 136.96,
+	  min: 131.15,
+	  q1: 136.49,
+	  median: 135.96,
+	  mean: (135.9 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:05:00.000",
+	  q3: 135.26,
+	  max: 135.95,
+	  min: 131.5,
+	  q1: 131.85,
+	  median: 133.95,
+	  mean: (133.9 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:10:00.000",
+	  q3: 129.9,
+	  max: 133.27,
+	  min: 128.3,
+	  q1: 132.25,
+	  median: 130.40,
+	  mean: (130.40 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:15:00.000",
+	  q3: 132.94,
+	  max: 136.24,
+	  min: 132.63,
+	  q1: 135.03,
+	  median: 134.27,
+	  mean: (134.27 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:20:00.000",
+	  q3: 136.76,
+	  max: 137.86,
+	  min: 132.0,
+	  q1: 134.01,
+	  median: 135.27,
+	  mean: (135.27 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:25:00.000",
+	  q3: 131.11,
+	  max: 133.0,
+	  min: 125.09,
+	  q1: 126.39,
+	  median: 129.27,
+	  mean: (129.27 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:30:00.000",
+	  q3: 130.11,
+	  max: 133.0,
+	  min: 125.09,
+	  q1: 127.39,
+	  median: 129.27,
+	  mean: (129.27 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:35:00.000",
+	  q3: 125.11,
+	  max: 126.0,
+	  min: 121.09,
+	  q1: 122.39,
+	  median: 124.27,
+	  mean: (124.2 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:40:00.000",
+	  q3: 131.11,
+	  max: 133.0,
+	  min: 122.09,
+	  q1: 124.39,
+	  median: 130.27,
+	  mean: 130.27
+	}
+  ];
 
 
 
@@ -143,7 +143,7 @@ function Graphic() {
 	const searchErrors         = useSelector(state => state.searchErrors)
 	let root // graphic root variable initialization
 
-	const [nodataRecive, setNodataRecive] = useState(false);
+	const [noDataRecived, setNoDataRecived] = useState(false);
 	const [error, setError] = useState(false);
 
 	/*
@@ -287,12 +287,12 @@ useEffect(() => {
     root.fps = 40
 
 	if (getResponse.length === 0)
-		setNodataRecive(false)
+		setNoDataRecived(false)
 	else
 	{
 		if(!getResponse.responseData?.samples)
 		{
-			setNodataRecive(true)
+			setNoDataRecived(true)
 			$("#initialImg").addClass('display-none')
 		}
 		else if (getResponse.responseData.samples.length > 0)
@@ -303,13 +303,13 @@ useEffect(() => {
 			if(graphicData !== undefined)
 			{
 				generateGraphic(graphicData)
-				setNodataRecive(false)
+				setNoDataRecived(false)
 			}
 			else
 				PopUpMessage({type:'error', message:'The data could not be processed, please contact the administrator to fix this.'})
 		}
 		else
-			setNodataRecive(true)
+			setNoDataRecived(true)
 	}
 
     // store current value of root and restore root element when update
@@ -450,7 +450,7 @@ const addMedianSeriesDefaultConf = (props) => {
 	return props.chart.series.push(
 		am5xy.StepLineSeries.new(root, {
 			stroke: "#d1d8d9",
-			name: PROCESSOR.meadianValueField,
+			// name: PROCESSOR.meadianValueField,
 			xAxis: props.dateAxis,
 			yAxis: props.valueAxis,
 			valueYField: PROCESSOR.meadianValueField,
@@ -468,7 +468,7 @@ const addMeanSeriesDefaultConf = (props) => {
 	let meanSeries = props.chart.series.push(
 		am5xy.StepLineSeries.new(root, {
 			stroke: "#d1d8d9",
-			// name: "josué " +PROCESSOR.meanValueField,
+			// name: PROCESSOR.meanValueField,
 			xAxis: props.dateAxis,
 			yAxis: props.valueAxis,
 			valueYField: PROCESSOR.meanValueField,
@@ -570,7 +570,25 @@ const getLegendHeight = (length) => {
 	}
 }
 
-
+/*
+ * calculate median for the graphic date baseInterval
+ */
+const baseIntervalmedian = (info) => {
+	const globalSampling = getResponse.sampling_period
+	if(globalSampling === 0)
+	{
+		const arr = info.map(strg => Math.trunc(strg.storagePeriod)/1000)
+		arr.sort((a,b) => a-b);
+		const l=arr.length;
+		return l%2===0
+			? arr.slice(l/2-1, l/2+1).reduce((a,b) => a+b)/2
+			: arr.slice((l/2), l/2+1)[0];
+	}
+	else
+	{
+		return globalSampling / 1000
+	}
+}
 
 //----------------------------------------Generate Graphic-----------------------------------------------------
 
@@ -588,8 +606,8 @@ const generateGraphic = (info) =>{
 	const legendContainerPos = generalOptions.legendContainerPos
 	
     /*
-	* Set the root format number for received values depending on whether the number is integer or not
-	*/
+	 * Set the root format number for received values depending on whether the number is integer or not
+	 */
 	const sciNotation = (generalOptions.scientificNotation) ? "e" : ""
     root.numberFormatter.setAll({
 		numberFormat: FORMATER.numberFormat + sciNotation,
@@ -632,10 +650,12 @@ const generateGraphic = (info) =>{
 		baseInterval: {
 			timeUnit: FORMATER.timeInterval,
 			// count: getMillisecondBaseCount(info)
-			count: 250000
+			count: baseIntervalmedian(info)
+			// count: 250000
 		},
 		renderer: getXRenderer(grid)
     }))
+	console.log("baseIntervalmedian ===", baseIntervalmedian(info))
 
     /*
      * Format the date depending on the time unit to be displayed
@@ -731,10 +751,12 @@ const generateGraphic = (info) =>{
 		}
 
       	if (legendContainerPos) { 
-			legend = chart.bottomAxesContainer.children.push(am5.Legend.new(root, legendSettings)) 
+			legend = chart.bottomAxesContainer
+			.children.push(am5.Legend.new(root, legendSettings)) 
 		}
     	else { 
-			legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, legendSettings)) 
+			legend = chart.rightAxesContainer
+			.children.push(am5.Legend.new(root, legendSettings)) 
 		}
 
 		// TODO: NOT_WORKING: el evento hover salta un excepción con el tipo de gráfica boxplot
@@ -847,7 +869,7 @@ const generateGraphic = (info) =>{
 			<InsertChartIcon id="initialImg" className="display-none" />
 
 			{
-			(nodataRecive) ?
+			(noDataRecived) ?
 					<div className="no-data-error-message">
 						<LiveHelpIcon className="icon-no-data help-icon" />
 						<MoreHorizIcon className="icon-no-data dot-icon" />
