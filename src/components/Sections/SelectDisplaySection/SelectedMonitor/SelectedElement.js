@@ -6,7 +6,8 @@ import * as $ from 'jquery';
 import {
   fnIsArray,
   fnIsMagnitude,
-  fnIsState
+  fnIsState,
+  posTostring
 }
 from '../../../standarFunctions';
 import { LtTooltip } from '../../../../commons/uiStyles/components';
@@ -34,6 +35,7 @@ const canvasOpts  = [ "Default", "Dotted", "Dashed", "Large Dashed", "Dotted Das
 const patternOpts = [ "Default", "0.#", "0.##", "0.###", "0.####", "0.#####", "0.######", "0.#######", "0.########" ]
 const unitOpt     = [ "Default" ]
 const prefixOpt   = [ "Default" ]
+const defaultPos  = ["All"]
 
 /*
  * Apply changes warning message
@@ -63,6 +65,7 @@ const handleClickOpenSettings = (id) => {
 
 function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateReload}) {
 	const loadWhileGetData = useSelector(state => state.loadingGraphic)
+	// const summaryConstraints = []
 	
 	// If the button is alredy active when a new monitor is selected, apply the changes
 	let lessDetailIfActive
@@ -83,7 +86,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	const [limit_max, setLimit_max] = useState(monitorData?.options?.limit_max 	|| "")
 	const [limit_min, setLimit_min] = useState(monitorData?.options?.limit_min 	|| "")
 	const [color, setColor] 		= useState(monitorData?.options?.color 		|| "")
-	const [pos, setPos] 			= useState(monitorData?.options?.pos 		|| "")
+	const [pos, setPos] 			= useState(monitorData?.options?.pos 		|| defaultPos)
 
 	// autocomplete inputs
 	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0]
@@ -117,7 +120,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 			stroke: stroke,
 			canvas: canvas,
 			color: enabledColor && color,
-			pos: (fnIsArray(monitorData.type)) ? pos : null,
+			pos: (fnIsArray(monitorData.type)) ? (pos[0] !== defaultPos[0]) ? posTostring(pos) : null : null,
 			prefix: fnIfExistDefault(prefix),
 			unit: fnIfExistDefault(unit),
 			decimal: fnIfExistDefault(decimal)
@@ -493,25 +496,30 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 						</div>
 						<div className="indexInput-tooltip-contain">
 						{
-						// (!fnIsArray(monitorData.type))
-						// ?
-						// 	''
-						// :
+						(!fnIsArray(monitorData.type))
+						?
+							''
+						:
 							// <GetIndexArrayModal
-							// 	id={ id }
-							// 	type={ monitorData.type }
+							// 	id={id}
+							// 	type={monitorData.type}
 							// 	pos={pos}
 							// 	setPos={setPos}
-							// 	applyChangesWarning={ applyChangesWarning }
-							// 	dimension_x={ monitorData.dimension_x }
-							// 	dimension_y={ monitorData.dimension_y }
+							// 	defaultPos={defaultPos}
+							// 	applyChangesWarning={applyChangesWarning}
+							// 	dimension_x={monitorData.dimension_x}
+							// 	dimension_y={monitorData.dimension_y}
 							// />
+
 							<GetIndexArrayModal
-								pos={pos}
+								id={ 34565}
+								type={"D"}
+								pos={"[[1];[4-7]]"}
 								setPos={setPos}
-								applyChangesWarning={ applyChangesWarning }
-								dimension_x={ "8" }
-								dimension_y={ "8" }
+								defaultPos={defaultPos}
+								applyChangesWarning={applyChangesWarning}
+								dimension_x={monitorData.dimension_x}
+								dimension_y={monitorData.dimension_y}
 							/>
 						}
 						</div>

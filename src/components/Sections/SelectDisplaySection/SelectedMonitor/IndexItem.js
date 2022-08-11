@@ -9,7 +9,16 @@ const BUTTON_TOGGLE = {
     disable: "outlined"
 }
 
-const IndexItem = ({isActive, indexNumber, selectedIndexes, setSelectedIndexes, defaultPos, setRanges}) => {
+const IndexItem = (
+    {
+        isActive, 
+        indexNumber, 
+        selectedIndexes,
+        defaultPos, 
+        setRanges
+    }
+) => {
+    
     const classes = usesTyles()
     const active = isActive
 
@@ -21,22 +30,24 @@ const IndexItem = ({isActive, indexNumber, selectedIndexes, setSelectedIndexes, 
     /*
      * tooggle select and deselect actions
      */
-   const tooggleSelect = () => {
-        if(selectedIndexes[0] === defaultPos){ // if default state if set delete it
-            console.log("holewpidfnasofcbaoñsuibgc")
-            selectedIndexes.shift()
-        }
+    const tooggleSelect = () => {
+        try {
+            if(selectedIndexes.length === 0)
+                setRanges(defaultPos)
+            else if(!active)
+            {
+                const arr_ = (selectedIndexes[0] === defaultPos[0]) 
+                            ? filterItems(selectedIndexes, defaultPos[0])
+                            : selectedIndexes
 
-        if(selectedIndexes.length === 0)
-            setSelectedIndexes(defaultPos)
-        else if(!active){
-            setRanges([ ...selectedIndexes, indexNumber])
-            setSelectedIndexes(prevState => ([ ...prevState, indexNumber ]))
-        }
-        else{
-            const deselect = filterItems(selectedIndexes, indexNumber)
-            setRanges(deselect)
-            setSelectedIndexes(deselect)
+                setRanges([ ...arr_, indexNumber])
+            }
+            else{
+                const deselect = filterItems(selectedIndexes, indexNumber)
+                setRanges((deselect.length === 0) ? defaultPos : deselect)
+            } 
+        } catch (error) {
+            console.error(error)
         }
     }
 

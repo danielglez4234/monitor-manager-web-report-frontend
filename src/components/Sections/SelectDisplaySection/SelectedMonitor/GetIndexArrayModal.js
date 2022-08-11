@@ -18,7 +18,6 @@ function getTemplate(ma_){
 	}
 }
 
-
 /*
  * TODO: make global function
  */
@@ -31,8 +30,9 @@ const sortDESC = (a, b) => {
  * create ranges 
  */
 const getRanges = (arr_) => {
+	console.log(arr_)
 	arr_.sort((a, b) => sortDESC(a, b))
-	const new_arrange_ = []
+	const arrange_ = []
 	let range_ = []
 
 	for (let x = 0; x < arr_.length; x++) {
@@ -45,33 +45,74 @@ const getRanges = (arr_) => {
 			}
 			else{
 				range_.push(num)
-				new_arrange_.push(getTemplate(range_))
+				arrange_.push(getTemplate(range_))
 				range_ = []
 			}
 	}
-	return new_arrange_
+	return arrange_
+}
+
+/*
+ * convert position string format to array of numbers
+ * expected template "[[0];[0-0]; ...]"
+ */
+const convertToArrayFromTemplate = (str) => {
+    try {
+        const activeIndexes_ = []
+        const replace = str.replace(/;/g, ",")
+        const substring = replace.substring(1)
+        const lastLetter = substring.slice(0, - 1)
+        const result = lastLetter.split(",")
+    
+        result.map(val => {
+            activeIndexes_.push(
+                (val.includes("-"))
+                ? getRangeFromString(val)
+                : JSON.parse(val)
+            )
+        })
+        return activeIndexes_.flat().sort((a, b) => sortDESC(a, b))
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+/*
+ * create range from string // from => [1-4] to => [1, 2, 3, 4]
+ */
+const getRangeFromString = (values) => {
+    try {
+        const arrange_ = []
+        const arr = values.replace(/\[/g, "").replace(/\]/g, "")
+        const range = arr.split("-")
+        const diference = Number(range[1]) - Number(range[0])
+    
+        for (let i = 0; i < diference; i++) { arrange_.push(Number(range[0]) + i) }
+        return arrange_
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 
 
-const GetIndexArrayModal = ({pos, setPos, applyChangesWarning, dimension_x, dimension_y}) => {
-	const defaultPos = ["All"] // this gets translate later to [-1]
+const GetIndexArrayModal = ({pos, setPos, defaultPos, applyChangesWarning, dimension_x, dimension_y}) => {
+
 	const availablePositions = dimension_x * dimension_y
 	const allPositions = Array.from(Array(availablePositions).keys())
+	const [openIndexModal, setOpenIndexModal] = useState(false)
 	
-	const [openIndexModal, setOpenIndexModal]     = useState(false)
-
-	// const positions = (pos === "" || pos === null) ? defaultPos : pos
-	const positions = [0]
-
-
-	const [selectedIndexes, setSelectedIndexes] = useState(positions) // TODO: invert names and calls
-	const [activeIndexes, setActiveIndexes] = useState(getRanges(positions))
+	// TODO: invert names and calls  selectedIndexes <==> activeIndexes
+	const positions_ = (Array.isArray(pos)) ? pos : convertToArrayFromTemplate(pos)
+	const [selectedIndexes, setSelectedIndexes] = useState(positions_) 
+	const [activeIndexes, setActiveIndexes] = useState(getRanges(positions_))
 	
 	/*
 	 * create ranges if necessary
 	 */
 	const setRanges = (arr_) => {
+		setPos(getRanges(arr_))
+		setSelectedIndexes(arr_)
 		setActiveIndexes(getRanges(arr_))
 	}
 
@@ -83,18 +124,12 @@ const GetIndexArrayModal = ({pos, setPos, applyChangesWarning, dimension_x, dime
 	/*
 	 * reset to default state
 	 */
-	const reset = () => {
-		setRanges(defaultPos)
-		setSelectedIndexes(defaultPos)
-	}
+	const reset = () => setRanges(defaultPos);
 
 	/*
 	 * select all positions
 	 */
-	const selectAll = () => {
-		setRanges(allPositions)
-		setSelectedIndexes(allPositions)
-	}
+	const selectAll = () => setRanges(allPositions);
 
 
 	return(
@@ -167,7 +202,6 @@ const GetIndexArrayModal = ({pos, setPos, applyChangesWarning, dimension_x, dime
 								indexNumber = { indexNumber }
 								isActive = { selectedIndexes.indexOf(indexNumber) !== -1 }
 								selectedIndexes = { selectedIndexes }
-								setSelectedIndexes = { setSelectedIndexes }
 								defaultPos = { defaultPos }
 								setRanges = { setRanges }
 							/>

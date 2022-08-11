@@ -20,7 +20,7 @@ import KeyboardDoubleArrowDownIcon  from '@mui/icons-material/KeyboardDoubleArro
 
 import CachedIcon from '@mui/icons-material/Cached';
 
-import SelectedElement      from './SelectedElement'
+import SelectedElement from './SelectedElement'
 
 
     /*
@@ -87,44 +87,32 @@ import SelectedElement      from './SelectedElement'
 		$(".input-limits-grafic-options").val('')
 	}
 
-	const test = [
-		{
-			id: 324,
-			type: "D",
-			dimension_y: "8",
-			dimension_x: "2",
-			magnitude: "test_2",
-			component: "sdf",
-			unit: "guat"
-		}
-	]
-
 
 function MonitorList({diActivateReload}) {
     const dispatch = useDispatch();
     const monitor = useSelector(state => state.monitor)
 
-    const [countMonitors, setCountMonitors] = useState(0);
+    // const [countMonitors, setCountMonitors] = useState(0);
 	// const [elements, setSelectedElements] = useState([]);
-	const [elements, setSelectedElements] = useState(test);
-	const [onSelect, setOnSelect] = useState(true);
+	// const [onSelect, setOnSelect] = useState(true);
 
+	// const elements = monitor
 	/*
 	 * Map selected elements
 	 */
 	useEffect(() => {
 		if (monitor.length > 0) 
 		{
-			setOnSelect(false)
-			setCountMonitors(monitor.length)
-			setSelectedElements(monitor)
+			// setOnSelect(false)
+			// setCountMonitors(monitor.length)
+			// setSelectedElements(monitor)
 				blinkAnimation()
 		}
-		else 
-		{
-			setOnSelect(true)
-			setCountMonitors(0)
-		}
+		// else 
+		// {
+			// setOnSelect(true)
+			// setCountMonitors(0)
+		// }
 	}, [monitor])
 
 	/*
@@ -213,12 +201,12 @@ function MonitorList({diActivateReload}) {
 					</LtTooltip>
 				</div>
 				<div id="resizable" data-bottom="true" className="selected-monitors-box">
-					{/* { */}
-					{/* (onSelect) ? initialInfoText : */}
+					{
+					(monitor.length === 0) ? initialInfoText :
 						<table id="drop-area" className="table-selected-monitors">
 							<tbody>
 							{
-								elements.map((element) =>
+								monitor.map((element) =>
 									<SelectedElement
 										key           	 = { element.id  }
 										id            	 = { element.id }
@@ -231,14 +219,14 @@ function MonitorList({diActivateReload}) {
 							}
 							</tbody>
 						</table>
-					{/*  } */}
+					 }
 				</div>
 			</div>
             <div className="selected-monitors-extends-buttons">
                 <div className="selected-monitor-count">
                     º
                     {
-                    countMonitors
+                    	monitor.length
                     }
                 </div>
                 <KeyboardDoubleArrowDownIcon 
