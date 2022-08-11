@@ -1,6 +1,6 @@
 import { fnIsArray } from '../../standarFunctions'
 
-// TODO: REFACTOR: hace esta función más eficiente
+// TODO: REFACTOR: hacer esta función más eficiente
 
 /*
  * Arrange the data received from the Backend according to the needs of the Frontend
@@ -23,13 +23,13 @@ export const arrageMonitors =  (data) => {
             })
         }
         else if(item?.id_monitor_description){
+            console.log("options", options)
             // generate monitor element
             monitorData = item.id_monitor_description
             item.options["prefix"] 	= item.prefix
             item.options["unit"] 	= item.unit
             item.options["decimal"] = item.decimal
-            // TODO: REFACTOR: el slice no debería ser necesario
-            item.options["pos"] = (item?.pos && fnIsArray(item.id_monitor_description.type)) ? item.pos.slice(1, -1) : ""
+            item.options["pos"] = (item?.pos && fnIsArray(item.id_monitor_description.type)) ? item.pos : ""
             monitorList.push({
                 component_id, 
                 name, 
