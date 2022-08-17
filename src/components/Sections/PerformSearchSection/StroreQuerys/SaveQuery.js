@@ -5,7 +5,7 @@ import {
 	insertQuery,
 	updateQuery
 } from '../../../../services/services'
-import { getCategory, fnIsState } from '../../../standarFunctions'
+import { getCategory, fnIsArray } from '../../../standarFunctions'
 import {makeStyles}					from '@material-ui/core';
 import { Modal, Box, Grid, Button, Backdrop, CircularProgress } from '@mui/material';
 
@@ -238,7 +238,8 @@ function SaveQuery({timeQuery, editing}) {
 		const unit  = (options.unit === null || options?.unit === "Default") ? undefined : options.unit
 		const prefix = (options.prefix === null || options?.prefix === "Default") ? undefined : options.prefix
 		const decimal = (options.decimal === null || options.decimal === "Default") ? undefined : options.decimal
-		const pos = (options.pos === null || options.pos === "" || options.pos === undefined) ? undefined : "["+options.pos+"]"
+		const pos = (fnIsArray(val.type)) ? 
+		(options.pos === null || options.pos === "" || options.pos === undefined) ? "[[-1]]" : "["+options.pos+"]" : undefined
 		delete val.options.prefix
 		delete val.options.unit
 		delete val.options.decimal
