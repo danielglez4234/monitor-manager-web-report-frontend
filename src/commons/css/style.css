@@ -962,9 +962,10 @@ table.table-selected-monitors tr:nth-child(odd)
 
 .index-choose-inputs-box{
   flex: 1;
-  padding:10px;
+  padding:10px 25px;
   overflow-y: scroll;
 }
+
 
 .index-choose-button-box{
   display: flex;

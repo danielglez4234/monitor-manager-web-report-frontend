@@ -148,13 +148,17 @@ export const usesTyles = makeStyles({
 		backgroundColor: '#fff',
 		color: 'black',
 		'&:hover':{
-			backgroundColor: '#fff99'
+			backgroundColor: '#fff',
 		}
 	},
 	
 	index_button_outlined: {
 		backgroundColor: 'transparent',
 		color: '#fff',
+		border: '1px solid white',
+		'&:hover':{
+			border: '1px solid gray'
+		}
 	},
 
 	/*
