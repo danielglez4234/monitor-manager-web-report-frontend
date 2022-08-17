@@ -60,7 +60,7 @@ function Header() {
 					<Toolbar>
 						<img src={ logoSrc } className="header-logo" alt="logo"/>
 						<Typography className="header-h2" variant="h6" component="div" sx={{ flexGrow: 1 }}>
-							Monitor Manager Web Report
+							Monitor Manager Web Report (UTC)
 						</Typography>
 						<div>
 							<IconButton

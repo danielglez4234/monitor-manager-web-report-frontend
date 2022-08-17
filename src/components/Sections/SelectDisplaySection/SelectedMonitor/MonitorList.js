@@ -27,7 +27,7 @@ import SelectedElement from './SelectedElement'
      * Default State of the list
      */
 	let initialInfoText = <div className="no_monitor_selected">
-                            <DataUsageIcon className="img_monitor_selected"/>
+                            	<DataUsageIcon className="img_monitor_selected"/>
                                 <p className="no_monitor_selected_message">Select a Monitor from the MonitorList</p>
                         </div>;
 
@@ -47,22 +47,30 @@ import SelectedElement from './SelectedElement'
 	 */
 	const handleExpandSection = (icon, setHeightPX) => {
 		$(".menu-monitorSelected-contain").css('height', setHeightPX + "px")
-		if (setHeightPX === 0) {
+		if (setHeightPX === 0) 
+		{
 			$(".menu-monitorSelected-contain").addClass('hide-sections')
 			$(".selected-monitors-select-all").addClass('hide-sections')
-		}else {
+		}
+		else 
+		{
 			$(".menu-monitorSelected-contain").removeClass('hide-sections')
 			$(".selected-monitors-select-all").removeClass('hide-sections')
 		}
 		$('.rotback').removeClass('rotate180 activeExpandColor')
-		if (icon === "visibilityMiddle-icon") {
+		if (icon === "visibilityMiddle-icon") 
+		{
 			if (!$('.visibilityMiddle-icon').hasClass('activeExpandColor')) {
 				$('.' + icon).toggleClass('activeExpandColor')
 			}
-		}else if (icon === "visibilityOff-icon") {
+		}
+		else if (icon === "visibilityOff-icon") 
+		{
 			$('.' + icon).toggleClass('rotate180 activeExpandColor')
 			$('.visibilityMiddle-icon').removeClass('rotate180')
-		}else {
+		}
+		else 
+		{
 			$('.' + icon).toggleClass('rotate180 activeExpandColor')
 			$('.visibilityMiddle-icon').toggleClass('rotate180')
 		}
@@ -206,11 +214,12 @@ function MonitorList({diActivateReload}) {
 						<table id="drop-area" className="table-selected-monitors">
 							<tbody>
 							{
-								monitor.map((element) =>
+								monitor.map((element, index) =>
 									<SelectedElement
 										key           	 = { element.id  }
 										id            	 = { element.id }
 										monitorData   	 = { element }
+										// isBoxplotEnabled = { isBoxplotEnabled[index] }
 										saveOptions	  	 = { saveOptions }
 										menuHandle    	 = { menuHandle }
 										diActivateReload = { diActivateReload }

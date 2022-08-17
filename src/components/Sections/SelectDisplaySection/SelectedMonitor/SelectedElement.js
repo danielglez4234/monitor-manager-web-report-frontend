@@ -62,6 +62,16 @@ const handleClickOpenSettings = (id) => {
 }
 
 
+// TODO: refactor a dos secciones
+// SelectedElement va a ser elemento lista
+// options otra sección que se divide en subsecciones 
+// (
+// 	REFACTOR: renombrar
+// 	GetIndexArrayModal,  => IndexArrayOptions
+// 	GetSummarySelect,  => SummaryOptions
+// 	GetUnitSelectType => UnitAndPatternOptions
+// )
+
 
 function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateReload}) {
 	const loadWhileGetData = useSelector(state => state.loadingGraphic)
@@ -99,10 +109,10 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	
 	// Boxplot
 	const [boxplot, setBoxplot] = useState({
-		isEnable: false,
-		onlyCollapseValues: false,
-		intervals: null,
-		collapseValues: null
+		isEnable: monitorData?.options?.boxplot?.isEnable						|| false,
+		onlyCollapseValues: monitorData?.options?.boxplot?.onlyCollapseValues	|| false,
+		intervals: monitorData?.options?.boxplot?.intervals						|| null,
+		collapseValues: monitorData?.options?.boxplot?.collapseValues			|| null
 	});
 
 	/*
@@ -500,21 +510,10 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 						?
 							''
 						:
-							// <GetIndexArrayModal
-							// 	id={id}
-							// 	type={monitorData.type}
-							// 	pos={pos}
-							// 	setPos={setPos}
-							// 	defaultPos={defaultPos}
-							// 	applyChangesWarning={applyChangesWarning}
-							// 	dimension_x={monitorData.dimension_x}
-							// 	dimension_y={monitorData.dimension_y}
-							// />
-
 							<GetIndexArrayModal
-								id={ 34565}
-								type={"D"}
-								pos={"[[1];[4-7]]"}
+								id={id}
+								type={monitorData.type}
+								pos={pos}
 								setPos={setPos}
 								defaultPos={defaultPos}
 								applyChangesWarning={applyChangesWarning}
