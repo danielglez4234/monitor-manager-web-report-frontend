@@ -1,4 +1,3 @@
-// --- Dependecies
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import CandlestickChartIcon from '@mui/icons-material/CandlestickChart';
@@ -21,7 +20,7 @@ import InfoRoundedIcon     from '@mui/icons-material/InfoRounded';
 import GetMonitordIconType from './GetMonitordIconType';
 import GetIndexArrayModal  from './GetIndexArrayModal';
 import GetUnitSelecttype   from './GetUnitSelecttype';
-import GetSummarySelect    from './GetSummarySelect';
+// import GetSummarySelect    from './GetSummarySelect';
 import TuneIcon            from '@mui/icons-material/Tune';
 import AnnouncementIcon    from '@mui/icons-material/Announcement';
 
@@ -95,19 +94,19 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	const [decimal, setDecimal] 		  = useState(monitorData?.options?.decimal 	   || patternOpts[0])
 	
 	// Boxplot
-	const [boxplot, setBoxplot] = useState({
-		isEnable: false,
-		onlyCollapseValues: false,
-		intervals: null,
-		collapseValues: null
-	});
+	// const [boxplot, setBoxplot] = useState({
+	// 	isEnable: false,
+	// 	onlyCollapseValues: false,
+	// 	intervals: null,
+	// 	collapseValues: null
+	// });
 
 	/*
 	 * handle get options
 	 */
 	const getOptions = () => {
 		return {
-			boxplot: boxplot,
+			// boxplot: boxplot,
 			logarithm: logarithm,
 			curved: curved,
 			filled: filled,
@@ -213,20 +212,20 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 					<div className="monitor-selected-item-title-box">
 						<p className="monitor-selected-item-title">
 							{
-								(!fnIsMagnitude(monitorData.type) && !fnIsState(monitorData.type)) ?
-								<>
-									<LtTooltip
-										disableInteractive
-										title={ 
-											<React.Fragment>
-												<b className="label-indHlp-tooltip">{"This graphic has a summary!!"}</b>
-											</React.Fragment>
-										}
-										placement="bottom" className="tool-tip-options-description">
-										<CandlestickChartIcon className="description-info-icon sumary-info-icon" />
-									</LtTooltip>
-								</>
-								: ""
+								// (!fnIsMagnitude(monitorData.type) && !fnIsState(monitorData.type)) ?
+								// <>
+								// 	<LtTooltip
+								// 		disableInteractive
+								// 		title={ 
+								// 			<React.Fragment>
+								// 				<b className="label-indHlp-tooltip">{"This graphic has a summary!!"}</b>
+								// 			</React.Fragment>
+								// 		}
+								// 		placement="bottom" className="tool-tip-options-description">
+								// 		<CandlestickChartIcon className="description-info-icon sumary-info-icon" />
+								// 	</LtTooltip>
+								// </>
+								// : ""
 							}
 						</p>
 						<p className="monitor-selected-item-title">
@@ -273,10 +272,10 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 					{/* 
 						BOXPLOT
 					*/}
-						<GetSummarySelect 
+						{/* <GetSummarySelect 
 							boxplot={boxplot}
 							setBoxplot={setBoxplot}
-						/>
+						/> */}
 					{/*
 						END BOXPLOT
 					*/}
