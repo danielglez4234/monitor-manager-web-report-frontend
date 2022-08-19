@@ -649,8 +649,8 @@ const generateGraphic = (info) =>{
 		maxDeviation: 0,
 		baseInterval: {
 			timeUnit: FORMATER.timeInterval,
-			// count: getMillisecondBaseCount(info)
-			count: baseIntervalmedian(info)
+			count: getMillisecondBaseCount(info)
+			// count: baseIntervalmedian(info)
 			// count: 250000
 		},
 		renderer: getXRenderer(grid)
