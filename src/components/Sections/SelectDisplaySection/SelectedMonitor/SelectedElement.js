@@ -86,7 +86,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 
 	// autocomplete inputs
 	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0]
-	const [graphicType, setGraphicType]   = useState(monitorData?.options?.graphicType || isEnumOrMonitor)
+	const [graphic_type, setgraphic_type]   = useState(monitorData?.options?.graphic_type || isEnumOrMonitor)
 	const [stroke, setStroke] 			  = useState(monitorData?.options?.stroke 	   || strokeOpts[0])
 	const [canvas, setCanvas] 			  = useState(monitorData?.options?.canvas 	   || canvasOpts[0])
 	const [unit, setUnit] 				  = useState(monitorData?.options?.unit 	   || unitOpt[0])
@@ -112,10 +112,10 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 			filled: filled,
 			limit_max: limit_max,
 			limit_min: limit_min,
-			graphicType: graphicType,
+			graphic_type: graphic_type,
 			stroke: stroke,
 			canvas: canvas,
-			color: enabledColor && color,
+			color: (enabledColor) ? color : "",
 			pos: (fnIsArray(monitorData.type)) ? pos : null,
 			prefix: fnIfExistDefault(prefix),
 			unit: fnIfExistDefault(unit),
@@ -378,13 +378,13 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 									disablePortal
 									disableClearable
 									id={`grafic-type` + id}
-									name={"graphicType"}
+									name={"graphic_type"}
 									className="input-limits-grafic-options input-select-graphic grafic-type"
 									options={graphicOpts}
 									onChange={(e, newValue) => {
-										setGraphicType(newValue)
+										setgraphic_type(newValue)
 									}}
-									value={graphicType}
+									value={graphic_type}
 									renderInput={(params) => <TextField {...params} />}
 								/>
 							<div className="visualization-monitor-settings">
