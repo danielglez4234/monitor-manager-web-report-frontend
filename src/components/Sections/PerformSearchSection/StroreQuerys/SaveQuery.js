@@ -64,7 +64,7 @@ const usesTyles = makeStyles({
 const { REACT_APP_QUERY_NAME_PATTERN } = process.env
 
 
-function SaveQuery({timeQuery, editing}) {
+function SaveQuery({timeQuery, editing, updateItemInLocalStorage}) {
 	const dispatch = useDispatch()
 	const classes = usesTyles()
 	const monitor = useSelector(state => state.monitor)
@@ -76,7 +76,6 @@ function SaveQuery({timeQuery, editing}) {
     const [queryName, setQueryName] = useState("")
 	const [ifSameQueryName, setifSameQueryName] = useState(true)
     const [queryDescription, setQueryDescription] = useState("")
-	const [infoUpdateDescription, setInfoUpdateDescription] = useState("");
     const [openBackDrop, setOpenBackDrop] = useState(false)
     const [monitorList, setMonitorList] = useState([""]);
 
@@ -153,7 +152,6 @@ function SaveQuery({timeQuery, editing}) {
 		dispatch(editingQuery({active: false}))
 		setQueryName("")
 		setQueryDescription("")
-		setInfoUpdateDescription("")
 	}
 
 	/*
@@ -184,12 +182,16 @@ function SaveQuery({timeQuery, editing}) {
 		Promise.resolve( fnAction() )
 		.then(() =>{
 			if(editing?.active){
-				if(ifSameQueryName && queryDescription !== editing.description){
+				if(ifSameQueryName && queryDescription !== editing.description)
+				{
 					editing["description"] = queryDescription
 					dispatch(editingQuery(editing))
 				}
+				// TODO: 
+				// updateItemInLocalStorage(editing)
+				// TODO:
+
 				setQueryDescription(editing.description) // input
-				setInfoUpdateDescription((ifSameQueryName) ? queryDescription : editing.description) // info text
 				setQueryName(editing.name)
 				setifSameQueryName(true)
 			}else{
@@ -323,32 +325,6 @@ function SaveQuery({timeQuery, editing}) {
 					>
 							Update Current Query 
 					</Button>
-					{/* <Button
-						onClick={() => { 
-							resetMonitors()
-						}}
-						disabled={false}
-						className={classes.resetQueryButton}
-						variant="contained"
-						startIcon={<RestartAltIcon />}
-					>
-							Reset
-					</Button> */}
-					{/* <div>
-						Edit Mode: ACTIVE
-					</div>
-					<div className="save-query-editing-message">
-						Now executing the query: <i>{editing?.name}</i> 
-					</div>
-					<div className="save-query-editing-message">
-						Descirption: <i>{
-						(editing.description === "") 
-						? "No desciption provided" 
-						: (infoUpdateDescription === "") 
-						? editing.description
-						: infoUpdateDescription  // if description was edited, shows the current description without doing another petition to the server
-						}</i> 
-					</div> */}
 				</>
 				:
 				<Button

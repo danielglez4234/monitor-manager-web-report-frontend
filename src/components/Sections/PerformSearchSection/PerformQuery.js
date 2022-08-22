@@ -61,6 +61,7 @@ function PerformQuery() {
 
 	// TODO: temporal
 	const [addItem, setAddItem] = useState(null)
+	const [updatingQuery, setUpdatingQuery] = useState(false)
 	
 	/*
 	 * 'loadWhileGetData' will be set to true when the data has arrived, and then the buttons will be active again
@@ -202,8 +203,13 @@ function PerformQuery() {
 	/*
 	 * TODO: temporal => cuendo se tenga una tabla dedicada esto se borrara
 	 */
-	const addItemtoLocalStorage = (item) => {
-		setAddItem(item)
+	const addItemtoLocalStorage = (items) => {
+		setAddItem(items)
+		setUpdatingQuery(false)
+	}
+	const updateItemInLocalStorage = (items) =>  {
+		setAddItem(items)
+		setUpdatingQuery(true)
 	}
 
     return(
@@ -299,6 +305,7 @@ function PerformQuery() {
 									convertToUnix={convertToUnix}
 									timeQuery={timeQuery}
 									editing={editing}
+									updateItemInLocalStorage={updateItemInLocalStorage} // TODO: temporal
 								/>
 								{
 									(editing?.active) ? "" :
@@ -311,6 +318,7 @@ function PerformQuery() {
 				</div>
 					<FavoriteQueries 
 						addItem={addItem} // TODO: temporal
+						updatingQuery={updatingQuery}
 					/>
 			</div>
 		</>

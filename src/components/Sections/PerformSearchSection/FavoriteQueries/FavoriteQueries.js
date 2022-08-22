@@ -54,7 +54,7 @@ const sectionHelperText = "In this section you will be able to visualize the ele
  * clear() :
  */
 
-function FavoriteQueries({addItem}) {
+function FavoriteQueries({addItem, updatingQuery}) {
 	const dispatch = useDispatch()
 	const [msg, PopUpMessage] = HandleMessage()
 	const [loadingFavorites, setLoadingFavorites] = useState(true)
@@ -142,6 +142,29 @@ function FavoriteQueries({addItem}) {
 	}
 
 	/*
+	 * Update LocalStorage
+	 */
+	const updateLocalStorage = async (newItems) => {
+		try {
+			const data = await getLocalStorage()
+			if(Array.isArray(newItems))
+			{
+				const newData = data.map(obj => {
+					if (obj.id === newItems.id)
+						return { ...newItems }
+					return obj
+				})
+				setLocalStorage(newData)
+				setFavorites(newData)
+			}
+			else
+				PopUpMessage({type:'error', message: 'unsupported data'})
+		} catch (error) {
+			PopUpMessage({type:'error', message: error})
+		}
+	}
+
+	/*
 	 * get query by id
 	 */
 	const getQueryById = (id) => {
@@ -167,7 +190,7 @@ function FavoriteQueries({addItem}) {
 			if(query.length > 1)
 				throw new Error("ERROR there is two queries with the same key")
 			else{
-				const monitors_ = getMonitorInfo(query[0])
+				const monitors_ = getMonitorInfo(query[0]) // => [{...}]
 				const arrageList_ = arrageMonitors(monitors_)
 				dispatch(handleSelectedElemets(type, null, arrageList_, null))
 			}
@@ -261,7 +284,9 @@ function FavoriteQueries({addItem}) {
 	 */
 	useEffect(() => { 
 		setLoadingFavorites(true)
-		if(addItem)
+		if(addItem && updatingQuery)
+			updateLocalStorage(addItem)
+		else if(addItem)
 			addToLocalStorage(addItem)
 		else if(localStorage.getItem('favorites') === null)
 			createLocalStorage()
