@@ -88,7 +88,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	const [logarithm, setLogarithm] 	  = useState(monitorData?.options?.logarithm 	 || false)
 	const [curved, setCurved] 			  = useState(monitorData?.options?.curved 	 	 || false)
 	const [filled, setFilled] 			  = useState(monitorData?.options?.filled 	 	 || false)
-	const [enabledColor, setEnabledColor] = useState(monitorData?.options?.enabled_color || false)
+	const [enabled_color, setEnabled_color] = useState(monitorData?.options?.enabled_color || false)
 
 	// string inputs
 	const [limit_max, setLimit_max] = useState(monitorData?.options?.limit_max 	|| "")
@@ -127,7 +127,8 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 			graphic_type: graphic_type,
 			stroke: stroke,
 			canvas: canvas,
-			color: (enabledColor) ? color : "",
+			enabled_color: enabled_color,
+			color: (enabled_color) ? color : "",
 			pos: (fnIsArray(monitorData.type)) ? pos : null,
 			prefix: fnIfExistDefault(prefix),
 			unit: fnIfExistDefault(unit),
@@ -432,7 +433,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 							<span className="monitor-selected-input-label-selects">Color:</span>
 							<div className="monitor-selected-checkbox-color">
 								<input 
-									disabled={!enabledColor}
+									disabled={!enabled_color}
 									className={`monitor-selected-input-color color-line selectColorInput` + id}
 									name="color"
 									type="color"
@@ -443,10 +444,10 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 								<Checkbox
 									sx={{ '&:hover': { bgcolor: 'transparent' }}}
 									size="small"
-									onChange={(e) => {setEnabledColor(e.target.checked)}}
+									onChange={(e) => {setEnabled_color(e.target.checked)}}
 									checkedIcon={<CheckBoxIcon sx={{color: "#fff"}} /> }
 									icon={<CheckBoxOutlineBlankIcon sx={{color: "#9396a4"}} />}
-									checked={enabledColor} 
+									checked={enabled_color} 
 								/>
 							</div>
 							</div>
