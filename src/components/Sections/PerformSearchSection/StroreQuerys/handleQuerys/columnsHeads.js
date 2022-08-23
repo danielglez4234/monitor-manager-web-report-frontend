@@ -32,7 +32,7 @@ const HEADS = [
         "width": "60",
         "sortable": false,
         "filterable": false,
-        "hide": false,
+        "hide": true,
         "disableColumnMenu": true,
         "actionCell": true,
         "actionCellType": "preview"

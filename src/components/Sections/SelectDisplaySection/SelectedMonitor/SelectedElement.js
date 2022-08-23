@@ -1,4 +1,3 @@
-// --- Dependecies
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import CandlestickChartIcon from '@mui/icons-material/CandlestickChart';
@@ -22,7 +21,7 @@ import InfoRoundedIcon     from '@mui/icons-material/InfoRounded';
 import GetMonitordIconType from './GetMonitordIconType';
 import GetIndexArrayModal  from './GetIndexArrayModal';
 import GetUnitSelecttype   from './GetUnitSelecttype';
-import GetSummarySelect    from './GetSummarySelect';
+// import GetSummarySelect    from './GetSummarySelect';
 import TuneIcon            from '@mui/icons-material/Tune';
 import AnnouncementIcon    from '@mui/icons-material/Announcement';
 
@@ -75,7 +74,6 @@ const handleClickOpenSettings = (id) => {
 
 function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateReload}) {
 	const loadWhileGetData = useSelector(state => state.loadingGraphic)
-	// const summaryConstraints = []
 	
 	// If the button is alredy active when a new monitor is selected, apply the changes
 	let lessDetailIfActive
@@ -100,8 +98,8 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 
 	// autocomplete inputs
 	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0]
-	const [graphicType, setGraphicType]   = useState(monitorData?.options?.graphicType || isEnumOrMonitor)
-	const [stroke, setStroke] 			  = useState(monitorData?.options?.stroke 	   || strokeOpts[0])
+	const [graphic_type, setgraphic_type]   = useState(monitorData?.options?.graphic_type || isEnumOrMonitor)
+	const [stroke, setStroke] 			  = useState(monitorData?.options?.stroke 	   || strokeOpts[1])
 	const [canvas, setCanvas] 			  = useState(monitorData?.options?.canvas 	   || canvasOpts[0])
 	const [unit, setUnit] 				  = useState(monitorData?.options?.unit 	   || unitOpt[0])
 	const [prefix, setPrefix] 			  = useState(monitorData?.options?.prefix 	   || prefixOpt[0])
@@ -120,17 +118,17 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	 */
 	const getOptions = () => {
 		return {
-			boxplot: boxplot,
+			// boxplot: boxplot,
 			logarithm: logarithm,
 			curved: curved,
 			filled: filled,
 			limit_max: limit_max,
 			limit_min: limit_min,
-			graphicType: graphicType,
+			graphic_type: graphic_type,
 			stroke: stroke,
 			canvas: canvas,
-			color: enabledColor && color,
-			pos: (fnIsArray(monitorData.type)) ? (pos[0] !== defaultPos[0]) ? posTostring(pos) : null : null,
+			color: (enabledColor) ? color : "",
+			pos: (fnIsArray(monitorData.type)) ? pos : null,
 			prefix: fnIfExistDefault(prefix),
 			unit: fnIfExistDefault(unit),
 			decimal: fnIfExistDefault(decimal)
@@ -226,20 +224,20 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 					<div className="monitor-selected-item-title-box">
 						<p className="monitor-selected-item-title">
 							{
-								(!fnIsMagnitude(monitorData.type) && !fnIsState(monitorData.type)) ?
-								<>
-									<LtTooltip
-										disableInteractive
-										title={ 
-											<React.Fragment>
-												<b className="label-indHlp-tooltip">{"This graphic has a summary!!"}</b>
-											</React.Fragment>
-										}
-										placement="bottom" className="tool-tip-options-description">
-										<CandlestickChartIcon className="description-info-icon sumary-info-icon" />
-									</LtTooltip>
-								</>
-								: ""
+								// (!fnIsMagnitude(monitorData.type) && !fnIsState(monitorData.type)) ?
+								// <>
+								// 	<LtTooltip
+								// 		disableInteractive
+								// 		title={ 
+								// 			<React.Fragment>
+								// 				<b className="label-indHlp-tooltip">{"This graphic has a summary!!"}</b>
+								// 			</React.Fragment>
+								// 		}
+								// 		placement="bottom" className="tool-tip-options-description">
+								// 		<CandlestickChartIcon className="description-info-icon sumary-info-icon" />
+								// 	</LtTooltip>
+								// </>
+								// : ""
 							}
 						</p>
 						<p className="monitor-selected-item-title">
@@ -286,10 +284,10 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 					{/* 
 						BOXPLOT
 					*/}
-						<GetSummarySelect 
+						{/* <GetSummarySelect 
 							boxplot={boxplot}
 							setBoxplot={setBoxplot}
-						/>
+						/> */}
 					{/*
 						END BOXPLOT
 					*/}
@@ -392,13 +390,13 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 									disablePortal
 									disableClearable
 									id={`grafic-type` + id}
-									name={"graphicType"}
+									name={"graphic_type"}
 									className="input-limits-grafic-options input-select-graphic grafic-type"
 									options={graphicOpts}
 									onChange={(e, newValue) => {
-										setGraphicType(newValue)
+										setgraphic_type(newValue)
 									}}
-									value={graphicType}
+									value={graphic_type}
 									renderInput={(params) => <TextField {...params} />}
 								/>
 							<div className="visualization-monitor-settings">

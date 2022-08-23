@@ -5,9 +5,9 @@ import { editingQuery, handleSelectedElemets, setloadingButton } from '../../../
 import {
 	insertQuery,
 	updateQuery
-} from '../../../../services/services';
-import { getCategory, fnIsState } from '../../../standarFunctions'
-// import {makeStyles}					from '@material-ui/core';
+} from '../../../../services/services'
+import { getCategory, fnIsArray } from '../../../standarFunctions'
+import {makeStyles}					from '@material-ui/core';
 import { Modal, Box, Grid, Button, Backdrop, CircularProgress } from '@mui/material';
 
 import ArchiveIcon from '@mui/icons-material/Archive';
@@ -149,12 +149,14 @@ function SaveQuery({timeQuery, editing}) {
 		Promise.resolve( fnAction() )
 		.then(() =>{
 			if(editing?.active){
-				if(ifSameQueryName && queryDescription !== editing.description){
+				if(ifSameQueryName && queryDescription !== editing.description)
+				{
 					editing["description"] = queryDescription
 					dispatch(editingQuery(editing))
 				}
+
 				setQueryDescription(editing.description) // input
-				setQueryName(editing.name)
+				setQueryName(editing.name) // input
 				setifSameQueryName(true)
 			}else{
 				setQueryName("")
@@ -202,7 +204,8 @@ function SaveQuery({timeQuery, editing}) {
 		const unit  = (options.unit === null || options?.unit === "Default") ? undefined : options.unit
 		const prefix = (options.prefix === null || options?.prefix === "Default") ? undefined : options.prefix
 		const decimal = (options.decimal === null || options.decimal === "Default") ? undefined : options.decimal
-		const pos = (options.pos === null || options.pos === "" || options.pos === undefined) ? undefined : "["+options.pos+"]"
+		const pos = (fnIsArray(val.type)) ? 
+		(options.pos === null || options.pos === "" || options.pos === undefined) ? "[[-1]]" : "["+options.pos+"]" : undefined
 		delete val.options.prefix
 		delete val.options.unit
 		delete val.options.decimal
@@ -222,26 +225,19 @@ function SaveQuery({timeQuery, editing}) {
 	const getMonitorListSeparator = () => {
 		try {
 			let [monitorDescriptions, magnitudeDescriptions, states] = [[],[],[]]
-			monitor.map(val => {
-				let [id, conf] = ["", ""];
+			monitor.map(val => 
+			{
 				const category = getCategory(val.type)
-				if(category === "monitor")
-				{
-					id = val?.id
-					conf = confOptionsSeparator(val)
-					monitorDescriptions.push({id, ...conf})
+				const data = {id: val?.id, ...confOptionsSeparator(val)}
+
+				if(category === "monitor"){
+					monitorDescriptions.push(data)
 				}
-				else if(category=== "magnitud")
-				{
-					id = val?.id
-					conf = confOptionsSeparator(val)
-					magnitudeDescriptions.push({id, ...conf})
+				else if(category=== "magnitud"){
+					magnitudeDescriptions.push(data)
 				}
-				else if(category === "state")
-				{
-					id = val?.id
-					conf = confOptionsSeparator(val)
-					states.push({id, ...conf})
+				else if(category === "state"){
+					states.push(data)
 				}
 			})
 			return {monitorDescriptions, magnitudeDescriptions, states}

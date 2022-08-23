@@ -242,7 +242,7 @@ function ListSelectedMonitor() {
 			{
 				if (data[a]?.stateOrMagnitudeValuesBind !== null)
 				{
-					titles.push(data[a].sTitle)
+					titles.push(data[a].name)
 					references.push(data[a].stateOrMagnitudeValuesBind)
 				}
 			}

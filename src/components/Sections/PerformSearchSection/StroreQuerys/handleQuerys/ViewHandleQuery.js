@@ -12,7 +12,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import QueryTable from './QueryTable';
 
 
-function ViewHandleQuery({addItemtoLocalStorage}) {
+function ViewHandleQuery({addItemtoLocalStorage, updateItemInLocalStorage}) {
 	const classes = usesTyles()
 	const [openViewQuery, setOpenViewQuery] = useState(false)
 
@@ -50,6 +50,7 @@ function ViewHandleQuery({addItemtoLocalStorage}) {
 							{
 								<QueryTable
 									addItemtoLocalStorage={addItemtoLocalStorage}
+									updateItemInLocalStorage={updateItemInLocalStorage}
 									openViewQuery={openViewQuery}
 									handleCloseSaveQuery={handleCloseSaveQuery}
 								/>
