@@ -22,7 +22,7 @@ const FavoriteElement = ({element, loadMonitors, removeFavorite}) => {
 				<div className="monitorItem-title-div favoriteItem-title-actions-icons">
 				<LtTooltip title="Concat" placement="top" className="tool-tip-options" disableInteractive>
 					<IconButton
-						onClick={() => {loadMonitors("concatMultiple", element.id)}}
+						onClick={() => {loadMonitors("concatMultiple", element.name)}}
 						size="small"
 					>
 						<AddCircleIcon sx={{color: "rgb(232, 238, 238)"}} fontSize="small"/>
@@ -30,7 +30,7 @@ const FavoriteElement = ({element, loadMonitors, removeFavorite}) => {
 				</LtTooltip>
 				<LtTooltip title="Load" placement="top" className="tool-tip-options" disableInteractive>
 					<IconButton
-						onClick={() => {loadMonitors("addMultiple", element.id)}}
+						onClick={() => {loadMonitors("addMultiple", element.name)}}
 						size="small"
 					>
 						<DownloadForOfflineIcon className="rotate270" sx={{color: "rgb(232, 238, 238)"}} fontSize="small"/>

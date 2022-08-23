@@ -202,9 +202,10 @@ function PerformQuery() {
 	/*
 	 * TODO: temporal => cuendo se tenga una tabla dedicada esto se borrara
 	 */
-	const addItemtoLocalStorage = (item) => {
-		setAddItem(item)
+	const addItemtoLocalStorage = (items) => {
+		setAddItem(items)
 	}
+
 
     return(
 		<>
@@ -303,14 +304,14 @@ function PerformQuery() {
 								{
 									(editing?.active) ? "" :
 										<ViewHandleQuery
-											addItemtoLocalStorage={addItemtoLocalStorage} // TODO: temporal
+											addItemtoLocalStorage={addItemtoLocalStorage}
 										/>
 								}
 						</Stack>
 					</div>
 				</div>
 					<FavoriteQueries 
-						addItem={addItem} // TODO: temporal
+						addItem={addItem}
 					/>
 			</div>
 		</>

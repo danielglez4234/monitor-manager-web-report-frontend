@@ -1,4 +1,3 @@
-// --- Dependecies
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import CandlestickChartIcon from '@mui/icons-material/CandlestickChart';
@@ -21,7 +20,7 @@ import InfoRoundedIcon     from '@mui/icons-material/InfoRounded';
 import GetMonitordIconType from './GetMonitordIconType';
 import GetIndexArrayModal  from './GetIndexArrayModal';
 import GetUnitSelecttype   from './GetUnitSelecttype';
-import GetSummarySelect    from './GetSummarySelect';
+// import GetSummarySelect    from './GetSummarySelect';
 import TuneIcon            from '@mui/icons-material/Tune';
 import AnnouncementIcon    from '@mui/icons-material/Announcement';
 
@@ -77,7 +76,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	const [logarithm, setLogarithm] 	  = useState(monitorData?.options?.logarithm 	 || false)
 	const [curved, setCurved] 			  = useState(monitorData?.options?.curved 	 	 || false)
 	const [filled, setFilled] 			  = useState(monitorData?.options?.filled 	 	 || false)
-	const [enabledColor, setEnabledColor] = useState(monitorData?.options?.enabled_color || false)
+	const [enabled_color, setEnabled_color] = useState(monitorData?.options?.enabled_color || false)
 
 	// string inputs
 	const [limit_max, setLimit_max] = useState(monitorData?.options?.limit_max 	|| "")
@@ -87,36 +86,37 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 
 	// autocomplete inputs
 	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0]
-	const [graphicType, setGraphicType]   = useState(monitorData?.options?.graphicType || isEnumOrMonitor)
-	const [stroke, setStroke] 			  = useState(monitorData?.options?.stroke 	   || strokeOpts[0])
+	const [graphic_type, setgraphic_type]   = useState(monitorData?.options?.graphic_type || isEnumOrMonitor)
+	const [stroke, setStroke] 			  = useState(monitorData?.options?.stroke 	   || strokeOpts[1])
 	const [canvas, setCanvas] 			  = useState(monitorData?.options?.canvas 	   || canvasOpts[0])
 	const [unit, setUnit] 				  = useState(monitorData?.options?.unit 	   || unitOpt[0])
 	const [prefix, setPrefix] 			  = useState(monitorData?.options?.prefix 	   || prefixOpt[0])
 	const [decimal, setDecimal] 		  = useState(monitorData?.options?.decimal 	   || patternOpts[0])
 	
 	// Boxplot
-	const [boxplot, setBoxplot] = useState({
-		isEnable: false,
-		onlyCollapseValues: false,
-		intervals: null,
-		collapseValues: null
-	});
+	// const [boxplot, setBoxplot] = useState({
+	// 	isEnable: false,
+	// 	onlyCollapseValues: false,
+	// 	intervals: null,
+	// 	collapseValues: null
+	// });
 
 	/*
 	 * handle get options
 	 */
 	const getOptions = () => {
 		return {
-			boxplot: boxplot,
+			// boxplot: boxplot,
 			logarithm: logarithm,
 			curved: curved,
 			filled: filled,
 			limit_max: limit_max,
 			limit_min: limit_min,
-			graphicType: graphicType,
+			graphic_type: graphic_type,
 			stroke: stroke,
 			canvas: canvas,
-			color: enabledColor && color,
+			enabled_color: enabled_color,
+			color: (enabled_color) ? color : "",
 			pos: (fnIsArray(monitorData.type)) ? pos : null,
 			prefix: fnIfExistDefault(prefix),
 			unit: fnIfExistDefault(unit),
@@ -213,20 +213,20 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 					<div className="monitor-selected-item-title-box">
 						<p className="monitor-selected-item-title">
 							{
-								(!fnIsMagnitude(monitorData.type) && !fnIsState(monitorData.type)) ?
-								<>
-									<LtTooltip
-										disableInteractive
-										title={ 
-											<React.Fragment>
-												<b className="label-indHlp-tooltip">{"This graphic has a summary!!"}</b>
-											</React.Fragment>
-										}
-										placement="bottom" className="tool-tip-options-description">
-										<CandlestickChartIcon className="description-info-icon sumary-info-icon" />
-									</LtTooltip>
-								</>
-								: ""
+								// (!fnIsMagnitude(monitorData.type) && !fnIsState(monitorData.type)) ?
+								// <>
+								// 	<LtTooltip
+								// 		disableInteractive
+								// 		title={ 
+								// 			<React.Fragment>
+								// 				<b className="label-indHlp-tooltip">{"This graphic has a summary!!"}</b>
+								// 			</React.Fragment>
+								// 		}
+								// 		placement="bottom" className="tool-tip-options-description">
+								// 		<CandlestickChartIcon className="description-info-icon sumary-info-icon" />
+								// 	</LtTooltip>
+								// </>
+								// : ""
 							}
 						</p>
 						<p className="monitor-selected-item-title">
@@ -273,10 +273,10 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 					{/* 
 						BOXPLOT
 					*/}
-						<GetSummarySelect 
+						{/* <GetSummarySelect 
 							boxplot={boxplot}
 							setBoxplot={setBoxplot}
-						/>
+						/> */}
 					{/*
 						END BOXPLOT
 					*/}
@@ -379,13 +379,13 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 									disablePortal
 									disableClearable
 									id={`grafic-type` + id}
-									name={"graphicType"}
+									name={"graphic_type"}
 									className="input-limits-grafic-options input-select-graphic grafic-type"
 									options={graphicOpts}
 									onChange={(e, newValue) => {
-										setGraphicType(newValue)
+										setgraphic_type(newValue)
 									}}
-									value={graphicType}
+									value={graphic_type}
 									renderInput={(params) => <TextField {...params} />}
 								/>
 							<div className="visualization-monitor-settings">
@@ -421,7 +421,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 							<span className="monitor-selected-input-label-selects">Color:</span>
 							<div className="monitor-selected-checkbox-color">
 								<input 
-									disabled={!enabledColor}
+									disabled={!enabled_color}
 									className={`monitor-selected-input-color color-line selectColorInput` + id}
 									name="color"
 									type="color"
@@ -432,10 +432,10 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 								<Checkbox
 									sx={{ '&:hover': { bgcolor: 'transparent' }}}
 									size="small"
-									onChange={(e) => {setEnabledColor(e.target.checked)}}
+									onChange={(e) => {setEnabled_color(e.target.checked)}}
 									checkedIcon={<CheckBoxIcon sx={{color: "#fff"}} /> }
 									icon={<CheckBoxOutlineBlankIcon sx={{color: "#9396a4"}} />}
-									checked={enabledColor} 
+									checked={enabled_color} 
 								/>
 							</div>
 							</div>

@@ -11,7 +11,9 @@ import {
 	Skeleton, 
 	IconButton, 
 	Divider,
-	Tooltip
+	Tooltip,
+	Backdrop, 
+	CircularProgress
 }  from '@mui/material';
 import { LtTooltip } from '../../../../commons/uiStyles';
 import { 
@@ -28,6 +30,8 @@ import FavoriteElement from './FavoriteElement'
 
 import { arrageMonitors } from '../manageMonitorData';
 import HandleMessage    from '../../../handleErrors/HandleMessage';
+
+import { getQueryByName } from '../../../../services/services';
 
 
 
@@ -62,6 +66,11 @@ function FavoriteQueries({addItem}) {
 	const [resultQueryFavorite, setResultQueryFavorite] = useState([])
 	const [sortToggle, setSortToggle] = useState(false);
 
+	const [openBackDrop, setOpenBackDrop] = useState(false)
+
+	const backDropLoadOpen = () => setOpenBackDrop(true)
+    const backDropLoadClose = () => setOpenBackDrop(false)
+
 	/*
 	 * get local storage data
 	 */
@@ -69,18 +78,18 @@ function FavoriteQueries({addItem}) {
 		try {
 			return await JSON.parse(localStorage.getItem('favorites'))
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
 	/*
 	 * set local storage to favorites
 	 */
-	const setLocalStorage = (data) => {
+	const setLocalStorage = async (data) => {
 		try {
 			localStorage.setItem('favorites', JSON.stringify(data))
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -93,7 +102,7 @@ function FavoriteQueries({addItem}) {
 			setFavorites(data)
 			setLoadingFavorites(false)
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -105,7 +114,7 @@ function FavoriteQueries({addItem}) {
 			setLocalStorage([])
 			load()
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -128,49 +137,67 @@ function FavoriteQueries({addItem}) {
 			const data = await getLocalStorage()
 			if(!isFound(data, item))
 			{
-				console.log("addToLocalStorage() => item", item)
 				const newSet = [...data, item]
-				setLocalStorage(newSet)
-				setFavorites(newSet)
+				await setLocalStorage(newSet)
 			}
 			else{
 				PopUpMessage({type:'info', message:'The query '+item.name+' is already inside the favorite queries'})
 			}
-			setLoadingFavorites(false)	
+			load()
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
 	/*
-	 * get query by id
+	 * get query from server by name
 	 */
-	const getQueryById = (id) => {
-		return favorites.filter(f => f.id === id)
+	const getQueryById = async (name) => {
+		backDropLoadOpen()
+		return await Promise.resolve(getQueryByName(name)).then(res => {return res})
+		.catch(error => {
+			console.error(error);
+			PopUpMessage({ type: 'error', message: error });
+		})
+		.finally(() => backDropLoadClose())
 	}
 	
 	/*
 	 * get monitor info
 	 */
-	const getMonitorInfo = (data) => {
-		return data.monitorInfo
+	const monitorListJoin = (data) => {
+		try {
+			if(data instanceof Object) {
+				return [
+					...data.monitorDescriptions,
+					...data.magnitudeDescriptions,
+					...data.states,
+				]
+			}
+			else{
+				PopUpMessage({type:'error', message:'the data cannot be processed'})
+				return []
+			}
+		} catch (error) {
+			PopUpMessage({type:'error', message: error})
+		}
 	}
 
 	/*
 	 * load monitors
 	 */
-	const loadMonitors = (type,id) => {
+	const loadMonitors = async (type, name) => {
 		try {
-			const query = getQueryById(id)
+			const query = await getQueryById(name)
 			if(query.length > 1)
 				throw new Error("ERROR there is two queries with the same key")
 			else{
-				const monitors_ = getMonitorInfo(query[0])
+				const monitors_ = monitorListJoin(query) // => [{...}]
 				const arrageList_ = arrageMonitors(monitors_)
 				dispatch(handleSelectedElemets(type, null, arrageList_, null))
 			}
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -182,22 +209,22 @@ function FavoriteQueries({addItem}) {
 		try {
 			const data_ = await getLocalStorage()
 			const filterData_ = data_.filter(f => f.id !== itemID)
-			setLocalStorage(filterData_)
+			await setLocalStorage(filterData_)
 			load()
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
 	/*
 	 * remove all favorites
 	 */
-	const removeAllFavorites = () => {
+	const removeAllFavorites = async () => {
 		try {
-			setLocalStorage([])
+			await setLocalStorage([])
 			setFavorites([])
 		} catch (error) {
-			console.log(error)	
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -226,7 +253,7 @@ function FavoriteQueries({addItem}) {
 				: (a, b) => compareDESC(a, b)
 			setFavorites(favorites.sort(compare))
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -257,16 +284,20 @@ function FavoriteQueries({addItem}) {
 	/*
 	 * get items
 	 */
-	useEffect(() => { 
+	useEffect(() => {
 		setLoadingFavorites(true)
+
 		if(addItem)
 			addToLocalStorage(addItem)
+
 		else if(localStorage.getItem('favorites') === null)
 			createLocalStorage()
+
 		else
 			load()
-	}, [addItem])
 
+	}, [addItem])
+ 
 	/*
 	 * initial search state
 	 */
@@ -366,6 +397,12 @@ function FavoriteQueries({addItem}) {
 					</Stack>
 				</Stack>
 			</div>
+			<Backdrop
+				sx={{ color: '#569d90', zIndex: (theme) => theme.zIndex.drawer + 13001 }}
+				open={openBackDrop}
+			>
+				<CircularProgress color="inherit" />
+			</Backdrop>
 		</>
     );
 }

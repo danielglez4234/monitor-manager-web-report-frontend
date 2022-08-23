@@ -631,8 +631,7 @@ const generateGraphic = (info) =>{
 		maxDeviation: 0,
 		baseInterval: {
 			timeUnit: FORMATER.timeInterval,
-			// count: getMillisecondBaseCount(info)
-			count: 250000
+			count: getMillisecondBaseCount(info)
 		},
 		renderer: getXRenderer(grid)
     }))
@@ -738,7 +737,7 @@ const generateGraphic = (info) =>{
 		}
 
 		// TODO: NOT_WORKING: el evento hover salta un excepción con el tipo de gráfica boxplot
-		if(false){
+		// if(false){
 			//  When hovering over the legend element container, all series are dimmed except the one hovered over.
 			legend.itemContainers.template.events.on("pointerover", function(e) {
 				let itemContainer = e.target;
@@ -766,7 +765,7 @@ const generateGraphic = (info) =>{
 					});
 				});
 			})
-		}
+		// }
 
 		// align legends content in the container
 		legend.itemContainers.template.set("width", am5.p100);
