@@ -87,7 +87,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	// autocomplete inputs
 	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0]
 	const [graphic_type, setgraphic_type]   = useState(monitorData?.options?.graphic_type || isEnumOrMonitor)
-	const [stroke, setStroke] 			  = useState(monitorData?.options?.stroke 	   || strokeOpts[0])
+	const [stroke, setStroke] 			  = useState(monitorData?.options?.stroke 	   || strokeOpts[1])
 	const [canvas, setCanvas] 			  = useState(monitorData?.options?.canvas 	   || canvasOpts[0])
 	const [unit, setUnit] 				  = useState(monitorData?.options?.unit 	   || unitOpt[0])
 	const [prefix, setPrefix] 			  = useState(monitorData?.options?.prefix 	   || prefixOpt[0])
