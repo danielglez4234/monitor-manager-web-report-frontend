@@ -61,7 +61,6 @@ function PerformQuery() {
 
 	// TODO: temporal
 	const [addItem, setAddItem] = useState(null)
-	const [updatingQuery, setUpdatingQuery] = useState(false)
 	
 	/*
 	 * 'loadWhileGetData' will be set to true when the data has arrived, and then the buttons will be active again
@@ -205,12 +204,8 @@ function PerformQuery() {
 	 */
 	const addItemtoLocalStorage = (items) => {
 		setAddItem(items)
-		setUpdatingQuery(false)
 	}
-	const updateItemInLocalStorage = (items) =>  {
-		setAddItem(items)
-		setUpdatingQuery(true)
-	}
+
 
     return(
 		<>
@@ -305,20 +300,18 @@ function PerformQuery() {
 									convertToUnix={convertToUnix}
 									timeQuery={timeQuery}
 									editing={editing}
-									updateItemInLocalStorage={updateItemInLocalStorage} // TODO: temporal
 								/>
 								{
 									(editing?.active) ? "" :
 										<ViewHandleQuery
-											addItemtoLocalStorage={addItemtoLocalStorage} // TODO: temporal
+											addItemtoLocalStorage={addItemtoLocalStorage}
 										/>
 								}
 						</Stack>
 					</div>
 				</div>
 					<FavoriteQueries 
-						addItem={addItem} // TODO: temporal
-						updatingQuery={updatingQuery}
+						addItem={addItem}
 					/>
 			</div>
 		</>

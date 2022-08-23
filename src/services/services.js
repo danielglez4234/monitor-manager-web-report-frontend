@@ -96,10 +96,10 @@ export const getAllQuerys = async () => {
 }
 
 /*
- *  GET specific query
+ * get query by name 
  */
-export const getQuery = async (id) => {
-    const res = await axios.get(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${encodeURI(id)}`, {header: headers});
+export const getQueryByName = async (name) => {
+    const res = await axios.get(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${encodeURI(name)}`, {header: headers});
     return res.data;
 }
 

@@ -64,7 +64,7 @@ const usesTyles = makeStyles({
 const { REACT_APP_QUERY_NAME_PATTERN } = process.env
 
 
-function SaveQuery({timeQuery, editing, updateItemInLocalStorage}) {
+function SaveQuery({timeQuery, editing}) {
 	const dispatch = useDispatch()
 	const classes = usesTyles()
 	const monitor = useSelector(state => state.monitor)
@@ -187,12 +187,9 @@ function SaveQuery({timeQuery, editing, updateItemInLocalStorage}) {
 					editing["description"] = queryDescription
 					dispatch(editingQuery(editing))
 				}
-				// TODO: 
-				// updateItemInLocalStorage(editing)
-				// TODO:
 
 				setQueryDescription(editing.description) // input
-				setQueryName(editing.name)
+				setQueryName(editing.name) // input
 				setifSameQueryName(true)
 			}else{
 				setQueryName("")
@@ -261,26 +258,19 @@ function SaveQuery({timeQuery, editing, updateItemInLocalStorage}) {
 	const getMonitorListSeparator = () => {
 		try {
 			let [monitorDescriptions, magnitudeDescriptions, states] = [[],[],[]]
-			monitor.map(val => {
-				let [id, conf] = ["", ""];
+			monitor.map(val => 
+			{
 				const category = getCategory(val.type)
-				if(category === "monitor")
-				{
-					id = val?.id
-					conf = confOptionsSeparator(val)
-					monitorDescriptions.push({id, ...conf})
+				const data = {id: val?.id, ...confOptionsSeparator(val)}
+
+				if(category === "monitor"){
+					monitorDescriptions.push(data)
 				}
-				else if(category=== "magnitud")
-				{
-					id = val?.id
-					conf = confOptionsSeparator(val)
-					magnitudeDescriptions.push({id, ...conf})
+				else if(category=== "magnitud"){
+					magnitudeDescriptions.push(data)
 				}
-				else if(category === "state")
-				{
-					id = val?.id
-					conf = confOptionsSeparator(val)
-					states.push({id, ...conf})
+				else if(category === "state"){
+					states.push(data)
 				}
 			})
 			return {monitorDescriptions, magnitudeDescriptions, states}
