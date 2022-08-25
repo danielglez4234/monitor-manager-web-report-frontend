@@ -134,6 +134,11 @@ const getIndexFromID = (fromArray, inArray) => {
 	})
 }
 
+// const trunkName = (name) => {
+// 	const trunk_ = name.split('/')
+// 	return _name[_name.length - 1]
+// }
+
 
 function Graphic() {
 	const [msg, PopUpMessage]  = HandleMessage()
@@ -220,15 +225,14 @@ function Graphic() {
 					let value  = sample_val[index+2] // +2 => jumping timestamp and timestampLong
 					
 					const isMagnitude = columns_row?.stateOrMagnitudeValuesBind
-					const isCollapsed = columns_row?.collapseValuesBind
+					const isSummary = columns_row?.summaryValuesBind
 
 					if (value !== "" && value.length > 0){
-						if (typeof isMagnitude !== "undefined" && isMagnitude !== null){
+						if (isMagnitude)
 							value = isMagnitude[value]
-						}
-						if(typeof isCollapsed !== "undefined" && isCollapsed !== null){
-							data.push( buildBoxplotGraphicValues(date, value, isCollapsed))
-						}
+
+						if(isSummary)
+							data.push( buildBoxplotGraphicValues(date, value, isSummary))
 						else
 						{
 							const min_l = options.limit_min || -Infinity

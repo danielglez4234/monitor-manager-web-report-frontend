@@ -14,7 +14,7 @@ import {
 	setSamples,
 	getUrl
 } from '../../../actions';
-import { isObjEmpty } from '../../standarFunctions';
+import { isEmpty } from '../../standarFunctions';
 import {
 	Stack,
 	Button,
@@ -301,9 +301,9 @@ function ListSelectedMonitor() {
 						<ButtonGeneralOptions />
 					}
 					{
-						(isObjEmpty(getResponse)) ? "" :
-							(isObjEmpty(getResponse?.responseData) && isObjEmpty(getResponse?.responseData?.samples)) ? "" :
-								(isObjEmpty(references)) ? "" :
+						(isEmpty(getResponse)) ? "" :
+							(isEmpty(getResponse?.responseData) && isEmpty(getResponse?.responseData?.samples)) ? "" :
+								(isEmpty(references)) ? "" :
 									<ButtonMagnitudeReference 
 										magnitudeTitles={referenceComponent}
 										magnitudeReferences={references}
@@ -316,7 +316,7 @@ function ListSelectedMonitor() {
 
 				{
 					(startloadingGraphic && pagination?.active === false) ? "" :
-					(isObjEmpty(totalResponseData)) ? "" :
+					(isEmpty(totalResponseData)) ? "" :
 					<>
 					<div className="displayTotal-responseData">
 						{
