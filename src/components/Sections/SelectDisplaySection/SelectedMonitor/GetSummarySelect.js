@@ -9,7 +9,7 @@ import {
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 
-const GetSummarySelect = ({boxplot, setBoxplot}) => {
+const GetSummarySelect = ({id, boxplot, setBoxplot, constraints}) => {
     const loading = Boolean()
     const summaryOptions = ["hola", "test", "prog", "foi", "djn"]
     const collapseValuseOptions = ["max", "min", "q1", "q3", "mean"]
@@ -25,16 +25,7 @@ const GetSummarySelect = ({boxplot, setBoxplot}) => {
      * Get summary Intervals
      */
     const getSummaryIntervals = () => {
-        // Promise.resolve()
-        // .then((res) => {
-        //     setSummaryIntervals(handleOnChange("intervals", res))
-        // })
-        // .catch((error) => {
-        //     console.log(error)
-        // })
-        // .finally(() => {
-
-        // })
+        
     }
 
     
@@ -61,7 +52,11 @@ const GetSummarySelect = ({boxplot, setBoxplot}) => {
                                 sx={{ '&:hover': { bgcolor: 'transparent' }}}
                                 size="small"
                                 onChange={(e) => {
-                                    handleOnChange("isEnable", e.target.checked); 
+                                    handleOnChange("isEnable", e.target.checked);
+                                    if(e.target.checked){
+                                        console.log("hola, que esta pasando?=?")
+                                        constraints({apply_to: id})
+                                    }
                                     if(boxplot.onlyCollapseValues)
                                         handleOnChange("onlyCollapseValues", false)
                                 }}
@@ -84,33 +79,13 @@ const GetSummarySelect = ({boxplot, setBoxplot}) => {
                     disabled={!boxplot.isEnable}
                     className="input-limits-grafic-options input-select-prefix"
                     name="summaryIntervals"
-                    onOpen={() => {
-                        if([].length < 2)
-                        {
-                            // setLoading(true);
-                            getSummaryIntervals();
-                        }
-                    }}
-                    // loading={loading}
                     options={summaryOptions}
                     onChange={(e, newValue) => {
                         handleOnChange("intervals", newValue)
                     }}
                     value={boxplot.intervals}
                     renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            className={""}
-                            InputProps={{
-                            ...params.InputProps,
-                                endAdornment: (
-                                    <Fragment>
-                                        {loading ? <CircularProgress size={16} className="cicularProgress-unit" /> : null}
-                                        {params.InputProps.endAdornment}
-                                    </Fragment>
-                                ),
-                            }}
-                        />
+                        <TextField {...params} />
                     )}
                 />
             </div>

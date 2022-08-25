@@ -5,7 +5,8 @@ import * as $ from 'jquery';
 import {
   fnIsArray,
   fnIsMagnitude,
-  fnIsState
+  fnIsState,
+  isEmpty
 }
 from '../../../standarFunctions';
 import { LtTooltip } from '../../../../commons/uiStyles';
@@ -20,7 +21,7 @@ import InfoRoundedIcon     from '@mui/icons-material/InfoRounded';
 import GetMonitordIconType from './GetMonitordIconType';
 import GetIndexArrayModal  from './GetIndexArrayModal';
 import GetUnitSelecttype   from './GetUnitSelecttype';
-// import GetSummarySelect    from './GetSummarySelect';
+import GetSummarySelect    from './GetSummarySelect';
 import TuneIcon            from '@mui/icons-material/Tune';
 import AnnouncementIcon    from '@mui/icons-material/Announcement';
 
@@ -60,7 +61,7 @@ const handleClickOpenSettings = (id) => {
 
 
 
-function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateReload}) {
+function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateReload, constraints}) {
 	const loadWhileGetData = useSelector(state => state.loadingGraphic)
 	
 	// If the button is alredy active when a new monitor is selected, apply the changes
@@ -73,40 +74,42 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	 * STATES
 	 */
 	// checkbox inputs
-	const [logarithm, setLogarithm] 	  = useState(monitorData?.options?.logarithm 	 || false)
-	const [curved, setCurved] 			  = useState(monitorData?.options?.curved 	 	 || false)
-	const [filled, setFilled] 			  = useState(monitorData?.options?.filled 	 	 || false)
+	const [logarithm, setLogarithm]         = useState(monitorData?.options?.logarithm     || false)
+	const [curved, setCurved]               = useState(monitorData?.options?.curved        || false)
+	const [filled, setFilled]               = useState(monitorData?.options?.filled        || false)
 	const [enabled_color, setEnabled_color] = useState(monitorData?.options?.enabled_color || false)
 
 	// string inputs
-	const [limit_max, setLimit_max] = useState(monitorData?.options?.limit_max 	|| "")
-	const [limit_min, setLimit_min] = useState(monitorData?.options?.limit_min 	|| "")
-	const [color, setColor] 		= useState(monitorData?.options?.color 		|| "")
-	const [pos, setPos] 			= useState(monitorData?.options?.pos 		|| "")
+	const [limit_max, setLimit_max] = useState(monitorData?.options?.limit_max  || "")
+	const [limit_min, setLimit_min] = useState(monitorData?.options?.limit_min  || "")
+	const [color, setColor]         = useState(monitorData?.options?.color      || "")
+	const [pos, setPos]             = useState(monitorData?.options?.pos        || "")
 
 	// autocomplete inputs
 	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0]
-	const [graphic_type, setgraphic_type]   = useState(monitorData?.options?.graphic_type || isEnumOrMonitor)
-	const [stroke, setStroke] 			  = useState(monitorData?.options?.stroke 	   || strokeOpts[1])
-	const [canvas, setCanvas] 			  = useState(monitorData?.options?.canvas 	   || canvasOpts[0])
-	const [unit, setUnit] 				  = useState(monitorData?.options?.unit 	   || unitOpt[0])
-	const [prefix, setPrefix] 			  = useState(monitorData?.options?.prefix 	   || prefixOpt[0])
-	const [decimal, setDecimal] 		  = useState(monitorData?.options?.decimal 	   || patternOpts[0])
+	const [graphic_type, setgraphic_type] = useState(monitorData?.options?.graphic_type || isEnumOrMonitor)
+	const [stroke, setStroke]             = useState(monitorData?.options?.stroke       || strokeOpts[1])
+	const [canvas, setCanvas]             = useState(monitorData?.options?.canvas       || canvasOpts[0])
+	const [unit, setUnit]                 = useState(monitorData?.options?.unit         || unitOpt[0])
+	const [prefix, setPrefix]             = useState(monitorData?.options?.prefix       || prefixOpt[0])
+	const [decimal, setDecimal]           = useState(monitorData?.options?.decimal      || patternOpts[0])
 	
 	// Boxplot
-	// const [boxplot, setBoxplot] = useState({
-	// 	isEnable: false,
-	// 	onlyCollapseValues: false,
-	// 	intervals: null,
-	// 	collapseValues: null
-	// });
+	const [boxplot, setBoxplot] = useState({
+		isEnable: monitorData?.options?.boxplot?.isEnable                       || false,
+		onlyCollapseValues: monitorData?.options?.boxplot?.onlyCollapseValues   || false,
+		summaryConfig: monitorData?.options?.boxplot?.summaryConfig             || [],
+	})
+
+	console.log("boxplot.isEnable", boxplot.isEnable)
+	console.log("monitorData?.options?.boxplot?.isEnable", monitorData?.options?.boxplot?.isEnable)
 
 	/*
 	 * handle get options
 	 */
 	const getOptions = () => {
 		return {
-			// boxplot: boxplot,
+			boxplot: boxplot,
 			logarithm: logarithm,
 			curved: curved,
 			filled: filled,
@@ -142,8 +145,9 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	 * store the selected monitor options in the redux variable
 	 */
 	useEffect(() => {
-		if(monitorData)
+		if(monitorData){
 			saveOpt()
+		}
 	}, [])
 
 	/*
@@ -235,7 +239,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 								<>
 									<LtTooltip
 										disableInteractive
-										title={ 
+										title={
 											<React.Fragment>
 												<b className="label-indHlp-tooltip">{"Descirption:"}</b><br />
 												<span className="indHlp-vis-desc">{ monitorData.description }</span>
@@ -251,35 +255,38 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 						</p>
 					</div>
 
-					<IconButton 
+					<IconButton
 						onClick={() => {
 							handleClickOpenSettings(id);
-						}} 
-						arai-label="tune-setings" 
+						}}
+						arai-label="tune-setings"
 						className={`settings-selected-monitor id-TuneIcon-sett` + id}
 					>
 						<TuneIcon />
 					</IconButton>
 
-					<div 
+					<div
 						className={`close_rangeZone-monitor-settings display-none close-settingsMon` + id} 
 						onClick={() => {
 							handleClickOpenSettings(id);
 							saveOpt();
-						}}>	
+						}}>
 					</div>
 					<Box className={`setting-selectd-monitor-options-box display-none id-mon-sett` + id} id="mon-settings-sx" sx={{boxShadow: 3}}>
 					<div className="monitor-selected-select-contain">
-					{/* 
-						BOXPLOT
-					*/}
-						{/* <GetSummarySelect 
+
+
+					{
+						// (isEmpty(monitorData.summaryConfigs)) &&
+						<GetSummarySelect
+							id={id}
 							boxplot={boxplot}
 							setBoxplot={setBoxplot}
-						/> */}
-					{/*
-						END BOXPLOT
-					*/}
+							constraints={constraints}
+						/>
+					}
+
+					
 						<div className="monitor-selected-select-box">
 
 						<div className="checkbox-monitor-selected">

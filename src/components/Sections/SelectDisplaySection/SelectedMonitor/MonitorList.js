@@ -17,9 +17,9 @@ import DetailsIcon                  from '@mui/icons-material/Details';
 import ArrowDropUpSharpIcon         from '@mui/icons-material/ArrowDropUpSharp';
 import ExpandMoreIcon               from '@mui/icons-material/ExpandMore';
 import KeyboardDoubleArrowDownIcon  from '@mui/icons-material/KeyboardDoubleArrowDown';
-
 import CachedIcon from '@mui/icons-material/Cached';
 
+import { CONSTRAINTS } from './constrainst';  
 import SelectedElement      from './SelectedElement'
 
 
@@ -93,8 +93,8 @@ function MonitorList({diActivateReload}) {
     const monitor = useSelector(state => state.monitor)
 
     const [countMonitors, setCountMonitors] = useState(0);
-	const [elements, setSelectedElements] = useState([]);
-	const [onSelect, setOnSelect] = useState(true);
+	// const [elements, setSelectedElements] = useState([]);
+	// const [onSelect, setOnSelect] = useState(true);
 
 	/*
 	 * Map selected elements
@@ -102,29 +102,33 @@ function MonitorList({diActivateReload}) {
 	useEffect(() => {
 		if (monitor.length > 0) 
 		{
-			setOnSelect(false)
-			setCountMonitors(monitor.length)
-			setSelectedElements(monitor)
+			// setOnSelect(false)
+			// setCountMonitors(monitor.length)
+			// setSelectedElements(monitor)
 				blinkAnimation()
 		}
-		else 
-		{
-			setOnSelect(true)
-			setCountMonitors(0)
-		}
+		// else 
+		// {
+		// 	setOnSelect(true)
+		// 	setCountMonitors(0)
+		// }
 	}, [monitor])
 
 	/*
 	 * save monitor options
 	 */
 	const saveOptions = (id, options) => {
-		monitor.map(obj => {
-			if (obj.id === id) {
-				delete obj["options"]
-				obj["options"] = options
-			}
-			return obj
-		})
+		try {
+			monitor.map(obj => {
+				if (obj.id === id) {
+					delete obj["options"]
+					obj["options"] = options
+				}
+				return obj
+			})
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	/*
@@ -132,6 +136,36 @@ function MonitorList({diActivateReload}) {
 	 */
 	const menuHandle = (type, id, options) => {
 		dispatch(handleSelectedElemets(type, id, null, options))
+	}
+
+	/*
+	 *
+	 */
+	const handleBoxplotEnabled = (id) => {
+		// !! => if undefined = true then ! revert to false
+		if(!!id){ 
+			monitor.map(obj => {
+				if(obj.id !== id)
+					if(obj?.options?.boxplot)
+						obj.options.boxplot = false
+				
+				console.log("monitor", obj?.options?.boxplot)
+			})
+		}
+	}
+
+	/*
+	 * add constraints to boxplot
+	 */
+	const constraints = ({apply_to}) => {
+		if(CONSTRAINTS?.apply_constraints)
+		{ 
+			const boxplot = CONSTRAINTS.boxplot
+			if(boxplot.only_one_collapse_enabled){
+				handleBoxplotEnabled(apply_to)
+			}
+			// ...
+		}
 	}
 
 
@@ -201,11 +235,12 @@ function MonitorList({diActivateReload}) {
 				</div>
 				<div id="resizable" data-bottom="true" className="selected-monitors-box">
 					{
-					(onSelect) ? initialInfoText :
+					// (onSelect) ? initialInfoText :
+					(monitor.length <= 0) ? initialInfoText :
 						<table id="drop-area" className="table-selected-monitors">
 							<tbody>
 							{
-								elements.map((element) =>
+								monitor.map((element) =>
 									<SelectedElement
 										key           	 = { element.id  }
 										id            	 = { element.id }
@@ -213,6 +248,7 @@ function MonitorList({diActivateReload}) {
 										saveOptions	  	 = { saveOptions }
 										menuHandle    	 = { menuHandle }
 										diActivateReload = { diActivateReload }
+										constraints		 = { constraints }
 									/>
 								)
 							}
@@ -225,7 +261,7 @@ function MonitorList({diActivateReload}) {
                 <div className="selected-monitor-count">
                     º
                     {
-                    countMonitors
+                    	monitor.length
                     }
                 </div>
                 <KeyboardDoubleArrowDownIcon 
