@@ -54,22 +54,22 @@ const cubeSpinnerImg = () => {
 }
 
 
-function ListSelectedMonitor() {
-	const dispatch             = useDispatch();
+function SelectDisplay() {
+	const dispatch = useDispatch();
 	const [msg, PopUpMessage] = HandleMessage();
 
-	const monitor           = useSelector(state => state.monitor);
-	const getResponse       = useSelector(state => state.getResponse);
-	const onSearch          = useSelector(state => state.onSearch);
+	const monitor = useSelector(state => state.monitor);
+	const getResponse = useSelector(state => state.getResponse);
+	const onSearch = useSelector(state => state.onSearch);
 	const totalResponseData = useSelector(state => state.totalResponseData);
 
 	const graphicStillLoading = useSelector(state => state.loadingButton);
-	const loadingGraphic      = useSelector(state => state.loadingGraphic);
+	const loadingGraphic = useSelector(state => state.loadingGraphic);
 
 	// pagination => todo => refactor 
-	let url            = useSelector(state => state.url);
-	const pagination   = useSelector(state => state.pagination);
-	const [disabled, setDisabled]         = useState(true);
+	let url = useSelector(state => state.url);
+	const pagination = useSelector(state => state.pagination);
+	const [disabled, setDisabled] = useState(true);
 
 	const [startloadingGraphic, setStartloadingGraphic]   = useState(false);
 
@@ -127,9 +127,7 @@ function ListSelectedMonitor() {
 	useEffect(() => {
 		setStartloadingGraphic(loadingGraphic)
 		if(loadingGraphic)
-		{
 			setDisabled(true)
-		}
 	}, [loadingGraphic])
 
 
@@ -141,7 +139,7 @@ function ListSelectedMonitor() {
 	useEffect(() => {
 		if (getResponse?.responseData && onSearch?.perform && monitor.length > 0)
 		{
-			let monitorLastState    = onSearch.searchedMonitors
+			let monitorLastState = onSearch.searchedMonitors
 			let monitorsNowSelected = monitor.map(e => e["id"])
 
 			let a = Object.values(monitorLastState)
@@ -150,7 +148,7 @@ function ListSelectedMonitor() {
 			let comparation = b.every(function (e) {
 				let val = (a.includes(e) && a.length === b.length)
 				return val
-			});
+			})
 
 			// if they match 'disabled' is set to false
 			if (!loadingGraphic && getResponse.responseData.samples.length > 0) { // if the graphic is loading dont compare
@@ -386,4 +384,4 @@ function ListSelectedMonitor() {
     );
 
 }
-export default ListSelectedMonitor;
+export default SelectDisplay;

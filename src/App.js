@@ -13,7 +13,7 @@ import Button               from '@mui/material/Button';
 
 import Header               from './components/Sections/Header';
 import ListComponentMonitor from './components/Sections/ListComponentMonitorSection/ListComponentMonitor';
-import ListSelectedMonitor  from './components/Sections/SelectDisplaySection/ListSelectedMonitor';
+import SelectDisplay        from './components/Sections/SelectDisplaySection/SelectDisplay';
 import PerformQuery         from './components/Sections/PerformSearchSection/PerformQuery';
 import PageNotFound         from './components/handleErrors/PageNotFound';
 
@@ -52,7 +52,7 @@ function App() {
 								<Header />
 								<div className="content">
 									<ListComponentMonitor />
-									<ListSelectedMonitor />
+									<SelectDisplay />
 									<PerformQuery />
 								</div>
 							</div>
