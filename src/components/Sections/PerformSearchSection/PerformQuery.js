@@ -83,11 +83,11 @@ function PerformQuery() {
 	/*
 	 * Get Samples From Server
 	 */
-	const getSamplesFromServer = () => {
+	const getSamplesFromServer = async () => {
 		const url = buildUrl(monitor, timeQuery, pagination) // construct url
 		dispatch(getUrl(url)) // refactor => eliminar
 		
-		Promise.resolve( getDataFromServer(url) )
+		await Promise.resolve( getDataFromServer(url) )
 		.then(res => { 
 			const totalArraysRecive  = res.samples.length
 			const totalRecords       = res.reportInfo.totalSamples

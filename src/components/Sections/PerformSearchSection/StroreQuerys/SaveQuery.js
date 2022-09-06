@@ -172,14 +172,14 @@ function SaveQuery({timeQuery, editing}) {
 	/*
 	 * save query
 	 */
-	const fnSaveQuery = () => {
+	const fnSaveQuery = async () => {
 		const payload = createPayload()
 
 		const fnAction = (editing?.active && ifSameQueryName) 
 			? () => updateQuery(queryName, payload) 
 			: () => insertQuery(payload);
 
-		Promise.resolve( fnAction() )
+		await Promise.resolve( fnAction() )
 		.then(() =>{
 			if(editing?.active){
 				if(ifSameQueryName && queryDescription !== editing.description)
