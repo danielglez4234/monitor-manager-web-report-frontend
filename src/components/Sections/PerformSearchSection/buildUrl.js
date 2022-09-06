@@ -33,10 +33,11 @@ const buildOptions = (opt) => {
     const unit    = (opt.unit    !== "Default") ? opt.unit    : false
     const prefix  = (opt.prefix  !== "Default") ? opt.prefix  : false
     const decimal = (opt.decimal !== "Default") ? opt.decimal : false
-    const summary = (opt.summary !== "Default") ? opt.summary : false
-    const collapseValue = (opt.collapseValues !== "Default") ? opt.collapseValues : false
-    const boxplot = opt?.boxplot?.isEnable
-    const onlycollapseValues = opt?.boxplot?.onlycollapseValues
+    // const summary = (opt.summary.length > 0) ? opt.summary : null
+    // const collapseValue = (opt.collapseValues.length > 0) ? opt.collapseValues : null
+    // const boxplot = opt?.boxplot?.isEnable
+    // const onlycollapseValues = opt?.boxplot?.onlycollapseValues
+    
     if (unit || decimal)
     {
         queryOpt += "{"
@@ -52,10 +53,11 @@ const buildOptions = (opt) => {
             }
             queryOpt += "decimal:" + decimal
         }
-        if(boxplot){
-            const sumary = ", sumary"
-            queryOpt += (onlycollapseValues) ? `${sumary}: [${onlycollapseValues}]` : sumary
-        }
+        // if(boxplot || onlycollapseValues){
+        //     queryOpt += `", sumary:"${summary}`
+        //     if(onlycollapseValues)
+        //         queryOpt += `, attr:${collapseValue}`
+        // }
         queryOpt += "}"
     }
     return queryOpt

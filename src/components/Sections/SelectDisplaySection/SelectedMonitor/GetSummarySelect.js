@@ -112,9 +112,9 @@ const GetSummarySelect = ({id, component, magnitude, boxplot, setBoxplot, constr
                     disabled={!boxplot.isEnable}
                     className="input-limits-grafic-options input-select-prefix"
                     name="summaryIntervals"
-                    options={summaryConfigOptions}
+                    options={["1m"]}
+                    // options={summaryConfigOptions}
                     onOpen={() => { 
-                        console.log("sdfuoñsdgñaouifnñsad", summaryConfigOptions)
                         if(summaryConfigOptions.length <= 1)
                             loadSummaryIntervals()
                     }}
