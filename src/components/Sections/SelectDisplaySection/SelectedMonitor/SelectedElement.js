@@ -26,7 +26,7 @@ import TuneIcon            from '@mui/icons-material/Tune';
 import AnnouncementIcon    from '@mui/icons-material/Announcement';
 
 /*
- * Set oprions 'select' inputs 
+ * Set options 'select' default options
  */
 const graphicOpts = [ "Line Series", "Step Line Series" ]
 const strokeOpts  = [ "Light", "Medium", "Bold", "Bolder" ]
@@ -34,6 +34,8 @@ const canvasOpts  = [ "Default", "Dotted", "Dashed", "Large Dashed", "Dotted Das
 const patternOpts = [ "Default", "0.#", "0.##", "0.###", "0.####", "0.#####", "0.######", "0.#######", "0.########" ]
 const unitOpt     = [ "Default" ]
 const prefixOpt   = [ "Default" ]
+const summaryConfigOpt = [ "None" ]
+const collapseValuesOpt = [ "None" ]
 
 /*
  * Apply changes warning message
@@ -86,19 +88,20 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	const [pos, setPos]             = useState(monitorData?.options?.pos        || "")
 
 	// autocomplete inputs
-	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0]
+	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts.at(1) : graphicOpts.at(0)
 	const [graphic_type, setgraphic_type] = useState(monitorData?.options?.graphic_type || isEnumOrMonitor)
-	const [stroke, setStroke]             = useState(monitorData?.options?.stroke       || strokeOpts[1])
-	const [canvas, setCanvas]             = useState(monitorData?.options?.canvas       || canvasOpts[0])
-	const [unit, setUnit]                 = useState(monitorData?.options?.unit         || unitOpt[0])
-	const [prefix, setPrefix]             = useState(monitorData?.options?.prefix       || prefixOpt[0])
-	const [decimal, setDecimal]           = useState(monitorData?.options?.decimal      || patternOpts[0])
+	const [stroke, setStroke]             = useState(monitorData?.options?.stroke       || strokeOpts.at(1))
+	const [canvas, setCanvas]             = useState(monitorData?.options?.canvas       || canvasOpts.at(0))
+	const [unit, setUnit]                 = useState(monitorData?.options?.unit         || unitOpt.at(0))
+	const [prefix, setPrefix]             = useState(monitorData?.options?.prefix       || prefixOpt.at(0))
+	const [decimal, setDecimal]           = useState(monitorData?.options?.decimal      || patternOpts.at(0))
 	
 	// Boxplot
 	const [boxplot, setBoxplot] = useState({
 		isEnable: monitorData?.options?.boxplot?.isEnable                       || false,
 		onlyCollapseValues: monitorData?.options?.boxplot?.onlyCollapseValues   || false,
-		summaryConfig: monitorData?.options?.boxplot?.summaryConfig             || [],
+		summaryConfig: monitorData?.options?.boxplot?.summaryConfig             || summaryConfigOpt.at(0),
+		collapseValues: monitorData?.options?.boxplot?.collapseValues           || collapseValuesOpt.at(0),
 	})
 
 	console.log("boxplot.isEnable", boxplot.isEnable)
@@ -137,7 +140,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	/*
 	 *	call save options action
 	 */
-	const saveOpt = () => {
+	const saveOptionsCallBack = () => {
 		saveOptions(id, getOptions())
 	}
 	
@@ -146,7 +149,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	 */
 	useEffect(() => {
 		if(monitorData){
-			saveOpt()
+			saveOptionsCallBack()
 		}
 	}, [])
 
@@ -269,7 +272,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 						className={`close_rangeZone-monitor-settings display-none close-settingsMon` + id} 
 						onClick={() => {
 							handleClickOpenSettings(id);
-							saveOpt();
+							saveOptionsCallBack();
 						}}>
 					</div>
 					<Box className={`setting-selectd-monitor-options-box display-none id-mon-sett` + id} id="mon-settings-sx" sx={{boxShadow: 3}}>
@@ -280,6 +283,8 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 						// (isEmpty(monitorData.summaryConfigs)) &&
 						<GetSummarySelect
 							id={id}
+							component={monitorData.name}
+							magnitude={monitorData.magnitude}
 							boxplot={boxplot}
 							setBoxplot={setBoxplot}
 							constraints={constraints}

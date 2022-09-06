@@ -141,8 +141,17 @@ export const deleteQuery = async (params) => {
 /*
  * GET INTERVALS OF
  */
-export const getSummaryIntervals = async (name) => {
-    const replacePad = fnReplacePad(encodeURI(name))
-    const res = await axios.get(`${REACT_APP_SERVICES_IP}/WebReport/rest/summary?${replacePad}`, {header: headers});
+export const getSummaryIntervals = async (component, magnitude) => {
+    const magnitude_ecd = fnReplacePad(encodeURI(magnitude))
+    const component_ecd = fnReplacePad(encodeURI(component))
+    const res = await axios.get(`${REACT_APP_SERVICES_IP}/WebReport/rest/${component_ecd}/monitor/${magnitude_ecd}/summary`, {header: headers});
+    return res.data;
+}
+
+/*
+ * GET COLLAPSE VAlUES OPTIONS
+ */
+export const getCollapseValuesOptions = async () => {
+    const res = await axios.get(`${REACT_APP_SERVICES_IP}/WebReport/rest/summary_values`, {header: headers});
     return res.data;
 }

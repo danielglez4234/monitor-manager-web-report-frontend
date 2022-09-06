@@ -92,26 +92,12 @@ function MonitorList({diActivateReload}) {
     const dispatch = useDispatch();
     const monitor = useSelector(state => state.monitor)
 
-    const [countMonitors, setCountMonitors] = useState(0);
-	// const [elements, setSelectedElements] = useState([]);
-	// const [onSelect, setOnSelect] = useState(true);
-
 	/*
 	 * Map selected elements
 	 */
 	useEffect(() => {
 		if (monitor.length > 0) 
-		{
-			// setOnSelect(false)
-			// setCountMonitors(monitor.length)
-			// setSelectedElements(monitor)
-				blinkAnimation()
-		}
-		// else 
-		// {
-		// 	setOnSelect(true)
-		// 	setCountMonitors(0)
-		// }
+			blinkAnimation()
 	}, [monitor])
 
 	/*
@@ -139,18 +125,19 @@ function MonitorList({diActivateReload}) {
 	}
 
 	/*
-	 *
+	 * handle boxplot enable on constrainst
 	 */
 	const handleBoxplotEnabled = (id) => {
 		// !! => if undefined = true then ! revert to false
-		if(!!id){ 
-			monitor.map(obj => {
+		// this prevents the undefined error to appear
+		if(!!id) {
+			const monitor_ = monitor.map(obj => {
 				if(obj.id !== id)
 					if(obj?.options?.boxplot)
-						obj.options.boxplot = false
-				
-				console.log("monitor", obj?.options?.boxplot)
+						obj.options.boxplot.isEnable = false
+				return obj
 			})
+			dispatch(handleSelectedElemets("addMultiple", null, monitor_))
 		}
 	}
 

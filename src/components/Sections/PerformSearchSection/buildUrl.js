@@ -33,8 +33,10 @@ const buildOptions = (opt) => {
     const unit    = (opt.unit    !== "Default") ? opt.unit    : false
     const prefix  = (opt.prefix  !== "Default") ? opt.prefix  : false
     const decimal = (opt.decimal !== "Default") ? opt.decimal : false
+    const summary = (opt.summary !== "Default") ? opt.summary : false
+    const collapseValue = (opt.collapseValues !== "Default") ? opt.collapseValues : false
     const boxplot = opt?.boxplot?.isEnable
-    const collapseValues = opt?.boxplot?.collapseValues
+    const onlycollapseValues = opt?.boxplot?.onlycollapseValues
     if (unit || decimal)
     {
         queryOpt += "{"
@@ -52,7 +54,7 @@ const buildOptions = (opt) => {
         }
         if(boxplot){
             const sumary = ", sumary"
-            queryOpt += (collapseValues) ? `${sumary}: [${collapseValues}]` : sumary
+            queryOpt += (onlycollapseValues) ? `${sumary}: [${onlycollapseValues}]` : sumary
         }
         queryOpt += "}"
     }
