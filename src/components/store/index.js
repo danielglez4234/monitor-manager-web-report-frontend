@@ -8,6 +8,7 @@ import loadingGraphicReducer          from '../../reducers/loadingGraphicReducer
 import totalResponseDataReducer       from '../../reducers/totalResponseDataReducer';
 import setActualPageReducer           from '../../reducers/setActualPageReducer';
 import editingQueryReducer            from '../../reducers/editingQueryReducer';
+import setSearchErrorsReducer         from '../../reducers/setSearchErrorsReducer';
 
 import { combineReducers }     from 'redux';
 
@@ -21,7 +22,8 @@ const allReducers = combineReducers({
   loadingGraphic:     loadingGraphicReducer,
   totalResponseData:  totalResponseDataReducer,
   pagination:         setActualPageReducer,
-  editingQuery:       editingQueryReducer
+  editingQuery:       editingQueryReducer,
+  searchErrors:       setSearchErrorsReducer
 });
 
 export default allReducers;
