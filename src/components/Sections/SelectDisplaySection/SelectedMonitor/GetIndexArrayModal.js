@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import * as $ from "jquery";
 import { LtTooltip } from '../../../../commons/uiStyles/components';
 import HelpIcon                   from '@mui/icons-material/Help';
 import IndexItem from './IndexItem';
@@ -30,25 +31,25 @@ const sortDESC = (a, b) => {
  * create ranges 
  */
 const getRanges = (arr_) => {
-	arr_.sort((a, b) => sortDESC(a, b))
-	const arrange_ = []
-	let range_ = []
+		arr_.sort((a, b) => sortDESC(a, b))
+		const arrange_ = []
+		let range_ = []
+	
+		for (let x = 0; x < arr_.length; x++) {
 
-	for (let x = 0; x < arr_.length; x++) {
-
-		const num = arr_[x]
-		const nextNumber = num + 1
-
-			if(arr_.includes(nextNumber)){
-				range_.push(num)
-			}
-			else{
-				range_.push(num)
-				arrange_.push(getTemplate(range_))
-				range_ = []
-			}
-	}
-	return JSON.stringify(arrange_).replace(/"/g, "")
+			const num = arr_[x]
+			const nextNumber = num + 1
+	
+				if(arr_.includes(nextNumber)){
+					range_.push(num)
+				}
+				else{
+					range_.push(num)
+					arrange_.push(getTemplate(range_))
+					range_ = []
+				}
+		}
+		return arrange_
 }
 
 /*
@@ -60,7 +61,7 @@ const convertToArrayFromTemplate = (str) => {
         const activeIndexes_ = []
         const result = str.replace(/;/g, ",")
 		                  .substring(1)
-		                  .slice(0, - 1)
+		                  .slice(0, -1)
 		                  .split(",")
         result.map(val => 
             activeIndexes_.push(
@@ -93,12 +94,15 @@ const getRangeFromString = (values) => {
 }
 
 
+const handleOpenIndexModal = (id) => {
+	$('.index-box' + id).toggleClass('display-none')
+}
 
-const GetIndexArrayModal = ({pos, setPos, defaultPos, applyChangesWarning, dimension_x, dimension_y}) => {
 
+
+const GetIndexArrayModal = ({id, pos, setPos, defaultPos, applyChangesWarning, dimension_x, dimension_y}) => {
 	const availablePositions = dimension_x * dimension_y
 	const allPositions = Array.from(Array(availablePositions).keys())
-	const [openIndexModal, setOpenIndexModal] = useState(false)
 	
 	// TODO: invert names and calls  selectedIndexes <==> activeIndexes
 	const positions_ = (Array.isArray(pos)) ? pos : convertToArrayFromTemplate(pos)
@@ -109,17 +113,11 @@ const GetIndexArrayModal = ({pos, setPos, defaultPos, applyChangesWarning, dimen
 	 * create ranges if necessary
 	 */
 	const setRanges = (arr_) => {
-		console.log(arr_)
 		setPos(getRanges(arr_))
 		setSelectedIndexes(arr_)
 		setActiveIndexes(getRanges(arr_))
 	}
 
-   	/*
-     * handle open "choose index" modal
-     */
-  	const openModal = () => setOpenIndexModal(preState => !preState);
-	  
 	/*
 	 * reset to default state
 	 */
@@ -129,7 +127,6 @@ const GetIndexArrayModal = ({pos, setPos, defaultPos, applyChangesWarning, dimen
 	 * select all positions
 	 */
 	const selectAll = () => setRanges(allPositions);
-
 
 	return(
 		<>
@@ -159,7 +156,7 @@ const GetIndexArrayModal = ({pos, setPos, defaultPos, applyChangesWarning, dimen
 		<LtTooltip title={JSON.stringify(activeIndexes)} enterDelay={900} leaveDelay={100} placement="left" className="tool-tip-options">
 			<div className="array-index-box">
 					<div 
-						onClick={() => { openModal() }} 
+						onClick={() => { handleOpenIndexModal(id) }} 
 						className="array-index-button-box"
 					>
 							<span className={`array-index-button-text`}>
@@ -174,7 +171,7 @@ const GetIndexArrayModal = ({pos, setPos, defaultPos, applyChangesWarning, dimen
 		{/* 
 		* Handle modal selection inputs for "textIndex"
 		*/}
-			<div className="choose-array-index-box">
+			<div className={"choose-array-index-box index-box" + id + " display-none"}>
 				<div className="index-choose-button-box">
 					<div 
 						onClick={() => { 

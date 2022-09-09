@@ -1,32 +1,38 @@
 import { makeStyles } from '@material-ui/core';
 
+const colors = {
+	white: '#fff',
+	balck: '#333',
+	light_blue: '#58a0b0',
+	light_green: '#62bfa5',
+	darker_blue: '#4b6180',
+	deep_blue_1: '#407b88',
+	deep_blue_2: '#407b99',
+	darker_pink: '#ac5978'
+}
+
+
 export const usesTyles = makeStyles({
 	/*
 	 * COLORS
 	 */
-	COLORS:{
-		white:{ color: '#fff' },
-		balck:{ color: '#333' },
-		light_green:{ color: '#62bfa5' },
-		light_blue:{ color: '#58a0b0'},
-		darker_blue:{ color: '#4b6180'},
-	},
+	COLORS: colors,
 	
 	/*
 	 * Perform Queries Buttons
 	 */
 	perfrom_query_button_search:{
-		backgroundColor: '#62bfa5',
+		backgroundColor: colors.light_green,
 	 	height: '60px',
 		width: '100%',
   		fontWeight: 'bold',
 		'&:hover': {
-			background: '#62bfa5',
+			background: colors.light_green,
 		},
 		'&.MuiLoadingButton-loadingIndicator': {
 			left: 'revert',
   			marginLeft: '-150px',
-  			color: 'white',
+  			color: colors.white,
 		}
 	},
 
@@ -34,12 +40,12 @@ export const usesTyles = makeStyles({
 	 * General Options Section
 	 */
 	apply_general_options_button: {
-		backgroundColor: '#407b88',
+		backgroundColor: colors.deep_blue_1,
 		height: '25px',
 		marginBottom: '5px',
 		fontFamily: 'RobotoMono-Bold',
 		'&:hover': {
-			background: '#407b99',
+			background: colors.deep_blue_2,
 		},
 	},
 	
@@ -48,18 +54,18 @@ export const usesTyles = makeStyles({
 	 */
 	save_actual_query_button: {
 		fontFamily: 'RobotoMono-SemiBold',
-		backgroundColor: '#ac5978',
+		backgroundColor: colors.darker_pink,
 		'&:hover': {
-			background: '#ac5978',
+			background: colors.darker_pink,
 		},
 	},
 
 	view_store_queries_button: {
 		fontFamily: 'RobotoMono-SemiBold',
-		backgroundColor: '#4b6180', 
+		backgroundColor: colors.darker_blue, 
 		// height: 60,
 		'&:hover': {
-			background: '#4b6180',
+			background: colors.darker_blue,
 		},
 	},
 	
@@ -72,11 +78,11 @@ export const usesTyles = makeStyles({
 	},
 	
 	update_query_button:{
-		backgroundColor: '#407b88',
+		backgroundColor: colors.deep_blue_1,
 		height: '60px',
 		fontFamily: 'RobotoMono-SemiBold',
 		'&:hover': {
-			background: '#407b88',
+			background: colors.deep_blue_1,
 		},
 	},
 	
@@ -145,17 +151,17 @@ export const usesTyles = makeStyles({
 	 * select monitor array index section
 	 */
 	index_button_contained: {
-		backgroundColor: '#fff',
+		backgroundColor: colors.white,
 		color: 'black',
 		'&:hover':{
-			backgroundColor: '#fff',
+			backgroundColor: colors.white,
 		}
 	},
 	
 	index_button_outlined: {
 		backgroundColor: 'transparent',
-		color: '#fff',
-		border: '1px solid white',
+		color: colors.white,
+		border: '1px solid' + colors.white,
 		'&:hover':{
 			border: '1px solid gray'
 		}

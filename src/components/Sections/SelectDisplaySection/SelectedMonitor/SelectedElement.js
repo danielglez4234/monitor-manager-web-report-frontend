@@ -18,23 +18,15 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 
 import InfoRoundedIcon     from '@mui/icons-material/InfoRounded';
+import TuneIcon            from '@mui/icons-material/Tune';
+import AnnouncementIcon    from '@mui/icons-material/Announcement';
+
 import GetMonitordIconType from './GetMonitordIconType';
 import GetIndexArrayModal  from './GetIndexArrayModal';
 import GetUnitSelecttype   from './GetUnitSelecttype';
 import GetSummarySelect    from './GetSummarySelect';
-import TuneIcon            from '@mui/icons-material/Tune';
-import AnnouncementIcon    from '@mui/icons-material/Announcement';
+import { defaultOptions }  from './defaultOptions';
 
-/*
- * Set options 'select' default options
- */
-const graphicOpts = [ "Line Series", "Step Line Series" ]
-const strokeOpts  = [ "Light", "Medium", "Bold", "Bolder" ]
-const canvasOpts  = [ "Default", "Dotted", "Dashed", "Large Dashed", "Dotted Dashed"]
-const patternOpts = [ "Default", "0.#", "0.##", "0.###", "0.####", "0.#####", "0.######", "0.#######", "0.########" ]
-const unitOpt     = [ "Default" ]
-const prefixOpt   = [ "Default" ]
-const defaultPos  = ["All"]
 
 /*
  * Apply changes warning message
@@ -58,6 +50,9 @@ const handleClickOpenSettings = (id) => {
 	const offset = $('.id-TuneIcon-sett' + id).offset()
 	$('.id-mon-sett' + id).toggleClass('display-none').offset({ top: offset.top, right: offset.right})
 	$('.close-settingsMon' + id).toggleClass('display-none')
+	if(!$('.index-box' + id).hasClass('display-none')){
+		$('.index-box' + id).addClass('display-none')
+	}
 }
 
 
@@ -71,12 +66,20 @@ const handleClickOpenSettings = (id) => {
 // 	GetUnitSelectType => UnitAndPatternOptions
 // )
 
+const stringPositions = (pos) => {
+	try {
+		return JSON.stringify(pos).replace(/"/g, "").replace(/,/g, ";")
+	} catch (error) {
+		console.error(error)
+	}
+}
 
 
 
 function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateReload, constraints}) {
 	const loadWhileGetData = useSelector(state => state.loadingGraphic)
-	
+	const default_ = defaultOptions
+
 	// If the button is alredy active when a new monitor is selected, apply the changes
 	let lessDetailIfActive
 	if ($('#lessDetail-icon').hasClass('color-menu-active')) {
@@ -87,33 +90,33 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	 * STATES
 	 */
 	// checkbox inputs
-	const [logarithm, setLogarithm]         = useState(monitorData?.options?.logarithm     || false)
-	const [curved, setCurved]               = useState(monitorData?.options?.curved        || false)
-	const [filled, setFilled]               = useState(monitorData?.options?.filled        || false)
-	const [enabled_color, setEnabled_color] = useState(monitorData?.options?.enabled_color || false)
+	const [logarithm, setLogarithm]         = useState(monitorData?.options?.logarithm     || default_.logarithm)
+	const [curved, setCurved]               = useState(monitorData?.options?.curved        || default_.curved)
+	const [filled, setFilled]               = useState(monitorData?.options?.filled        || default_.filled)
+	const [enabled_color, setEnabled_color] = useState(monitorData?.options?.enabled_color || default_.enabled_color)
 
 	// string inputs
-	const [limit_max, setLimit_max] = useState(monitorData?.options?.limit_max 	|| "")
-	const [limit_min, setLimit_min] = useState(monitorData?.options?.limit_min 	|| "")
-	const [color, setColor] 		= useState(monitorData?.options?.color 		|| "")
-	const [pos, setPos] 			= useState(monitorData?.options?.pos 		|| defaultPos)
+	const [limit_max, setLimit_max] = useState(monitorData?.options?.limit_max 	|| default_.limit_max)
+	const [limit_min, setLimit_min] = useState(monitorData?.options?.limit_min 	|| default_.limit_min)
+	const [color, setColor] 		= useState(monitorData?.options?.color 		|| default_.color)
+	const [pos, setPos] 			= useState(monitorData?.options?.pos 		|| default_.pos)
 
 	// autocomplete inputs
-	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts.at(1) : graphicOpts.at(0)
+	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ? default_.graphic_type.at(1) : default_.graphic_type.at(0)
 	const [graphic_type, setgraphic_type] = useState(monitorData?.options?.graphic_type || isEnumOrMonitor)
-	const [stroke, setStroke]             = useState(monitorData?.options?.stroke       || strokeOpts.at(1))
-	const [canvas, setCanvas]             = useState(monitorData?.options?.canvas       || canvasOpts.at(0))
-	const [unit, setUnit]                 = useState(monitorData?.options?.unit         || unitOpt.at(0))
-	const [prefix, setPrefix]             = useState(monitorData?.options?.prefix       || prefixOpt.at(0))
-	const [decimal, setDecimal]           = useState(monitorData?.options?.decimal      || patternOpts.at(0))
+	const [stroke, setStroke]             = useState(monitorData?.options?.stroke       || default_.stroke.at(1))
+	const [canvas, setCanvas]             = useState(monitorData?.options?.canvas       || default_.canvas.at(0))
+	const [unit, setUnit]                 = useState(monitorData?.options?.unit         || default_.unit.at(0))
+	const [prefix, setPrefix]             = useState(monitorData?.options?.prefix       || default_.prefix.at(0))
+	const [decimal, setDecimal]           = useState(monitorData?.options?.decimal      || default_.decimal.at(0))
 	
 	// Boxplot
 	const defautlInterval = (monitorData.summaryConfigs) ? monitorData.summaryConfigs.data.at(0).interval : ""
 	const [boxplot, setBoxplot] = useState({
-		isEnable: monitorData?.options?.boxplot?.isEnable                       || false,
-		onlyCollapseValues: monitorData?.options?.boxplot?.onlyCollapseValues   || false,
+		isEnable: monitorData?.options?.boxplot?.isEnable                       || default_.isEnable,
+		onlyCollapseValues: monitorData?.options?.boxplot?.onlyCollapseValues   || default_.onlyCollapseValues,
 		interval: monitorData?.options?.boxplot?.interval             			|| defautlInterval,
-		collapseValue: monitorData?.options?.boxplot?.collapseValue           	|| "",
+		collapseValue: monitorData?.options?.boxplot?.collapseValue           	|| default_.collapseValue,
 	})
 
 	/*
@@ -132,7 +135,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 			canvas: canvas,
 			enabled_color: enabled_color,
 			color: (enabled_color) ? color : "",
-			pos: (fnIsArray(monitorData.type)) ? pos : null,
+			pos: (fnIsArray(monitorData.type)) ? stringPositions(pos) : null,
 			prefix: fnIfExistDefault(prefix),
 			unit: fnIfExistDefault(unit),
 			decimal: fnIfExistDefault(decimal)
@@ -157,9 +160,8 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	 * store the selected monitor options in the redux variable
 	 */
 	useEffect(() => {
-		if(monitorData){
+		if(monitorData)
 			saveOptionsCallBack()
-		}
 	}, [])
 
 	/*
@@ -401,7 +403,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 									id={`grafic-type` + id}
 									name={"graphic_type"}
 									className="input-limits-grafic-options input-select-graphic grafic-type"
-									options={graphicOpts}
+									options={default_.graphic_type}
 									onChange={(e, newValue) => {
 										setgraphic_type(newValue)
 									}}
@@ -417,7 +419,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 									id={`strokeWidth` + id}
 									name="stroke"
 									className="input-limits-grafic-options input-select-graphic stroke-width"
-									options={strokeOpts}
+									options={default_.stroke}
 									onChange={(e, newValue) => {
 										setStroke(newValue)
 									}}
@@ -431,7 +433,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 									id={`canvas` + id}
 									name="canvas"
 									className="input-limits-grafic-options input-select-graphic canvas-width"
-									options={canvasOpts}
+									options={default_.canvas}
 									onChange={(e, newValue) => {
 										setCanvas(newValue)
 									}}
@@ -481,7 +483,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 									<LtTooltip
 									title={
 										<React.Fragment>
-										<b className="label-indHlp-tooltip">{"Instructions:"}</b><br />
+										<b className="label-indHlp-tooltip">{"Info:"}</b><br />
 										<span className="indHlp-vis">{"This option set how many decimals places"}</span><br />
 										<span className="indHlp-vis">{"you want to display in the value."}</span><br />
 										</React.Fragment>
@@ -499,7 +501,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 									id={`Pattern` + id}
 									name="deimnalPattern"
 									className="input-limits-grafic-options input-select-pattern deimnalPattern"
-									options={patternOpts}
+									options={default_.decimal}
 									onChange={(e, newValue) => {
 										setDecimal(newValue)
 									}}
@@ -522,7 +524,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 								type={monitorData.type}
 								pos={pos}
 								setPos={setPos}
-								defaultPos={defaultPos}
+								defaultPos={default_.pos}
 								applyChangesWarning={applyChangesWarning}
 								dimension_x={monitorData.dimension_x}
 								dimension_y={monitorData.dimension_y}

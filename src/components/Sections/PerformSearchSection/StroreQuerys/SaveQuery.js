@@ -221,7 +221,7 @@ function SaveQuery({timeQuery, editing}) {
 			const prefix = (options.prefix === null || options?.prefix === "Default") ? undefined : options.prefix
 			const decimal = (options.decimal === null || options.decimal === "Default") ? undefined : options.decimal
 			const pos = (fnIsArray(val.type)) ? 
-			(options.pos === null || options.pos === "" || options.pos === undefined) ? "[[-1]]" : "["+options.pos+"]" : undefined
+			(options.pos === null || options.pos === "" || options.pos === undefined) ? "[[-1]]" : options.pos : undefined
 			return { unit, prefix, decimal, pos, summary, options }
 		} catch (error) {
 			PopUpMessage({type:'error', message:error})
