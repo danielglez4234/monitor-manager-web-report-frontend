@@ -82,8 +82,8 @@ function ListComponentMonitor() {
 	/*
 	 * Get All Components
 	 */
-	const loadComponents = () => {
-		Promise.resolve( getComponents() )
+	const loadComponents = async () => {
+		await Promise.resolve( getComponents() )
 		.then(res => {
 			setConnectionError(false)
 			setData_components(res)
@@ -127,14 +127,14 @@ function ListComponentMonitor() {
 	/*
 	 * Get All MonitorsMagnitude and state from a Component
 	 */
-	const getMonitors = (title) =>{
+	const getMonitors = async (title) =>{
 		document.getElementById('searchInputCompMon').value = '' // reset the value of the search input when a component is clicked
 		if (component_clicked !== title)
 		{
 			setInitialStateMonitors(false)
 			setComponent_clicked(title)
 			setLoadingMonitors(true)
-			Promise.resolve( getMonitorsFromComponent(title) )
+			await Promise.resolve( getMonitorsFromComponent(title) )
 			.then(res => {
 				if (res.magnitudeDescriptions.length > 0 || res.monitorDescription.length > 0) 
 				{

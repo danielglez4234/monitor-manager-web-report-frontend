@@ -198,10 +198,9 @@ CSS INDIVIDUALS TAGS
 }
 
 
-
-
-
-
+/*
+ *TODO: generalizar
+ */
 .no-data-error-message{
   text-align: center;
   display: flex;
@@ -211,8 +210,20 @@ CSS INDIVIDUALS TAGS
   left: 50%;
   margin-left: -238px;
 }
-
+.server-error-error-message{
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  margin-top: 100px;
+  position: absolute;
+  left: 50%;
+  margin-left: -150px;
+}
 .no-data-error-message p {
+  font-family: "RobotoMono-Bold";
+  color: gray;
+}
+.server-error-error-message p {
   font-family: "RobotoMono-Bold";
   color: gray;
 }
@@ -221,6 +232,15 @@ CSS INDIVIDUALS TAGS
   left: 50%;
   font-size: 100px !important;
   color: #86bdae;
+}
+.icon-server-error{
+  position: relative;
+  left: 50%;
+  font-size: 130px !important;
+  color: #86bdae;
+}
+.error-icon{
+  margin-left: -65px;
 }
 .help-icon{
   margin-left: -50px;

@@ -19,101 +19,15 @@ import NearbyErrorIcon from '@mui/icons-material/NearbyError';
 import HandleMessage from '../../../handleErrors/HandleMessage';
 
 
-const data_test = [
-	{
-	  time_sample: "2019-08-01 13:00:00.000",
-	  q3: 132.3,
-	  max: 136.96,
-	  min: 131.15,
-	  q1: 136.49,
-	  median: 135.96,
-	  mean: (135.9 -1)
-	},
-	{
-	  time_sample: "2019-08-01 13:05:00.000",
-	  q3: 135.26,
-	  max: 135.95,
-	  min: 131.5,
-	  q1: 131.85,
-	  median: 133.95,
-	  mean: (133.9 -1)
-	},
-	{
-	  time_sample: "2019-08-01 13:10:00.000",
-	  q3: 129.9,
-	  max: 133.27,
-	  min: 128.3,
-	  q1: 132.25,
-	  median: 130.40,
-	  mean: (130.40 -1)
-	},
-	{
-	  time_sample: "2019-08-01 13:15:00.000",
-	  q3: 132.94,
-	  max: 136.24,
-	  min: 132.63,
-	  q1: 135.03,
-	  median: 134.27,
-	  mean: (134.27 -1)
-	},
-	{
-	  time_sample: "2019-08-01 13:20:00.000",
-	  q3: 136.76,
-	  max: 137.86,
-	  min: 132.0,
-	  q1: 134.01,
-	  median: 135.27,
-	  mean: (135.27 -1)
-	},
-	{
-	  time_sample: "2019-08-01 13:25:00.000",
-	  q3: 131.11,
-	  max: 133.0,
-	  min: 125.09,
-	  q1: 126.39,
-	  median: 129.27,
-	  mean: (129.27 -1)
-	},
-	{
-	  time_sample: "2019-08-01 13:30:00.000",
-	  q3: 130.11,
-	  max: 133.0,
-	  min: 125.09,
-	  q1: 127.39,
-	  median: 129.27,
-	  mean: (129.27 -1)
-	},
-	{
-	  time_sample: "2019-08-01 13:35:00.000",
-	  q3: 125.11,
-	  max: 126.0,
-	  min: 121.09,
-	  q1: 122.39,
-	  median: 124.27,
-	  mean: (124.2 -1)
-	},
-	{
-	  time_sample: "2019-08-01 13:40:00.000",
-	  q3: 131.11,
-	  max: 133.0,
-	  min: 122.09,
-	  q1: 124.39,
-	  median: 130.27,
-	  mean: 130.27
-	}
-  ];
-
-
-
 const PROCESSOR = {
 	numericField: "value",
 	dateField: "time_sample",
-	lowValueField: "min",
-	highValueField: "max",
-	q1ValueField: "q1",
-	q3ValueField: "q3",
-	meanValueField: "mean",
-	meadianValueField: "median"
+	lowValueField: "MIN",
+	highValueField: "MAX",
+	q1ValueField: "Q1",
+	q3ValueField: "Q3",
+	meanValueField: "MEAN",
+	meadianValueField: "MEDIAN"
 }
 const FORMATER = {
 	dateFormat: "yyyy-MM-dd HH:mm:ss.SSS",
@@ -134,24 +48,31 @@ const getIndexFromID = (fromArray, inArray) => {
 	})
 }
 
+/*
+ * transform from string to array
+ * expected str => eg. "[12, 32 ,3456, 7865, 345, 34]"
+ */
+const stringToArray = (str) => {
+	try {
+		// delete first and last "[ ]" and split
+		return str.substring(1).slice(0, -1).split(',')
+	} catch (error) {
+		console.error(error)
+	}
+}
+
 
 function Graphic() {
 	const [msg, PopUpMessage]  = HandleMessage()
 	const getResponse          = useSelector(state => state.getResponse)
 	const monitor 			   = useSelector(state => state.monitor)
 	const reload               = useSelector(state => state.reload)
-	const searchErrors         = useSelector(state => state.searchErrors)
+	const error                = useSelector(state => state.searchErrors)
 	let root // graphic root variable initialization
 
 	const [noDataRecived, setNoDataRecived] = useState(false);
 	const [error, setError] = useState(false);
 
-	/*
-	 * if a data search error is sent
-	 */
-	useEffect(() => {
-		setError(searchErrors)
-   	}, [searchErrors])
 
    	/*
 	 * handle the server's values for display
@@ -177,11 +98,12 @@ function Graphic() {
 	 */
 	const buildBoxplotGraphicValues = (date, _value, collapseBind) => {
 		try {
-			if(Array.isArray(_value)) {
+			const arr_value = stringToArray(_value)
+			if(Array.isArray(arr_value)) {
 				const instance = {}
 				const time_sample = parseInt(date)
 				for (const [key, value] of Object.entries(collapseBind))
-					instance[key] = parseFloat(_value[value])
+					instance[key] = parseFloat(arr_value[value])
 				return { time_sample, ...instance }
 			}
 			else{
@@ -203,31 +125,31 @@ function Graphic() {
 		
 			const info_ = []
 			// we remove these two fields so that the indexes of the graphical monitor options match more easily
-			if(columns_[0].name === "TimeStamp"){
+			if(columns_.at(0).name === "TimeStamp"){
 				columns_.shift() // delete timeStamp
 				columns_.shift() // delete timeStampLong
 			}
 			const indexOfFrom_ = getIndexFromID(columns_, monitor)
 			
 			columns_.map((columns_row, index) => {
-				const optionsIndex = indexOfFrom_[index]
-				const options = (optionsIndex !== undefined) ? monitor[optionsIndex].options : monitor[0].options
+				const optionsIndex = indexOfFrom_.at(index)
+				const options = (optionsIndex !== undefined) ? monitor.at(optionsIndex).options : monitor.at(0).options
 				
 				const data = []
 				samples_.map((sample_val) => {
 
-					const date = sample_val[1].substring(0, sample_val[1].length - 3) // convert to milliseconds (the chart does not support microseconds)
-					let value  = sample_val[index+2] // +2 => jumping timestamp and timestampLong
+					const date = sample_val.at(1).substring(0, sample_val.at(1).length - 3) // convert to milliseconds (the chart does not support microseconds)
+					let value  = sample_val.at(index+2) // +2 => jumping timestamp and timestampLong
 					
 					const isMagnitude = columns_row?.stateOrMagnitudeValuesBind
-					const isCollapsed = columns_row?.collapseValuesBind
+					const isSummary = columns_row?.summaryValuesBind
 
 					if (value !== "" && value.length > 0){
-						if (typeof isMagnitude !== "undefined" && isMagnitude !== null){
+						if (isMagnitude)
 							value = isMagnitude[value]
-						}
-						if(typeof isCollapsed !== "undefined" && isCollapsed !== null){
-							data.push( buildBoxplotGraphicValues(date, value, isCollapsed))
+
+						if(isSummary && options.boxplot.isEnable && !options.boxplot.onlyCollapseValues){
+							data.push( buildBoxplotGraphicValues(date, value, isSummary))
 						}
 						else
 						{
@@ -251,8 +173,10 @@ function Graphic() {
 				const unit_abbr = (columns_row?.unit !== null) ? columns_row.unit.abbreviature : ""
 				// save monitor storage period
 				const storagePeriod = columns_row.storagePeriod
+				// save monitor summary period
+				const summaryPeriod = columns_row.summaryPeriod
 
-				info_.push({name, unit_abbr, storagePeriod, data, ...options})
+				info_.push({name, unit_abbr, storagePeriod, summaryPeriod, data, ...options})
 			})
 			return info_
 		} catch (error) {
@@ -276,7 +200,7 @@ const getRootTheme = () => {
 }
 
   /*
-   *  Chart initialization
+   *  Chart init
    *   - When the component is mounted, the root is initialized, since responseData is empty for the moment nothing is shown
    +   - When the responseData subscriber receives the data the function is executed again, the change of [responseData] will trigger the update of the function.
    *       - the same for [reload] the function will be updated with the new data
@@ -285,39 +209,45 @@ const getRootTheme = () => {
 useEffect(() => {
     root = am5.Root.new("chartdiv") // Create root element =ref=> <div id="chartdiv"></div>
     root.fps = 40
-
-	if (getResponse.length === 0)
-		setNoDataRecived(false)
-	else
-	{
-		if(!getResponse.responseData?.samples)
-		{
-			setNoDataRecived(true)
-			$("#initialImg").addClass('display-none')
-		}
-		else if (getResponse.responseData.samples.length > 0)
-		{
-			root.setThemes(getRootTheme())
-			const graphicData = arrangeData(getResponse)
-
-			if(graphicData !== undefined)
-			{
-				generateGraphic(graphicData)
-				setNoDataRecived(false)
-			}
-			else
-				PopUpMessage({type:'error', message:'The data could not be processed, please contact the administrator to fix this.'})
+	console.log("exquiusme", error)
+	if(!error){
+		console.log("no entres")
+		if (getResponse.length === 0){
+			setNodataRecive(false)
 		}
 		else
-			setNoDataRecived(true)
+		{
+			if(!getResponse.responseData?.samples)
+			{
+				setNodataRecive(true)
+				$("#initialImg").addClass('display-none')
+			}
+			else if (getResponse.responseData.samples.length > 0)
+			{
+				root.setThemes(getRootTheme())
+				const graphicData = arrangeData(getResponse)
+				
+				if(graphicData !== undefined)
+				{
+					generateGraphic(graphicData)
+					setNodataRecive(false)
+				}
+				else
+				PopUpMessage({type:'error', message:'The data could not be processed, please contact the administrator to fix this.'})
+			}
+			else
+				setNodataRecive(true)
+		}
+	}else{
+		setNodataRecive(false)
 	}
-
+	
     // store current value of root and restore root element when update
     root.current = root
     return () => {
       	root.dispose()
     }
-}, [getResponse, reload])
+}, [getResponse, reload, error])
 
 
 /*
@@ -355,23 +285,25 @@ const getXRenderer = (grid) => {
 
 
 /*
- * Calculate tooltip 
+ * Calculate scale base count 
  */
 const getMillisecondBaseCount = (info) => {
 	let totalSum = 0;
 	const globalSampling = getResponse.sampling_period
 	const totalLength = info.length
-	if (globalSampling === 0) 
+	if (globalSampling === 0)
 	{
-		for (let n = 0; n < info.length; n++) 
+		for (let n = 0; n < info.length; n++)
 		{
-			const ifsampling = (info[n].storagePeriod === "") ? 2000000 : info[n].storagePeriod
+			const period = info[n].summaryPeriod || info[n].storagePeriod
+
+			const ifsampling = (period === "") ? 2000000 : period
 			const numSampling = Math.trunc(ifsampling) / 1000 // tranform to milliseconds
 			totalSum += numSampling
 		}
 		return totalSum / totalLength
 	}
-	else 
+	else
 	{
 		return globalSampling / 1000
 	}
@@ -437,7 +369,7 @@ const boxplotSeriesConfiguration = (name) => {
 		valueXField: PROCESSOR.dateField,
 		tooltip: am5.Tooltip.new(root, {
 			pointerOrientation: "horizontal",
-			labelText: "open: {openValueY}\nlow: {lowValueY}\nhigh: {highValueY}\nclose: {valueY},\nmedian: {median}\nmean: {mean}"
+			labelText: `[bold]${name}[/]\n${PROCESSOR.highValueField}: {highValueY}\n${PROCESSOR.q3ValueField}: {openValueY}\n${PROCESSOR.meadianValueField}: {MEDIAN}\n${PROCESSOR.q1ValueField}: {valueY},\n${PROCESSOR.lowValueField}: {lowValueY}`
 		})
 	}
 }
@@ -464,24 +396,24 @@ const addMedianSeriesDefaultConf = (props) => {
  * // mean series
  * get boxplot mean values default options 
  */
-const addMeanSeriesDefaultConf = (props) => {
-	let meanSeries = props.chart.series.push(
-		am5xy.StepLineSeries.new(root, {
-			stroke: "#d1d8d9",
-			// name: PROCESSOR.meanValueField,
-			xAxis: props.dateAxis,
-			yAxis: props.valueAxis,
-			valueYField: PROCESSOR.meanValueField,
-			valueXField: PROCESSOR.dateField,
-			noRisers: true
-		})
-	)
-	meanSeries.strokes.template.setAll({
-		strokeDasharray: [2, 2],
-		strokeWidth: 2
-	})
-	return meanSeries
-}
+// const addMeanSeriesDefaultConf = (props) => {
+// 	let meanSeries = props.chart.series.push(
+// 		am5xy.StepLineSeries.new(root, {
+// 			stroke: "#d1d8d9",
+// 			// name: "josué " +PROCESSOR.meanValueField,
+// 			xAxis: props.dateAxis,
+// 			yAxis: props.valueAxis,
+// 			valueYField: PROCESSOR.meanValueField,
+// 			valueXField: PROCESSOR.dateField,
+// 			noRisers: true
+// 		})
+// 	)
+// 	meanSeries.strokes.template.setAll({
+// 		strokeDasharray: [2, 2],
+// 		strokeWidth: 2
+// 	})
+// 	return meanSeries
+// }
 
 /*
  * get series
@@ -490,9 +422,10 @@ const getSeries = (props, data) => {
 	try {
 		let config
 		const isBoxplotEnabled = data?.boxplot?.isEnable
+		const onlyCollapseValues = data?.boxplot?.onlyCollapseValues
 		const seriesType = data.graphicType
 
-		if(isBoxplotEnabled)
+		if(isBoxplotEnabled && !onlyCollapseValues)
 			config = boxplotSeriesConfiguration(data.name)
 		else
 			config = seriesConfiguration(data)
@@ -500,7 +433,7 @@ const getSeries = (props, data) => {
 		config["xAxis"] = props.dateAxis
 		config["yAxis"] = props.valueAxis
 
-		if(isBoxplotEnabled)
+		if(isBoxplotEnabled && !onlyCollapseValues)
 			return props.chart.series.push(am5xy.CandlestickSeries.new(root, config))
 		else if(seriesType === "Step Line Series")
 			return props.chart.series.push(am5xy.StepLineSeries.new(root, config))
@@ -611,7 +544,7 @@ const generateGraphic = (info) =>{
 	const sciNotation = (generalOptions.scientificNotation) ? "e" : ""
     root.numberFormatter.setAll({
 		numberFormat: FORMATER.numberFormat + sciNotation,
-    });
+    })
 
     /*
      * Set Local Time Zone to avoid default date formating
@@ -627,7 +560,7 @@ const generateGraphic = (info) =>{
 			wheelY: "zoomX",
 			maxTooltipDistance: 0
 		})
-    );
+    )
 
     /*
      * Add Value Y Axis
@@ -639,7 +572,7 @@ const generateGraphic = (info) =>{
 		min: limitMIN,
 		max: limitMAX,
 		renderer: getYRenderer(grid)
-    }));
+    }))
 
     /*
      *  Set the format for representing the values and set the data count interval 
@@ -650,12 +583,9 @@ const generateGraphic = (info) =>{
 		baseInterval: {
 			timeUnit: FORMATER.timeInterval,
 			count: getMillisecondBaseCount(info)
-			// count: baseIntervalmedian(info)
-			// count: 250000
 		},
 		renderer: getXRenderer(grid)
     }))
-	console.log("baseIntervalmedian ===", baseIntervalmedian(info))
 
     /*
      * Format the date depending on the time unit to be displayed
@@ -672,12 +602,10 @@ const generateGraphic = (info) =>{
 		// Set Series
 		series = getSeries(graphProps, data_)
 
-		// if a boxplot exist the way to show the median is using the steps series type
-		if(data_?.boxplot){
+		// if boxplot is enabled the way to show the median is using the steps series type
+		if(data_?.boxplot.isEnable && !data_?.boxplot.onlyCollapseValues){
 			addMedianSeriesDefaultConf(graphProps).data.setAll(data_.data)
-			// addMedianSeriesDefaultConf(graphProps).data.setAll(data_test)
-			addMeanSeriesDefaultConf(graphProps).data.setAll(data_.data)
-			// addMeanSeriesDefaultConf(graphProps).data.setAll(data_test)
+			// addMeanSeriesDefaultConf(graphProps).data.setAll(data_.data)
 		}
 		else{
 			// Set Series line weight and dashArray view // this doesn't work with boxplot series type
@@ -760,7 +688,7 @@ const generateGraphic = (info) =>{
 		}
 
 		// TODO: NOT_WORKING: el evento hover salta un excepción con el tipo de gráfica boxplot
-		// if(false){
+		if(false){
 			//  When hovering over the legend element container, all series are dimmed except the one hovered over.
 			legend.itemContainers.template.events.on("pointerover", function(e) {
 				let itemContainer = e.target;
@@ -788,7 +716,7 @@ const generateGraphic = (info) =>{
 					});
 				});
 			})
-		// }
+		}
 
 		// align legends content in the container
 		legend.itemContainers.template.set("width", am5.p100);
@@ -807,7 +735,7 @@ const generateGraphic = (info) =>{
 	chart.set("cursor", am5xy.XYCursor.new(root, {
 		behavior: "zoomX",
 		xAxis: dateAxis
-	}));
+	}))
 
 	/*
 	 * if microTheme is active
@@ -819,7 +747,7 @@ const generateGraphic = (info) =>{
 
 		dateAxis.set("tooltip", am5.Tooltip.new(root, {
 			themeTags: ["axis"]
-		}));
+		}))
 	}
 
 	/*
@@ -829,7 +757,7 @@ const generateGraphic = (info) =>{
 	scrollbarX = am5.Scrollbar.new(root, {
 		orientation: "horizontal",
 		exportable: false
-	});
+	})
 	chart.set("scrollbarX", scrollbarX);
 	// chart.bottomAxesContainer.children.push(scrollbarX);
 
@@ -837,7 +765,7 @@ const generateGraphic = (info) =>{
 	scrollbarY = am5.Scrollbar.new(root, {
 		orientation: "vertical",
 		exportable: false
-	});
+	})
 	chart.set("scrollbarY", scrollbarY);
 	chart.leftAxesContainer.children.push(scrollbarY);
 
@@ -855,7 +783,7 @@ const generateGraphic = (info) =>{
 			time_sample: "Date"
 		},
 		dataFieldsOrder: ["date", "value"]
-	});
+	})
 } // end generateGraphic
 
 
@@ -869,22 +797,22 @@ const generateGraphic = (info) =>{
 			<InsertChartIcon id="initialImg" className="display-none" />
 
 			{
-			(noDataRecived) ?
-					<div className="no-data-error-message">
-						<LiveHelpIcon className="icon-no-data help-icon" />
-						<MoreHorizIcon className="icon-no-data dot-icon" />
-						<p>No Data Available.</p>
-						<p>Try to use a different date range or a different Monitor.</p>
-					</div>
-				:
-				(error) ? 
-					<div className="no-data-error-message"> 
-						<NearbyErrorIcon className="icon-no-data help-icon error-color" />
-						<p>An error has ocurred!</p>
-						<p>If the error persist</p>
-						<p>please contact the administrators.</p>
-					</div>
-				: ""
+			(error) ? 
+				<div className="server-error-error-message"> 
+					<NearbyErrorIcon className="icon-server-error error-icon error-color" />
+					<p>An error has ocurred!</p>
+					<p>If the error persist</p>
+					<p>please contact the administrators.</p>
+				</div>
+			:
+			(nodataRecive) ?
+				<div className="no-data-error-message">
+					<LiveHelpIcon className="icon-no-data help-icon" />
+					<MoreHorizIcon className="icon-no-data dot-icon" />
+					<p>No Data Available.</p>
+					<p>Try to use a different date range or a different Monitor.</p>
+				</div>
+			: ""
 			}
 			</div>
 		</div>

@@ -139,14 +139,14 @@ function SaveQuery({timeQuery, editing}) {
 	/*
 	 * save query
 	 */
-	const fnSaveQuery = () => {
+	const fnSaveQuery = async () => {
 		const payload = createPayload()
 
 		const fnAction = (editing?.active && ifSameQueryName) 
 			? () => updateQuery(queryName, payload) 
 			: () => insertQuery(payload);
 
-		Promise.resolve( fnAction() )
+		await Promise.resolve( fnAction() )
 		.then(() =>{
 			if(editing?.active){
 				if(ifSameQueryName && queryDescription !== editing.description)
@@ -195,27 +195,36 @@ function SaveQuery({timeQuery, editing}) {
 		}
 	}
 
-
+	/*
+	 * arrange summary conf
+	 */
+	const getSummaryConf = (conf) => {
+		try {
+			const isEnable = conf.isEnable
+			const onlyCollapseValues = conf.onlyCollapseValues
+			const config = (isEnable) ? (conf.interval) ? conf.interval: null : null
+			const attr = (onlyCollapseValues) ? (conf.collapseValue) ? conf.collapseValue.toLowerCase() : null : null
+			return {config, attr}
+		} catch (error) {
+			PopUpMessage({type:'error', message:error})
+		}
+	}
+	
 	/*
 	 * separate monitor options 
 	 */
 	const confOptionsSeparator = (val) => {
-		const options = val.options
-		const unit  = (options.unit === null || options?.unit === "Default") ? undefined : options.unit
-		const prefix = (options.prefix === null || options?.prefix === "Default") ? undefined : options.prefix
-		const decimal = (options.decimal === null || options.decimal === "Default") ? undefined : options.decimal
-		const pos = (fnIsArray(val.type)) ? 
-		(options.pos === null || options.pos === "" || options.pos === undefined) ? "[[-1]]" : "["+options.pos+"]" : undefined
-		delete val.options.prefix
-		delete val.options.unit
-		delete val.options.decimal
-		delete val.options.pos
-		return {
-			unit,
-			prefix,
-			decimal,
-			pos,
-			options
+		try {
+			const options = val.options
+			const summary = getSummaryConf(val.options?.boxplot)
+			const unit  = (options.unit === null || options?.unit === "Default") ? undefined : options.unit
+			const prefix = (options.prefix === null || options?.prefix === "Default") ? undefined : options.prefix
+			const decimal = (options.decimal === null || options.decimal === "Default") ? undefined : options.decimal
+			const pos = (fnIsArray(val.type)) ? 
+			(options.pos === null || options.pos === "" || options.pos === undefined) ? "[[-1]]" : "["+options.pos+"]" : undefined
+			return { unit, prefix, decimal, pos, summary, options }
+		} catch (error) {
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 

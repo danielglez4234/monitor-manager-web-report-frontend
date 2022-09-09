@@ -226,9 +226,9 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 	/*
 	 * get querys from server
 	 */
-	const loadQuerys = () => {
+	const loadQuerys = async () => {
 		setLoadingQuerys(true)
-		Promise.resolve(getAllQuerys())
+		await Promise.resolve(getAllQuerys())
 		.then((res) => {
 			if(res.length > 0){
 				const fillrow = res.map(val => createRows(val))
@@ -261,7 +261,7 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 	/*
 	 * delete query
 	 */
-	const deleteQueryFromServer = (name) => {
+	const deleteQueryFromServer = async (name) => {
 		setLoadingQuerys(true)
 		const obj = (typeof name === "object") ? setObjectFromEntries(name, "name") : name
 
@@ -271,7 +271,7 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 		else
 			params.append('name', obj);
 
-		Promise.resolve(deleteQuery(params))
+		await Promise.resolve(deleteQuery(params))
 		.then(() => {
 			loadQuerys()
 			console.log("Query Deleted Correctly!!")
@@ -291,12 +291,15 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 	 */
 	const handleLoadQuery = (query, edit) => {
 		let monitors_ = []
-		if(Array.isArray(query)){
+		if(Array.isArray(query))
+		{
 			for (let i = 0; i < checkedRowsData.length; i++) {
 				monitors_.push(arrageMonitors(getMonitorInfo(checkedRowsData[i])))
 			}
 			dispatch(handleSelectedElemets('concatMultiple', null, monitors_.flat(), null))
-		}else{
+		}
+		else
+		{
 			monitors_ = arrageMonitors(getMonitorInfo(query))
 			dispatch(handleSelectedElemets('addMultiple', null, monitors_, null))
 		}

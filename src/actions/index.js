@@ -1,6 +1,11 @@
 // TODO: REFACTOR: 
 // export only one action that references all the types
-
+export const setSearchErrors = (error) => { // <-- boolean
+	return{
+		type: 'errorWhileSearching',
+		searchErrors: error
+	}
+}
 
 export const handleSelectedElemets = (type, id, data, options) => {
 	return{

@@ -121,7 +121,7 @@ export const getCategory = (type) =>{
 /*
  * check of object send is empty
  */
-export const isObjEmpty = (x) => {
+export const isEmpty = (x) => {
 	try {
 		if(Array.isArray(x))
 			return x.length === 0

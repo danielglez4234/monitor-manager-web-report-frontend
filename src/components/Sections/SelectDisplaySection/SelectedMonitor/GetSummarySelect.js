@@ -9,11 +9,13 @@ import {
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 
-const GetSummarySelect = ({boxplot, setBoxplot}) => {
-    const loading = Boolean()
-    const summaryOptions = ["hola", "test", "prog", "foi", "djn"]
-    const collapseValuseOptions = ["max", "min", "q1", "q3", "mean"]
-
+const GetSummarySelect = ({id, monitorData, boxplot, setBoxplot, constraints}) => {
+    const intervalOptions = monitorData.summaryConfigs.data.map(x => x.interval)
+	const collapseValuesOptions = monitorData.summaryConfigs.values
+    
+    /*
+     * handle onChange for boxplot object state 
+     */
     const handleOnChange = (name, value) => {
         setBoxplot(prevState => ({
             ...prevState,
@@ -21,26 +23,8 @@ const GetSummarySelect = ({boxplot, setBoxplot}) => {
         }))
     }
 
-    /*
-     * Get summary Intervals
-     */
-    const getSummaryIntervals = () => {
-        // Promise.resolve()
-        // .then((res) => {
-        //     setSummaryIntervals(handleOnChange("intervals", res))
-        // })
-        // .catch((error) => {
-        //     console.log(error)
-        // })
-        // .finally(() => {
 
-        // })
-    }
-
-    
-
-
-    return ( 
+    return (
         <div className="monitor-selected-select-box">
             <div className="checkbox-monitor-selected">
                 <div className="label-monitor-settings">BoxPlot:</div>
@@ -50,10 +34,9 @@ const GetSummarySelect = ({boxplot, setBoxplot}) => {
                         label={
                             <Fragment>
                                 <b className="checkbox-monitor-selected-label">
-                                {/* { */}
-                                    {/* (!boxplot.onlyCollapseValues) ? "Display" : "Only Values" */}
-                                {/* } */}
-                                    Display
+                                {
+                                    "Display"
+                                }
                                 </b>
                             </Fragment>
                         }
@@ -61,10 +44,11 @@ const GetSummarySelect = ({boxplot, setBoxplot}) => {
                             <Checkbox
                                 sx={{ '&:hover': { bgcolor: 'transparent' }}}
                                 size="small"
+                                onClick={() => {
+                                    constraints({apply_to: id})
+                                }}
                                 onChange={(e) => {
-                                    handleOnChange("isEnable", e.target.checked); 
-                                    if(boxplot.onlyCollapseValues)
-                                        handleOnChange("onlyCollapseValues", false)
+                                    handleOnChange("isEnable", e.target.checked)
                                 }}
                                 checkedIcon={<CheckBoxIcon sx={{color: "#52c8bd"}} /> }
                                 icon={<CheckBoxOutlineBlankIcon sx={{color: "#9396a4"}} />}
@@ -82,36 +66,15 @@ const GetSummarySelect = ({boxplot, setBoxplot}) => {
                 <Autocomplete
                     disablePortal
                     disableClearable
-                    disabled={!boxplot.isEnable}
                     className="input-limits-grafic-options input-select-prefix"
-                    name="summaryIntervals"
-                    onOpen={() => {
-                        if([].length < 2)
-                        {
-                            // setLoading(true);
-                            getSummaryIntervals();
-                        }
-                    }}
-                    // loading={loading}
-                    options={summaryOptions}
+                    name="interval"
+                    options={intervalOptions}
                     onChange={(e, newValue) => {
-                        handleOnChange("intervals", newValue)
+                        handleOnChange("interval", newValue)
                     }}
-                    value={boxplot.intervals}
+                    value={boxplot.interval}
                     renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            className={""}
-                            InputProps={{
-                            ...params.InputProps,
-                                endAdornment: (
-                                    <Fragment>
-                                        {loading ? <CircularProgress size={16} className="cicularProgress-unit" /> : null}
-                                        {params.InputProps.endAdornment}
-                                    </Fragment>
-                                ),
-                            }}
-                        />
+                        <TextField {...params} />
                     )}
                 />
             </div>
@@ -129,10 +92,9 @@ const GetSummarySelect = ({boxplot, setBoxplot}) => {
                             <Checkbox
                                 sx={{ '&:hover': { bgcolor: 'transparent' }}}
                                 size="small"
+                                name="onlyCollapseValues"
                                 onChange={(e) => {
                                     handleOnChange("onlyCollapseValues", e.target.checked)
-                                    if(boxplot.isEnable)
-                                        handleOnChange("isEnable", false)
                                 }}
                                 checkedIcon={<CheckBoxIcon sx={{color: "#52c8bd"}} /> }
                                 icon={<CheckBoxOutlineBlankIcon sx={{color: "#9396a4"}} />}
@@ -150,14 +112,13 @@ const GetSummarySelect = ({boxplot, setBoxplot}) => {
                 <Autocomplete
                     disablePortal
                     disableClearable
-                    disabled={!boxplot.onlyCollapseValues}
                     className="input-limits-grafic-options input-select-prefix"
                     name="onlyCollapseValues"
-                    options={collapseValuseOptions}
+                    options={collapseValuesOptions}
                     onChange={(e, newValue) => {
-                        handleOnChange("collapseValues", newValue)
+                        handleOnChange("collapseValue", newValue)
                     }}
-                    value={boxplot.collapseValues}
+                    value={boxplot.collapseValue}
                     renderInput={(params) => (
                         <TextField {...params} />
                     )}
