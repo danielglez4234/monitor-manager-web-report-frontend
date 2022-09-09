@@ -30,7 +30,6 @@ const sortDESC = (a, b) => {
  * create ranges 
  */
 const getRanges = (arr_) => {
-	console.log(arr_)
 	arr_.sort((a, b) => sortDESC(a, b))
 	const arrange_ = []
 	let range_ = []
@@ -49,7 +48,7 @@ const getRanges = (arr_) => {
 				range_ = []
 			}
 	}
-	return arrange_
+	return JSON.stringify(arrange_).replace(/"/g, "")
 }
 
 /*
@@ -59,18 +58,17 @@ const getRanges = (arr_) => {
 const convertToArrayFromTemplate = (str) => {
     try {
         const activeIndexes_ = []
-        const replace = str.replace(/;/g, ",")
-        const substring = replace.substring(1)
-        const lastLetter = substring.slice(0, - 1)
-        const result = lastLetter.split(",")
-    
-        result.map(val => {
+        const result = str.replace(/;/g, ",")
+		                  .substring(1)
+		                  .slice(0, - 1)
+		                  .split(",")
+        result.map(val => 
             activeIndexes_.push(
                 (val.includes("-"))
                 ? getRangeFromString(val)
                 : JSON.parse(val)
             )
-        })
+        )
         return activeIndexes_.flat().sort((a, b) => sortDESC(a, b))
     } catch (error) {
         console.error(error)
@@ -111,6 +109,7 @@ const GetIndexArrayModal = ({pos, setPos, defaultPos, applyChangesWarning, dimen
 	 * create ranges if necessary
 	 */
 	const setRanges = (arr_) => {
+		console.log(arr_)
 		setPos(getRanges(arr_))
 		setSelectedIndexes(arr_)
 		setActiveIndexes(getRanges(arr_))
