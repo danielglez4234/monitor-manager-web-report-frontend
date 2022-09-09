@@ -2,6 +2,25 @@ import { fnIsArray } from '../../standarFunctions'
 
 // TODO: REFACTOR: hacer esta función más eficiente
 
+
+/*
+ * get boxplot conf
+ */
+const getBoxplotConf = (item) => {
+    try {
+        const interval = item?.config
+        const collapseValue = item?.attr
+        return {
+            isEnable: Boolean(interval),
+            onlyCollapseValues: Boolean(collapseValue),
+            interval: interval || null,
+            collapseValue: collapseValue || null
+        }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 /*
  * Arrange the data received from the Backend according to the needs of the Frontend
  */
@@ -26,25 +45,27 @@ export const arrageMonitors =  (data) => {
             else if(item?.id_monitor_description){
                 // generate monitor element
                 monitorData = item.id_monitor_description
-                item.options["prefix"] 	= item.prefix
-                item.options["unit"] 	= item.unit
+                item.options["prefix"] = item.prefix
+                item.options["unit"] = item.unit
                 item.options["decimal"] = item.decimal
                 // TODO: REFACTOR: el slice no debería ser necesario
                 item.options["pos"] = (item?.pos && fnIsArray(item.id_monitor_description.type)) ? item.pos.slice(1, -1) : ""
+                item.options["boxplot"] = getBoxplotConf(item.summary || null)
+
                 monitorList.push({
-                    component_id, 
-                    name, 
-                    ...monitorData, 
+                    component_id,
+                    name,
+                    ...monitorData,
                     options
                 })
             }
             else{
                 // generate state element
                 monitorList.push({
-                    id: component_id, 
-                    name, 
-                    magnitude: "STATE", 
-                    type: "state", 
+                    id: component_id,
+                    name,
+                    magnitude: "STATE",
+                    type: "state",
                     options
                 })
             }

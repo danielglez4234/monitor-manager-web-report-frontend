@@ -12,7 +12,8 @@ import {
 	setSamples,
 	setTotalResponseData,
 	getUrl,
-	setActualPage
+	setActualPage,
+	setSearchErrors
 }
 from '../../../actions';
 import LoadingButton                            from '@mui/lab/LoadingButton';
@@ -95,6 +96,7 @@ function PerformQuery() {
 
 			dispatch(setSamples(res, timeQuery.sampling))
 			dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
+			dispatch(setSearchErrors(false))
 			console.log(`\
 				MonitorsMagnitude Data was recibe successfully!!\n \
 				Sampling Period Choosen: ${timeQuery.sampling} microsegundos\n \
@@ -106,6 +108,7 @@ function PerformQuery() {
 		.catch(error => {
 			const error_message = (error.response?.data) ? error.response.data.toString() : "Unsupported error";
 			const error_status = (error.response?.status) ? error.response.status : "Unknown"
+			dispatch(setSearchErrors(true))
 			PopUpMessage({type:'error', message:'Error: '+error_message+" - Code "+error_status})
 			console.error(error)
 		})

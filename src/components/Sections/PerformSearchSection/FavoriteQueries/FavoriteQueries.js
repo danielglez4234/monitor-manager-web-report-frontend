@@ -136,32 +136,15 @@ function FavoriteQueries({addItem}) {
 		try {
 			const data = await getLocalStorage()
 			if(!isFound(data, item))
-			{
-				const newSet = [...data, item]
-				await setLocalStorage(newSet)
-			}
-			else{
+				await setLocalStorage([...data, item])
+			else
 				PopUpMessage({type:'info', message:'The query '+item.name+' is already inside the favorite queries'})
-			}
 			load()
 		} catch (error) {
 			PopUpMessage({type:'error', message:error})
 		}
 	}
 
-	/*
-	 * get query from server by name
-	 */
-	const getQueryById = async (name) => {
-		backDropLoadOpen()
-		return await Promise.resolve(getQueryByName(name)).then(res => {return res})
-		.catch(error => {
-			console.error(error);
-			PopUpMessage({ type: 'error', message: error });
-		})
-		.finally(() => backDropLoadClose())
-	}
-	
 	/*
 	 * get monitor info
 	 */
@@ -188,14 +171,25 @@ function FavoriteQueries({addItem}) {
 	 */
 	const loadMonitors = async (type, name) => {
 		try {
-			const query = await getQueryById(name)
-			if(query.length > 1)
-				throw new Error("ERROR there is two queries with the same key")
-			else{
-				const monitors_ = monitorListJoin(query) // => [{...}]
-				const arrageList_ = arrageMonitors(monitors_)
-				dispatch(handleSelectedElemets(type, null, arrageList_, null))
-			}
+			backDropLoadOpen()
+			await Promise.resolve(getQueryByName(name))
+			.then(res =>  {
+				const query = res
+				if(query.length > 1)
+					throw new Error("ERROR there is two queries with the same key")
+				else{
+					const monitors_ = monitorListJoin(query) // => [{...}]
+					const arrageList_ = arrageMonitors(monitors_)
+					dispatch(handleSelectedElemets(type, null, arrageList_, null))
+				}
+			})
+			.catch(error => {
+				console.error(error)
+				const error_message = (error.response?.data) ? error.response.data.toString() : "Unsupported error";
+				const error_status = (error.response?.status) ? error.response.status : "Unknown"
+				PopUpMessage({type:'error', message:'Error: '+error_message+" - Code "+error_status})
+			})
+			.finally(() => backDropLoadClose())
 		} catch (error) {
 			PopUpMessage({type:'error', message:error})
 		}

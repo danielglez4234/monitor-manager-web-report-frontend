@@ -30,34 +30,43 @@ const getPagination = (pagination, isDownload) => {
  */
 const buildOptions = (opt) => {
     let queryOpt  = String()
+    const boxplot = opt?.boxplot?.isEnable
+    const onlycollapseValues = opt?.boxplot?.onlyCollapseValues
+
     const unit    = (opt.unit    !== "Default") ? opt.unit    : false
     const prefix  = (opt.prefix  !== "Default") ? opt.prefix  : false
     const decimal = (opt.decimal !== "Default") ? opt.decimal : false
-    // const summary = (opt.summary.length > 0) ? opt.summary : null
-    // const collapseValue = (opt.collapseValues.length > 0) ? opt.collapseValues : null
-    // const boxplot = opt?.boxplot?.isEnable
-    // const onlycollapseValues = opt?.boxplot?.onlycollapseValues
+
+    const interval = (opt.boxplot.interval !== "") ? opt.boxplot.interval : false
+    const collapseValue = (opt.boxplot.collapseValue !== "") ? opt.boxplot.collapseValue : false
     
-    if (unit || decimal)
+    if (unit || decimal || boxplot || onlycollapseValues)
     {
         queryOpt += "{"
         if(unit){
-            queryOpt += "unit:" + unit
+            queryOpt += `unit:${unit}`
             if(prefix){
-                queryOpt += ",prefix:" + prefix
+                queryOpt += `,prefix:${prefix}`
             }
         }
         if(decimal){
             if(unit){
                 queryOpt += ","
             }
-            queryOpt += "decimal:" + decimal
+            queryOpt += `decimal:${decimal}`
         }
-        // if(boxplot || onlycollapseValues){
-        //     queryOpt += `", sumary:"${summary}`
-        //     if(onlycollapseValues)
-        //         queryOpt += `, attr:${collapseValue}`
-        // }
+
+        if(interval){
+            if(unit || prefix || decimal){
+                queryOpt += ","
+            }
+            queryOpt += `summary:${interval}`
+            if(onlycollapseValues){
+                if(collapseValue){
+                    queryOpt += `,attr:${collapseValue.toLowerCase()}`
+                }
+            }
+        }
         queryOpt += "}"
     }
     return queryOpt
@@ -68,7 +77,7 @@ const buildOptions = (opt) => {
  */
 const getFormatDate = (date) => {
     try {
-        return date.replace(/\s{1}/,"@")
+        return date.replace(/\s{1}/,"@") + ".000"
     } catch (error) {
         console.error(error)
     }
@@ -78,8 +87,8 @@ const getFormatDate = (date) => {
  * build time range and sampling params
  */
 const buildTimeAndSampling = (tm) => {
-    const beginDate = getFormatDate(tm.beginDate) + ".000"
-    const endDate 	= getFormatDate(tm.endDate) + ".000"
+    const beginDate = getFormatDate(tm.beginDate) 
+    const endDate 	= getFormatDate(tm.endDate)
     const sampling  = "&sampling=" + tm.sampling
     return { beginDate, endDate, sampling }
 }

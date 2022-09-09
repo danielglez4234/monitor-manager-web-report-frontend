@@ -34,8 +34,6 @@ const canvasOpts  = [ "Default", "Dotted", "Dashed", "Large Dashed", "Dotted Das
 const patternOpts = [ "Default", "0.#", "0.##", "0.###", "0.####", "0.#####", "0.######", "0.#######", "0.########" ]
 const unitOpt     = [ "Default" ]
 const prefixOpt   = [ "Default" ]
-const summaryConfigOpt = [ "None" ]
-const collapseValuesOpt = [ "None" ]
 
 /*
  * Apply changes warning message
@@ -59,6 +57,10 @@ const handleClickOpenSettings = (id) => {
 	const offset = $('.id-TuneIcon-sett' + id).offset()
 	$('.id-mon-sett' + id).toggleClass('display-none').offset({ top: offset.top, right: offset.right})
 	$('.close-settingsMon' + id).toggleClass('display-none')
+}
+
+const handleSummaryCheck = () => {
+	
 }
 
 
@@ -97,15 +99,13 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	const [decimal, setDecimal]           = useState(monitorData?.options?.decimal      || patternOpts.at(0))
 	
 	// Boxplot
+	const defautlInterval = (monitorData.summaryConfigs) ? monitorData.summaryConfigs.data.at(0).interval : ""
 	const [boxplot, setBoxplot] = useState({
 		isEnable: monitorData?.options?.boxplot?.isEnable                       || false,
 		onlyCollapseValues: monitorData?.options?.boxplot?.onlyCollapseValues   || false,
-		summaryConfig: monitorData?.options?.boxplot?.summaryConfig             || summaryConfigOpt.at(0),
-		collapseValues: monitorData?.options?.boxplot?.collapseValues           || collapseValuesOpt.at(0),
+		interval: monitorData?.options?.boxplot?.interval             			|| defautlInterval,
+		collapseValue: monitorData?.options?.boxplot?.collapseValue           	|| "",
 	})
-
-	console.log("boxplot.isEnable", boxplot.isEnable)
-	console.log("monitorData?.options?.boxplot?.isEnable", monitorData?.options?.boxplot?.isEnable)
 
 	/*
 	 * handle get options
@@ -280,11 +280,10 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 
 
 					{
-						// (isEmpty(monitorData.summaryConfigs)) &&
+					(monitorData.summaryConfigs) &&
 						<GetSummarySelect
 							id={id}
-							component={monitorData.name}
-							magnitude={monitorData.magnitude}
+							monitorData={monitorData}
 							boxplot={boxplot}
 							setBoxplot={setBoxplot}
 							constraints={constraints}
