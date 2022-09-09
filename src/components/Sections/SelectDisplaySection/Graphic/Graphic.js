@@ -71,8 +71,6 @@ function Graphic() {
 	let root // graphic root variable initialization
 
 	const [noDataRecived, setNoDataRecived] = useState(false);
-	const [error, setError] = useState(false);
-
 
    	/*
 	 * handle the server's values for display
@@ -209,17 +207,17 @@ const getRootTheme = () => {
 useEffect(() => {
     root = am5.Root.new("chartdiv") // Create root element =ref=> <div id="chartdiv"></div>
     root.fps = 40
-	console.log("exquiusme", error)
-	if(!error){
-		console.log("no entres")
+
+	if(!error)
+	{
 		if (getResponse.length === 0){
-			setNodataRecive(false)
+			setNoDataRecived(false)
 		}
 		else
 		{
 			if(!getResponse.responseData?.samples)
 			{
-				setNodataRecive(true)
+				setNoDataRecived(true)
 				$("#initialImg").addClass('display-none')
 			}
 			else if (getResponse.responseData.samples.length > 0)
@@ -230,16 +228,16 @@ useEffect(() => {
 				if(graphicData !== undefined)
 				{
 					generateGraphic(graphicData)
-					setNodataRecive(false)
+					setNoDataRecived(false)
 				}
 				else
 				PopUpMessage({type:'error', message:'The data could not be processed, please contact the administrator to fix this.'})
 			}
 			else
-				setNodataRecive(true)
+				setNoDataRecived(true)
 		}
 	}else{
-		setNodataRecive(false)
+		setNoDataRecived(false)
 	}
 	
     // store current value of root and restore root element when update
@@ -805,7 +803,7 @@ const generateGraphic = (info) =>{
 					<p>please contact the administrators.</p>
 				</div>
 			:
-			(nodataRecive) ?
+			(noDataRecived) ?
 				<div className="no-data-error-message">
 					<LiveHelpIcon className="icon-no-data help-icon" />
 					<MoreHorizIcon className="icon-no-data dot-icon" />

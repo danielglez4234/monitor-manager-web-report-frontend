@@ -141,7 +141,7 @@ function SaveQuery({timeQuery, editing}) {
 	 */
 	const fnSaveQuery = async () => {
 		const payload = createPayload()
-
+		console.log("payload", payload)
 		const fnAction = (editing?.active && ifSameQueryName) 
 			? () => updateQuery(queryName, payload) 
 			: () => insertQuery(payload);
