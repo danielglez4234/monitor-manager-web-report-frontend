@@ -115,7 +115,7 @@ export default function buildUrl(monitors, timeAndSampling, pagination, isDownlo
                 if (index === '/' || !index){
                     queryRest += id + "[[-1]]"
                 }else{
-                    queryRest += id + index
+                    queryRest += id + "[" +index+ "]"
                 }
             }else if (fnIsState(type)){
                 queryRest += component

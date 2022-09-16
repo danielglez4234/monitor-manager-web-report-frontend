@@ -151,17 +151,18 @@ export const usesTyles = makeStyles({
 	 * select monitor array index section
 	 */
 	index_button_contained: {
-		backgroundColor: colors.white,
-		color: 'black',
+		backgroundColor: "#393b4a",
+		color: colors.white,
+		fontFamily: "RobotoMono-Bold",
 		'&:hover':{
-			backgroundColor: colors.white,
+			backgroundColor: "#393b4a",
 		}
 	},
 	
 	index_button_outlined: {
-		backgroundColor: 'transparent',
-		color: colors.white,
-		border: '1px solid' + colors.white,
+		border: "3px solid #c6d7e8",
+		color: "#c6d7e8",
+		fontFamily: "RobotoMono-Bold",
 		'&:hover':{
 			border: '1px solid gray'
 		}

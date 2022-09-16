@@ -36,6 +36,90 @@ const FORMATER = {
 	timeInterval: "millisecond"
 }
 
+const data_test = [
+	{
+	  time_sample: "2019-08-01 13:00:00.000",
+	  Q3: 132.312368903,
+	  MAX: 136.96312368903,
+	  MIN: 131.15312368903,
+	  Q1: 136.49312368903,
+	  MEDIAN: 135.96312368903,
+	  MEAN: (135.9312368903 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:05:00.000",
+	  Q3: 135.2612368903,
+	  MAX: 135.952612368903,
+	  MIN: 131.52612368903,
+	  Q1: 131.852612368903,
+	  MEDIAN: 133.952612368903,
+	  MEAN: (133.92612368903 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:10:00.000",
+	  Q3: 129.912368903,
+	  MAX: 133.27912368903,
+	  MIN: 128.3912368903,
+	  Q1: 132.25912368903,
+	  MEDIAN: 130.40912368903,
+	  MEAN: (130.40912368903 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:15:00.000",
+	  Q3: 132.9412368903,
+	  MAX: 136.249412368903,
+	  MIN: 132.639412368903,
+	  Q1: 135.039412368903,
+	  MEDIAN: 134.279412368903,
+	  MEAN: (134.279412368903 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:20:00.000",
+	  Q3: 136.7612368903,
+	  MAX: 137.867612368903,
+	  MIN: 132.07612368903,
+	  Q1: 134.017612368903,
+	  MEDIAN: 135.277612368903,
+	  MEAN: (135.277612368903 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:25:00.000",
+	  Q3: 131.1112368903,
+	  MAX: 133.01112368903,
+	  MIN: 125.091112368903,
+	  Q1: 126.391112368903,
+	  MEDIAN: 129.271112368903,
+	  MEAN: (129.271112368903 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:30:00.000",
+	  Q3: 130.1112368903,
+	  MAX: 133.01112368903,
+	  MIN: 125.091112368903,
+	  Q1: 127.391112368903,
+	  MEDIAN: 129.271112368903,
+	  MEAN: (129.271112368903 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:35:00.000",
+	  Q3: 125.1112368903,
+	  MAX: 126.01112368903,
+	  MIN: 121.091112368903,
+	  Q1: 122.391112368903,
+	  MEDIAN: 124.271112368903,
+	  MEAN: (124.21112368903 -1)
+	},
+	{
+	  time_sample: "2019-08-01 13:40:00.000",
+	  Q3: 131.1112368903,
+	  MAX: 133.01112368903,
+	  MIN: 122.091112368903,
+	  Q1: 124.391112368903,
+	  MEDIAN: 130.271112368903,
+	  MEAN: 1311123689030.27
+	}
+  ];
+
 /*
  * obtain the index of the element of the second matrix that matches it
  */
@@ -157,6 +241,7 @@ function Graphic() {
 								data.push( buildGraphicValues(date, value, options.logarithm) )
 						}
 					}
+					return null
 				})
 				// if "Only monitor name" is checked
 				let _name = columns_row.name
@@ -175,6 +260,7 @@ function Graphic() {
 				const summaryPeriod = columns_row.summaryPeriod
 
 				info_.push({name, unit_abbr, storagePeriod, summaryPeriod, data, ...options})
+				return null
 			})
 			return info_
 		} catch (error) {
@@ -367,7 +453,7 @@ const boxplotSeriesConfiguration = (name) => {
 		valueXField: PROCESSOR.dateField,
 		tooltip: am5.Tooltip.new(root, {
 			pointerOrientation: "horizontal",
-			labelText: `[bold]${name}[/]\n${PROCESSOR.highValueField}: {highValueY}\n${PROCESSOR.q3ValueField}: {openValueY}\n${PROCESSOR.meadianValueField}: {MEDIAN}\n${PROCESSOR.q1ValueField}: {valueY},\n${PROCESSOR.lowValueField}: {lowValueY}`
+			labelText: `[bold]${name}[/]\n${PROCESSOR.highValueField}: {highValueY}\n${PROCESSOR.q3ValueField}: {openValueY}\n${PROCESSOR.meadianValueField}: {MEDIAN}\n${PROCESSOR.q1ValueField}: {valueY}\n${PROCESSOR.lowValueField}: {lowValueY}`
 		})
 	}
 }
@@ -602,7 +688,7 @@ const generateGraphic = (info) =>{
 
 		// if boxplot is enabled the way to show the median is using the steps series type
 		if(data_?.boxplot.isEnable && !data_?.boxplot.onlyCollapseValues){
-			addMedianSeriesDefaultConf(graphProps).data.setAll(data_.data)
+			// addMedianSeriesDefaultConf(graphProps).data.setAll(data_.data) // TODO: descomentar
 			// addMeanSeriesDefaultConf(graphProps).data.setAll(data_.data)
 		}
 		else{
@@ -628,8 +714,8 @@ const generateGraphic = (info) =>{
 		});
 		
 		// Set series DATA
-		series.data.setAll(data_.data)
-		// series.data.setAll(data_test)
+		// series.data.setAll(data_.data)
+		series.data.setAll(data_test)
     } 	
 	
 	// --- --- --- --- --- end for 'Add All series ' --- --- --- --- --- --- ---

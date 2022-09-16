@@ -1,5 +1,5 @@
 export const CONSTRAINTS = {
-    apply_constraints: true,
+    apply_constraints: false,
     boxplot:{
         only_one_collapse_enabled: true,
         intervals:{

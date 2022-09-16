@@ -984,6 +984,7 @@ table.table-selected-monitors tr:nth-child(odd)
   flex: 1;
   padding:10px 25px;
   overflow-y: scroll;
+  border: 1px solid #393b4a;
 }
 
 
