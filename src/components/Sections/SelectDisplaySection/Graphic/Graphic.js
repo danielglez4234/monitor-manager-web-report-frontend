@@ -453,7 +453,7 @@ const boxplotSeriesConfiguration = (name) => {
 		valueXField: PROCESSOR.dateField,
 		tooltip: am5.Tooltip.new(root, {
 			pointerOrientation: "horizontal",
-			labelText: `[bold]${name}[/]\n${PROCESSOR.highValueField}: {highValueY}\n${PROCESSOR.q3ValueField}: {openValueY}\n${PROCESSOR.meadianValueField}: {MEDIAN}\n${PROCESSOR.q1ValueField}: {valueY}\n${PROCESSOR.lowValueField}: {lowValueY}`
+			labelText: `[bold]${name}[/]\n[bold]{valueX.formatDate('${FORMATER.dateFormat}')}[/]\n${PROCESSOR.highValueField}: {highValueY}\n${PROCESSOR.q3ValueField}: {openValueY}\n${PROCESSOR.meadianValueField}: {MEDIAN}\n${PROCESSOR.q1ValueField}: {valueY}\n${PROCESSOR.lowValueField}: {lowValueY}`
 		})
 	}
 }
@@ -688,7 +688,7 @@ const generateGraphic = (info) =>{
 
 		// if boxplot is enabled the way to show the median is using the steps series type
 		if(data_?.boxplot.isEnable && !data_?.boxplot.onlyCollapseValues){
-			// addMedianSeriesDefaultConf(graphProps).data.setAll(data_.data) // TODO: descomentar
+			addMedianSeriesDefaultConf(graphProps).data.setAll(data_.data)
 			// addMeanSeriesDefaultConf(graphProps).data.setAll(data_.data)
 		}
 		else{
@@ -714,8 +714,8 @@ const generateGraphic = (info) =>{
 		});
 		
 		// Set series DATA
-		// series.data.setAll(data_.data)
-		series.data.setAll(data_test)
+		series.data.setAll(data_.data)
+		// series.data.setAll(data_test)
     } 	
 	
 	// --- --- --- --- --- end for 'Add All series ' --- --- --- --- --- --- ---
