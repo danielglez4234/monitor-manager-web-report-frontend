@@ -112,10 +112,12 @@ export default function buildUrl(monitors, timeAndSampling, pagination, isDownlo
             if (fnIsScalar(type)){
                 queryRest += id
             }else if (fnIsArray(type)){
-                if (index === '/' || !index){
+                if (index === '/' || !index || index === "[-1]"){
+                    console.log("🚀 ~ file: buildUrl.js ~ line 116 ~ buildUrl ~ index", index)
                     queryRest += id + "[[-1]]"
                 }else{
-                    queryRest += id + "[" +index+ "]"
+                    console.log("🚀 ~ file: buildUrl.js ~ line 116 ~ buildUrl ~ index", index)
+                    queryRest += id + index
                 }
             }else if (fnIsState(type)){
                 queryRest += component
