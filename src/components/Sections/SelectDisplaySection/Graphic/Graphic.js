@@ -317,7 +317,7 @@ useEffect(() => {
 					setNoDataRecived(false)
 				}
 				else
-				PopUpMessage({type:'error', message:'The data could not be processed, please contact the administrator to fix this.'})
+					PopUpMessage({type:'error', message:'The data could not be processed, please contact the administrator to fix this.'})
 			}
 			else
 				setNoDataRecived(true)

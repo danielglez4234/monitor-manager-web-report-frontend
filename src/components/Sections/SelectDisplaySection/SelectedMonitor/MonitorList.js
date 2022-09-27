@@ -155,9 +155,7 @@ function MonitorList({diActivateReload}) {
 	const constraints = ({apply_to}) => {
 		if(Number(CONSTRAINTS.apply_constraints))
 		{ 
-			console.log("🚀 ~ file: MonitorList.js ~ line 157 ~ constraints ~ CONSTRAINTS.apply_constraints", CONSTRAINTS.apply_constraints)
 			const boxplot = CONSTRAINTS.boxplot
-			console.log("🚀 ~ file: MonitorList.js ~ line 160 ~ constraints ~ boxplot", boxplot)
 			if(boxplot.only_one_collapse_enabled){
 				handleBoxplotEnabled(apply_to)
 			}
