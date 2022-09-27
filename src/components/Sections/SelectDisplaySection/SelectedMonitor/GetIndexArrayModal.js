@@ -80,12 +80,11 @@ const convertToArrayFromTemplate = (str) => {
  * create range from string // from => [1-4] to => [1, 2, 3, 4]
  */
 const getRangeFromString = (values) => {
-    try {
-        const arrange_ = []
+	try {
+		const arrange_ = []
         const arr = values.replace(/\[/g, "").replace(/\]/g, "")
         const range = arr.split("-")
-        const diference = Number(range[1]) - Number(range[0])
-    
+        const diference = (Number(range[1]) + 1) - Number(range[0])
         for (let i = 0; i < diference; i++) { arrange_.push(Number(range[0]) + i) }
         return arrange_
     } catch (error) {
