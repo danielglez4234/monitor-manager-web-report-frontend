@@ -180,7 +180,7 @@ function Graphic() {
 			? convertToLogarithm(parseValue)
 			: parseValue
 
-			if (!value_) {
+			if (value_ === null) {
 				PopUpMessage({type:'warning', message:'Logarithm can\'t have zero or negative values, all incompatible values will be ignored!! If you want to avoid inconsistencies deactivate the logarithm format'})
 				return {}
 			}
