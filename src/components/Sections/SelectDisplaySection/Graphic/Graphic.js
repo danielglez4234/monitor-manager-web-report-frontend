@@ -379,7 +379,7 @@ const getMillisecondBaseCount = (info) => {
 	{
 		for (let n = 0; n < info.length; n++)
 		{
-			const period = info[n].summaryPeriod || info[n].storagePeriod
+			const period = Number(info[n].summaryPeriod )|| Number(info[n].storagePeriod)
 
 			const ifsampling = (period === "") ? 2000000 : period
 			const numSampling = Math.trunc(ifsampling) / 1000 // tranform to milliseconds
