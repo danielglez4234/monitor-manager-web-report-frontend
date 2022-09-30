@@ -199,7 +199,7 @@ function Graphic() {
 	/*
 	 * create data for configuration in the chart
 	 */
-	const arrangeData = (res) => {
+	const getArrangeByMonitorData = (res) => {
 		try {
 			const columns_ = res.responseData.columns
 			const samples_ = res.responseData.samples
@@ -309,7 +309,7 @@ useEffect(() => {
 			else if (getResponse.responseData.samples.length > 0)
 			{
 				root.setThemes(getRootTheme())
-				const graphicData = arrangeData(getResponse)
+				const graphicData = getArrangeByMonitorData(getResponse)
 				
 				if(graphicData !== undefined)
 				{

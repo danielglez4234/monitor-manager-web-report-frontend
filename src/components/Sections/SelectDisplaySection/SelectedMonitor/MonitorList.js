@@ -189,7 +189,7 @@ function MonitorList({diActivateReload}) {
 						startIcon={<CachedIcon />}
 						onClick={() =>{ saveOptions()}}
 					>
-						Aply Options
+						Apply
 					</Button>
                 }
 			</div>
