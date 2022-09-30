@@ -155,19 +155,39 @@ function Graphic() {
 	let root // graphic root variable initialization
 
 	const [noDataRecived, setNoDataRecived] = useState(false);
-
-   	/*
+    
+	/*
+	 * convert to logarithm
+	 */
+	const convertToLogarithm = (value) => {
+		try {
+			if(value > 0)
+				return Math.log10(value)
+			return null
+		} catch (error) {
+			return null
+		}
+	}
+		
+	/*
 	 * handle the server's values for display
 	 */
 	const buildGraphicValues = (date, _value, logarithm) => {
 		try {
-			const value = (logarithm) ? Math.log10(parseFloat(_value)) : parseFloat(_value)
-			if ((logarithm && value === 0) || isNaN(value))
-				PopUpMessage({type:'error', message:'Error: Logarithm can\'t have zero values, disabled the Logarithm option and click reload'})
-			else{
-				return { 
-					[PROCESSOR.dateField]: parseInt(date), 
-					[PROCESSOR.numericField]: value 
+			const parseDate = parseInt(date) 
+			const parseValue = parseFloat(_value)
+			const value_ = (logarithm) 
+			? convertToLogarithm(parseValue)
+			: parseValue
+
+			if (!value_) {
+				PopUpMessage({type:'warning', message:'Logarithm can\'t have zero or negative values, all incompatible values will be ignored!! If you want to avoid inconsistencies deactivate the logarithm format'})
+				return {}
+			}
+			else {
+				return {
+					[PROCESSOR.dateField]: parseDate, 
+					[PROCESSOR.numericField]: value_ 
 				}
 			}
 		} catch (error) {
