@@ -326,7 +326,7 @@ useEffect(() => {
 				setNoDataRecived(true)
 				$("#initialImg").addClass('display-none')
 			}
-			else if (getResponse.responseData.samples.length > 0)
+			else if (getResponse.responseData.samples.length > 0 || getResponse.responseData.reportInfo.totalPages > 1)
 			{
 				root.setThemes(getRootTheme())
 				const graphicData = getArrangeByMonitorData(getResponse)
