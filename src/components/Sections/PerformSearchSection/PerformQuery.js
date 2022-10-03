@@ -96,6 +96,11 @@ function PerformQuery() {
 			const totalRecords       = res.reportInfo.totalSamples
 			const totalPerPage       = REACT_APP_IDISPLAYLENGTH
 
+			// if(){
+			// 	PopUpMessage({type:'default', message:'No data was collected on this page, this may happen if the monitor goes into FAULT state.'})
+			// }
+
+
 			dispatch(setSamples(res, timeQuery.sampling))
 			dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
 			dispatch(setSearchErrors(false))

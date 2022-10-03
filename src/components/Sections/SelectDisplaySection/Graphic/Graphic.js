@@ -236,6 +236,7 @@ function Graphic() {
 			columns_.map((columns_row, index) => {
 				const optionsIndex = indexOfFrom_.at(index)
 				const options = (optionsIndex !== undefined) ? monitor.at(optionsIndex).options : monitor.at(0).options
+				// const options = monitor.at(optionsIndex || 0).options
 				
 				const data = []
 				samples_.map((sample_val) => {
@@ -328,6 +329,7 @@ useEffect(() => {
 			}
 			else if (getResponse.responseData.samples.length > 0 || getResponse.responseData.reportInfo.totalPages > 1)
 			{
+				console.log("🚀 ~ file: Graphic.js ~ line 330 ~ useEffect ~ getResponse.responseData.reportInfo.totalPages", getResponse.responseData.reportInfo.totalPages)
 				root.setThemes(getRootTheme())
 				const graphicData = getArrangeByMonitorData(getResponse)
 				

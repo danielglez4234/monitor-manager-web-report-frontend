@@ -93,7 +93,7 @@ function SelectDisplay() {
 	useEffect(() => {
 		if(graphicStillLoading)
 		{
-			if (getResponse?.responseData?.samples.length > 0)
+			if (getResponse?.responseData?.samples.length > 0 || getResponse?.responseData?.reportInfo?.totalPages > 1)
 			{
 				const totalPages   = getResponse.responseData.reportInfo.totalPages
 				const totalSamples = getResponse.responseData.reportInfo.totalSamples
