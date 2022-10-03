@@ -216,7 +216,9 @@ function SelectDisplay() {
 					console.log("Data recibe successfully");
 				})
 				.catch(error => {
-					PopUpMessage({type:'error', message:error})
+					const error_message = (error.response?.data) ? error.response.data.toString() : "Unsupported error";
+					const error_status = (error.response?.status) ? error.response.status : "Unknown"
+					PopUpMessage({type:'error', message:'Error: '+error_message+" - Code "+error_status})
 					console.error(error)
 				})
 				.finally(() => {

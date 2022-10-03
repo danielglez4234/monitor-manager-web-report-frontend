@@ -95,11 +95,13 @@ function PerformQuery() {
 			const totalArraysRecive  = res.samples.length
 			const totalRecords       = res.reportInfo.totalSamples
 			const totalPerPage       = REACT_APP_IDISPLAYLENGTH
-
-			// if(){
-			// 	PopUpMessage({type:'default', message:'No data was collected on this page, this may happen if the monitor goes into FAULT state.'})
-			// }
-
+			
+			// TODO: quitar
+			console.log("🚀 ~ file: PerformQuery.js ~ line 101 ~ getSamplesFromServer ~ es.reportInfo.totalPages", res.reportInfo.totalPages)
+			console.log("🚀 ~ file: PerformQuery.js ~ line 96 ~ getSamplesFromServer ~ totalArraysRecive", totalArraysRecive)
+			if(totalArraysRecive === 0 && res.reportInfo.totalPages > 1){
+			 	PopUpMessage({type:'default', message:'No data was collected on this page, this may happen if the monitor goes into FAULT state.'})
+			}
 
 			dispatch(setSamples(res, timeQuery.sampling))
 			dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
