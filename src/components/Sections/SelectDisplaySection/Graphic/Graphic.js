@@ -153,6 +153,7 @@ function Graphic() {
 	const reload               = useSelector(state => state.reload)
 	const error                = useSelector(state => state.searchErrors)
 	let root // graphic root variable initialization
+	// const graphicOptions = getGraphicoptions()
 
 	const [noDataRecived, setNoDataRecived] = useState(false);
     
@@ -166,6 +167,17 @@ function Graphic() {
 			return null
 		} catch (error) {
 			return null
+		}
+	}
+
+	/*
+	 * remove null entries from array
+	 */
+	const removeNullEntries = (array) => {
+		try {
+			return array.filter((el) => el !== null)
+		} catch (error) {
+			console.error(error)
 		}
 	}
 		
@@ -204,15 +216,50 @@ function Graphic() {
 			if(Array.isArray(arr_value)) {
 				const instance = {}
 				const time_sample = parseInt(date)
+
 				for (const [key, value] of Object.entries(collapseBind))
 					instance[key] = parseFloat(arr_value[value])
+
 				return { time_sample, ...instance }
 			}
-			else{
+			else
 				PopUpMessage({type:'error', message:'The data type is not valid!! please contact the administrator to fix this'})
-			}
 		} catch (error) {
 			console.log(error)
+		}
+	}
+
+
+	/*
+	 * set columns monitor objects
+	 */
+	const setColumnsRowObjects = (row) => {
+		try {
+			const { legendTrunkName } = getGraphicoptions()
+			let { name } = row
+			console.log("🚀 ~ file: Graphic.js ~ line 240 ~ setColumnsRowObjects ~ name", name)
+			const {
+				position,
+				unit,
+				storagePeriod,
+				summaryPeriod
+			} = row
+
+			console.log("🚀 ~ file: Graphic.js ~ line 249 ~ setColumnsRowObjects ~ legendTrunkName", legendTrunkName)
+			if(legendTrunkName)
+				name = name.split("/").at(-1)
+			name = name + (!~position) ? " " : " /" + position
+
+			console.log("🚀 ~ file: Graphic.js ~ line 252 ~ setColumnsRowObjects ~ !~position)", !~position)
+			
+			const unit_abbr = (unit !== null) ? unit.abbreviature : ""
+
+			return {
+				name, unit_abbr, storagePeriod, summaryPeriod
+			}
+		} catch (error) {
+			console.error(error)
+			return ""
 		}
 	}
 
@@ -223,67 +270,60 @@ function Graphic() {
 		try {
 			const columns_ = res.responseData.columns
 			const samples_ = res.responseData.samples
-			const graphicOptions = getGraphicoptions()
 		
-			const info_ = []
 			// we remove these two fields so that the indexes of the graphical monitor options match more easily
 			if(columns_.at(0).name === "TimeStamp"){
 				columns_.shift() // delete timeStamp
 				columns_.shift() // delete timeStampLong
 			}
+
+			// get the index if it exists in the other array as many times as it appears
 			const indexOfFrom_ = getIndexFromID(columns_, monitor)
 			
-			columns_.map((columns_row, index) => {
-				const optionsIndex = indexOfFrom_.at(index)
-				const options = (optionsIndex !== undefined) ? monitor.at(optionsIndex).options : monitor.at(0).options
-				// const options = monitor.at(optionsIndex || 0).options
-				
-				const data = []
-				samples_.map((sample_val) => {
+			return columns_.map((columns_row, index) => 
+			{
+				// set options
+				const options = monitor.at(indexOfFrom_.at(index) || 0).options
+				// conf options
+				const { 
+					logarithm, limit_min, limit_max,
+					boxplot: {isEnable, onlyCollapseValues}
+				} = options
 
-					const date = sample_val.at(1).substring(0, sample_val.at(1).length - 3) // convert to milliseconds (the chart does not support microseconds)
+				const _data = samples_.map((sample_val) => 
+				{
+					const { stateOrMagnitudeValuesBind, summaryValuesBind } = columns_row
+					// (the chart does not support microseconds)
+					const date = sample_val.at(1).substring(0, sample_val.at(1).length - 3) // convert to milliseconds
 					let value  = sample_val.at(index+2) // +2 => jumping timestamp and timestampLong
-					
-					const isMagnitude = columns_row?.stateOrMagnitudeValuesBind
-					const isSummary = columns_row?.summaryValuesBind
 
-					if (value !== "" && value.length > 0){
-						if (isMagnitude)
-							value = isMagnitude[value]
+					if (value !== "")
+					{
+						if (stateOrMagnitudeValuesBind)
+							value = stateOrMagnitudeValuesBind[value]
 
-						if(isSummary && options.boxplot.isEnable && !options.boxplot.onlyCollapseValues){
-							data.push( buildBoxplotGraphicValues(date, value, isSummary))
+						if(summaryValuesBind && isEnable && !onlyCollapseValues) {
+							return buildBoxplotGraphicValues(date, value, summaryValuesBind)
 						}
 						else
 						{
-							const min_l = options.limit_min || -Infinity
-							const max_l = options.limit_max || Infinity
-							if (value > min_l && value < max_l)
-								data.push( buildGraphicValues(date, value, options.logarithm) )
+							const min_l = limit_min || -Infinity
+							const max_l = limit_max || Infinity
+							return (value > min_l && value < max_l)
+								? buildGraphicValues(date, value, logarithm)
+								: null
 						}
 					}
-					return null
+					else
+						return null
 				})
-				// if "Only monitor name" is checked
-				let _name = columns_row.name
-				if(graphicOptions.legendTrunkName)
-				{
-					_name = _name.split("/")
-					_name = _name[_name.length - 1]
-				}
-				// the graphic removes the "[]" so we force the position number with the "/"
-				const name = _name + ((columns_row.position === -1) ? " " : " /" + columns_row.position) 
-				// show the abbreviation if the monitor has a unit
-				const unit_abbr = (columns_row?.unit !== null) ? columns_row.unit.abbreviature : ""
-				// save monitor storage period
-				const storagePeriod = columns_row.storagePeriod
-				// save monitor summary period
-				const summaryPeriod = columns_row.summaryPeriod
 
-				info_.push({name, unit_abbr, storagePeriod, summaryPeriod, data, ...options})
-				return null
+				const data = removeNullEntries(_data)
+				const tst = { ...setColumnsRowObjects(columns_row), ...options, data }
+				console.log("🚀 ~ file: Graphic.js ~ line 319 ~ getArrangeByMonitorData ~ tst", tst)
+
+				return { ...setColumnsRowObjects(columns_row), ...options, data }
 			})
-			return info_
 		} catch (error) {
 			console.log(error)
 		}
@@ -312,6 +352,7 @@ const getRootTheme = () => {
    +   - The root element of amchart cannot be duplicated, we avoid this by using the 'retun () => {...}' method to execute the 'dispose()' when the component is unmount
    */
 useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     root = am5.Root.new("chartdiv") // Create root element =ref=> <div id="chartdiv"></div>
     root.fps = 40
 
@@ -329,7 +370,6 @@ useEffect(() => {
 			}
 			else if (getResponse.responseData.samples.length > 0 || getResponse.responseData.reportInfo.totalPages > 1)
 			{
-				console.log("🚀 ~ file: Graphic.js ~ line 330 ~ useEffect ~ getResponse.responseData.reportInfo.totalPages", getResponse.responseData.reportInfo.totalPages)
 				root.setThemes(getRootTheme())
 				const graphicData = getArrangeByMonitorData(getResponse)
 				
@@ -635,6 +675,9 @@ const generateGraphic = (info) =>{
    	// Initialize variables for chart
 	let [chart, dateAxis, valueAxis, series, legend, scrollbarX, scrollbarY] = [] // [] => this represents undefined
 	// Initialize variables for general options
+	// const generalOptions 	 = getGraphicoptions()
+	// const { grid, limitMIN, limitMAX, groupData, microTheme, legends, legendContainerPos } = generalOptions
+
 	const generalOptions 	 = getGraphicoptions()
 	const grid 				 = !generalOptions.grid
 	const limitMIN 			 = generalOptions.limitMIN
