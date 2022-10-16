@@ -29,16 +29,15 @@ const getPagination = (pagination, isDownload) => {
  * build monitor prefix, unit and decimal options
  */
 const buildOptions = (opt) => {
-    let queryOpt  = String()
+    let queryOpt  = ""
     const boxplot = opt?.boxplot?.isEnable
     const onlycollapseValues = opt?.boxplot?.onlyCollapseValues
 
-    const unit    = (opt.unit    !== "Default") ? opt.unit    : false
-    const prefix  = (opt.prefix  !== "Default") ? opt.prefix  : false
-    const decimal = (opt.decimal !== "Default") ? opt.decimal : false
-
-    const interval = (opt.boxplot.interval !== "") ? opt.boxplot.interval : false
-    const collapseValue = (opt.boxplot.collapseValue !== "") ? opt.boxplot.collapseValue : false
+    const unit    = opt.unit    !== "Default" && opt.unit
+    const prefix  = opt.prefix  !== "Default" && opt.prefix
+    const decimal = opt.decimal !== "Default" && opt.decimal
+    const interval = opt.boxplot.interval !== "" && opt.boxplot.interval
+    const collapseValue = opt.boxplot.collapseValue !== "" && opt.boxplot.collapseValue
     
     if (unit || decimal || boxplot || onlycollapseValues)
     {
@@ -98,7 +97,7 @@ const buildTimeAndSampling = (tm) => {
  */
 export default function buildUrl(monitors, timeAndSampling, pagination, isDownload) {
     try {
-        let queryRest = String()
+        let queryRest = ""
         const mlength = monitors.length
         for (let i = 0; i < mlength; i++)
         {
@@ -107,34 +106,33 @@ export default function buildUrl(monitors, timeAndSampling, pagination, isDownlo
             const id = infoMonitor.id
 			const component = infoMonitor.name
             const index = infoMonitor.options.pos
+            const defaultIndex = "[[-1]]"
  
             queryRest += "id" + getCategory(type) + "=";
-            if (fnIsScalar(type)){
+
+            if (fnIsScalar(type))
                 queryRest += id
-            }else if (fnIsArray(type)){
-                if (index === '/' || !index || index === "[-1]"){
-                    console.log("🚀 ~ file: buildUrl.js ~ line 116 ~ buildUrl ~ index", index)
-                    queryRest += id + "[[-1]]"
-                }else{
-                    console.log("🚀 ~ file: buildUrl.js ~ line 116 ~ buildUrl ~ index", index)
-                    queryRest += id + index
-                }
-            }else if (fnIsState(type)){
+
+            else if (fnIsArray(type))
+                queryRest += id + (index === '/' || !index || index === "[-1]") ? defaultIndex : index
+
+            else if (fnIsState(type))
                 queryRest += component
-            }else{
+
+            else
                 console.error("Error: Type is not supported. \n Please contact the system administrator.")
-            }
-            if(!fnIsMagnitude(type) || !fnIsState(type)){
+
+            if(!fnIsMagnitude(type) || !fnIsState(type))
                 queryRest += buildOptions(infoMonitor.options)
-            }
-            if ((i + 1) < mlength){
+
+            if ((i + 1) < mlength)
                 queryRest += "&"
-            }
         }
-        const tm = buildTimeAndSampling(timeAndSampling)
+
+        const { beginDate, endDate, sampling } = buildTimeAndSampling(timeAndSampling)
         const _pagination = getPagination(pagination, isDownload)
         
-        return tm.beginDate + "/" + tm.endDate + "/?" + queryRest + tm.sampling + _pagination
+        return beginDate + "/" + endDate + "/?" + queryRest + sampling + _pagination
     } catch (error) {
         console.error(error)
     }

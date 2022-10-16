@@ -209,7 +209,8 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 			const data = rows.find((r) => r.id === id)
 			if(field === "name" || field === "description" || field === "creation_time" || field === "update_time")
 			{
-				const textWidth = getTextWidth(data[field], "400 0.875rem Roboto")
+				const font = "400 0.875rem Roboto"
+				const textWidth = getTextWidth(data[field], font)
 				if(textWidth > event.currentTarget.clientWidth) // if greater than textWidth aply tooltip
 				{
 					setRowPopOverValue(data[field])

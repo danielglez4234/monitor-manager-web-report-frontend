@@ -30,31 +30,63 @@ import HandleMessage                   from '../../handleErrors/HandleMessage';
 
 
 /*
- * Declare condition html variables
+ * noSelectedComponent html
  */
-const noSelectedComponent = <div className="noComponentSelected-box">
-								<SnippetFolderIcon className="noComponentSelected-icon" />
-								<p className="noComponentSelected-title">No Component Selected From Component Item List</p>
-							</div>;
-const skeleton            = <div>
-								<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
-								<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
-								<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
-								<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
-								<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
-							</div>;
-const noResultFound       = <div className="noComponentSelected-box">
-								<HelpOutlineIcon className="noComponentSelected-icon" />
-								<p className="noComponentSelected-title">No Results Found</p>
-							</div>;
-const noMonitorElements   = <div className="noComponentSelected-box">
-								<HelpOutlineIcon className="noComponentSelected-icon" />
-								<p className="noComponentSelected-title">No Monitors Found</p>
-							</div>;
-const error               = <div className="noComponentSelected-box">
-								<ReportGmailerrorredRoundedIcon className="noComponentSelected-icon" />
-								<p className="noComponentSelected-title">Connection Error</p>
-							</div>;
+const noSelectedComponent = () => {
+	return (
+		<div className="noComponentSelected-box">
+			<SnippetFolderIcon className="noComponentSelected-icon" />
+			<p className="noComponentSelected-title">No Component Selected From Component Item List</p>
+		</div>
+	)
+}
+/*
+ * skeleton html
+ */
+const skeleton = () => {
+	return (
+		<div>
+			<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
+			<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
+			<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
+			<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
+			<Skeleton className="skeleton-componentmonitor" variant="rectangular" width={235} height={30} />
+		</div>
+	)
+}
+/*
+ * noResultFound html
+ */
+const noResultFound = () => {
+	return (
+		<div className="noComponentSelected-box">
+			<HelpOutlineIcon className="noComponentSelected-icon" />
+			<p className="noComponentSelected-title">No Results Found</p>
+		</div>
+	)
+}
+/*
+ * noResultFound html
+ */
+const noMonitorElements = () => {
+	return (
+		<div className="noComponentSelected-box">
+			<HelpOutlineIcon className="noComponentSelected-icon" />
+			<p className="noComponentSelected-title">No Monitors Found</p>
+		</div>
+	)
+}
+/*
+ * error html
+ */
+const error = () => {
+	return (
+		<div className="noComponentSelected-box">
+			<ReportGmailerrorredRoundedIcon className="noComponentSelected-icon" />
+			<p className="noComponentSelected-title">Connection Error</p>
+		</div>
+	)
+}
 
 
 function ListComponentMonitor() {
@@ -80,24 +112,28 @@ function ListComponentMonitor() {
 	const [connectionError, setConnectionError] = useState(false)
 
 	/*
-	 * Get All Components
+	 * load All Components
 	 */
 	const loadComponents = async () => {
-		await Promise.resolve( getComponents() )
-		.then(res => {
-			setConnectionError(false)
-			setData_components(res)
-			setResultQueryComponent(res)
-			console.log("Comoponent Data was recibe successfully")
-		})
-		.catch(error => { 
-			setConnectionError(true)
-			PopUpMessage({type:'error', message:'Error fetching components data on the Server'})
+		try {
+			await Promise.resolve( getComponents() )
+			.then(res => {
+				setConnectionError(false)
+				setData_components(res)
+				setResultQueryComponent(res)
+				console.log("Comoponent Data was recibe successfully")
+			})
+			.catch(error => { 
+				setConnectionError(true)
+				PopUpMessage({type:'error', message:'Error fetching components data on the Server'})
+				console.error(error)
+			})
+			.finally(() => { 
+				setLoadingComponent(false)
+			})
+		} catch (error) {
 			console.error(error)
-		})
-		.finally(() => { 
-			setLoadingComponent(false)
-		});
+		}
 	}
 	
 	/*
@@ -127,33 +163,36 @@ function ListComponentMonitor() {
 	/*
 	 * Get All MonitorsMagnitude and state from a Component
 	 */
-	const getMonitors = async (title) =>{
-		document.getElementById('searchInputCompMon').value = '' // reset the value of the search input when a component is clicked
-		if (component_clicked !== title)
-		{
-			setInitialStateMonitors(false)
-			setComponent_clicked(title)
-			setLoadingMonitors(true)
-			await Promise.resolve( getMonitorsFromComponent(title) )
-			.then(res => {
-				if (res.magnitudeDescriptions.length > 0 || res.monitorDescription.length > 0) 
-				{
-					setNoMonitorsAvailable(false)
-					const dataList = buildDataElementsList(res)
-					setData_monitors(dataList)
-					setResultQueryMonitor(dataList)
-					console.log("Get monitors from component successfully")
-				}
-				else 
-				{
-					setNoMonitorsAvailable(true)
-				}
-				setLoadingMonitors(false)
-			})
-			.catch(error => {
-				PopUpMessage({type:'error', message:'Error fetching monitors data on the Server'})
-				console.error(error)
-			})
+	const getMonitors = async (component) =>{
+		try {
+			// reset the value of the search input when a component is clicked
+			document.getElementById('searchInputCompMon').value = '' 
+			if (component_clicked !== component)
+			{
+				setInitialStateMonitors(false)
+				setComponent_clicked(component)
+				setLoadingMonitors(true)
+				await Promise.resolve( getMonitorsFromComponent(component) )
+				.then(res => {
+					if (res.magnitudeDescriptions.length === 0 && res.monitorDescription.length === 0) 
+						setNoMonitorsAvailable(true)
+					else 
+					{
+						setNoMonitorsAvailable(false)
+						const dataList = buildDataElementsList(res)
+						setData_monitors(dataList)
+						setResultQueryMonitor(dataList)
+						console.log("Get monitors from component successfully")
+					}
+				})
+				.catch(error => {
+					PopUpMessage({type:'error', message:'Error fetching monitors data on the Server'})
+					console.error(error)
+				})
+				.finally(() => setLoadingMonitors(false))
+			}
+		} catch (error) {
+			console.error(error)
 		}
 	}
 
@@ -166,14 +205,14 @@ function ListComponentMonitor() {
 
 		const magnitudeDescriptions = data.magnitudeDescriptions
 		for (let i = 0; i < magnitudeDescriptions.length; i++) {
-			magnitudeDescriptions[i]["component_id"] = component_id
-			magnitudeDescriptions[i]["name"] = name
+			magnitudeDescriptions.at(i)["component_id"] = component_id
+			magnitudeDescriptions.at(i)["name"] = name
 		}
 
 		const monitorDescription = data.monitorDescription
 		for (let i = 0; i < monitorDescription.length; i++) {
-			monitorDescription[i]["component_id"] = component_id
-			monitorDescription[i]["name"] = name
+			monitorDescription.at(i)["component_id"] = component_id
+			monitorDescription.at(i)["name"] = name
 		}
 
 		const stateDescriptions = {
@@ -302,9 +341,9 @@ function ListComponentMonitor() {
 
 					<div className="sample-items component-list-items">
 						{
-							(connectionError)  ? error :
-							(loadingComponent) ? skeleton :
-							(resultQueryComponent.length === 0) ? noResultFound :
+							(connectionError)  ? error() :
+							(loadingComponent) ? skeleton() :
+							(resultQueryComponent.length === 0) ? noResultFound() :
 							resultQueryComponent.map((element, index) =>
 								<ComponentElement
 									key                = { index }
@@ -344,9 +383,9 @@ function ListComponentMonitor() {
 
 					<div id="offer-area" className="sample-items monitors-list-items">
 						{
-							(initialStateMonitors) ? noSelectedComponent :
-							(loadingMonitors) ? skeleton :
-							(resultQueryMonitor.length === 0 || monitorsAvailable) ? noMonitorElements :
+							(initialStateMonitors) ? noSelectedComponent() :
+							(loadingMonitors) ? skeleton() :
+							(resultQueryMonitor.length === 0 || monitorsAvailable) ? noMonitorElements() :
 							resultQueryMonitor.map((element, index) =>
 								<MonitorElement
 									key                = { index }

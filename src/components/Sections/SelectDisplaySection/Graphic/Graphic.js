@@ -193,7 +193,12 @@ function Graphic() {
 			: parseValue
 
 			if (value_ === null) {
-				PopUpMessage({type:'warning', message:'Logarithm can\'t have zero or negative values, all incompatible values will be ignored!! If you want to avoid inconsistencies deactivate the logarithm format'})
+				PopUpMessage({
+					type:'warning', 
+					message:'Logarithm can\'t have zero or negative values, \
+					all incompatible values will be ignored!! If you want to \
+					avoid inconsistencies deactivate the logarithm format'
+				})
 				return {}
 			}
 			else {
@@ -222,8 +227,12 @@ function Graphic() {
 
 				return { time_sample, ...instance }
 			}
-			else
-				PopUpMessage({type:'error', message:'The data type is not valid!! please contact the administrator to fix this'})
+			else{
+				PopUpMessage({
+					type:'error', 
+					message:'The data type is not valid!! please contact the administrator to fix this'
+				})
+			}
 		} catch (error) {
 			console.log(error)
 		}
@@ -248,7 +257,7 @@ function Graphic() {
 			console.log("🚀 ~ file: Graphic.js ~ line 249 ~ setColumnsRowObjects ~ legendTrunkName", legendTrunkName)
 			if(legendTrunkName)
 				name = name.split("/").at(-1)
-			name = name + (!~position) ? " " : " /" + position
+			name = name + (~position) ? " /" + position : " "
 
 			console.log("🚀 ~ file: Graphic.js ~ line 252 ~ setColumnsRowObjects ~ !~position)", !~position)
 			
@@ -268,60 +277,50 @@ function Graphic() {
 	 */
 	const getArrangeByMonitorData = (res) => {
 		try {
-			const columns_ = res.responseData.columns
-			const samples_ = res.responseData.samples
+			const { columns, samples } = res.responseData
 		
 			// we remove these two fields so that the indexes of the graphical monitor options match more easily
-			if(columns_.at(0).name === "TimeStamp"){
-				columns_.shift() // delete timeStamp
-				columns_.shift() // delete timeStampLong
+			if(columns.at(0).name === "TimeStamp"){
+				columns.shift() // delete timeStamp
+				columns.shift() // delete timeStampLong
 			}
 
 			// get the index if it exists in the other array as many times as it appears
-			const indexOfFrom_ = getIndexFromID(columns_, monitor)
+			const indexOfFrom_ = getIndexFromID(columns, monitor)
 			
-			return columns_.map((columns_row, index) => 
+			return columns.map((columns_row, index) => 
 			{
 				// set options
 				const options = monitor.at(indexOfFrom_.at(index) || 0).options
 				// conf options
 				const { 
 					logarithm, limit_min, limit_max,
-					boxplot: {isEnable, onlyCollapseValues}
+					boxplot: { isEnable, onlyCollapseValues }
 				} = options
 
-				const _data = samples_.map((sample_val) => 
+				const min_l = limit_min || -Infinity
+				const max_l = limit_max || Infinity
+
+				const _data = samples.map((sample_val) => 
 				{
 					const { stateOrMagnitudeValuesBind, summaryValuesBind } = columns_row
-					// (the chart does not support microseconds)
+					// the chart does not support microseconds
 					const date = sample_val.at(1).substring(0, sample_val.at(1).length - 3) // convert to milliseconds
 					let value  = sample_val.at(index+2) // +2 => jumping timestamp and timestampLong
 
-					if (value !== "")
-					{
-						if (stateOrMagnitudeValuesBind)
-							value = stateOrMagnitudeValuesBind[value]
-
-						if(summaryValuesBind && isEnable && !onlyCollapseValues) {
-							return buildBoxplotGraphicValues(date, value, summaryValuesBind)
-						}
-						else
-						{
-							const min_l = limit_min || -Infinity
-							const max_l = limit_max || Infinity
-							return (value > min_l && value < max_l)
-								? buildGraphicValues(date, value, logarithm)
-								: null
-						}
-					}
-					else
+					if (value === "")
 						return null
+
+					if (stateOrMagnitudeValuesBind)
+						value = stateOrMagnitudeValuesBind[value]
+
+					if(summaryValuesBind && isEnable && !onlyCollapseValues)
+						return buildBoxplotGraphicValues(date, value, summaryValuesBind)
+					else
+						return (value > min_l && value < max_l) ? buildGraphicValues(date, value, logarithm) : null
 				})
 
 				const data = removeNullEntries(_data)
-				const tst = { ...setColumnsRowObjects(columns_row), ...options, data }
-				console.log("🚀 ~ file: Graphic.js ~ line 319 ~ getArrangeByMonitorData ~ tst", tst)
-
 				return { ...setColumnsRowObjects(columns_row), ...options, data }
 			})
 		} catch (error) {
@@ -356,37 +355,33 @@ useEffect(() => {
     root = am5.Root.new("chartdiv") // Create root element =ref=> <div id="chartdiv"></div>
     root.fps = 40
 
-	if(!error)
-	{
-		if (getResponse.length === 0){
-			setNoDataRecived(false)
-		}
-		else
-		{
-			if(!getResponse.responseData?.samples)
-			{
-				setNoDataRecived(true)
-				$("#initialImg").addClass('display-none')
-			}
-			else if (getResponse.responseData.samples.length > 0 || getResponse.responseData.reportInfo.totalPages > 1)
-			{
-				root.setThemes(getRootTheme())
-				const graphicData = getArrangeByMonitorData(getResponse)
-				
-				if(graphicData !== undefined)
-				{
-					generateGraphic(graphicData)
-					setNoDataRecived(false)
-				}
-				else
-					PopUpMessage({type:'error', message:'The data could not be processed, please contact the administrator to fix this.'})
-			}
-			else
-				setNoDataRecived(true)
-		}
-	}else{
+	if (error || getResponse.length === 0)
 		setNoDataRecived(false)
+	else
+	{
+		if (getResponse.responseData.samples.length > 0 || getResponse.responseData.reportInfo.totalPages > 1)
+		{
+			root.setThemes(getRootTheme())
+			const graphicData = getArrangeByMonitorData(getResponse)
+			
+			if(graphicData !== undefined)
+			{
+				generateGraphic(graphicData)
+				setNoDataRecived(false)
+			}
+			else{
+				PopUpMessage({
+					type:'error', 
+					message:'The data could not be processed, please contact the administrator to fix this.'
+				})
+			}
+		}
+		else {
+			setNoDataRecived(true)
+			$("#initialImg").addClass('display-none')
+		}
 	}
+
 	
     // store current value of root and restore root element when update
     root.current = root

@@ -35,21 +35,37 @@ import HandleMessage    from '../../../handleErrors/HandleMessage';
 import { getQueryByName } from '../../../../services/services';
 
 
+/*
+ * skeleton html
+ */
+const skeleton = () => {
+	return (
+		<div className="sample-items-favorites">
+			<Skeleton className="skeleton-favorites" variant="rectangular" width={235} height={30} />
+			<Skeleton className="skeleton-favorites" variant="rectangular" width={235} height={30} />
+			<Skeleton className="skeleton-favorites" variant="rectangular" width={235} height={30} />
+			<Skeleton className="skeleton-favorites" variant="rectangular" width={235} height={30} />
+			<Skeleton className="skeleton-favorites" variant="rectangular" width={235} height={30} />
+		</div>
+	)
+}
+/*
+ * noResultFound html
+ */
+const noResultFound = () => {
+	return (
+		<div className="noComponentSelected-box">
+			<BookmarkIcon className="noComponentSelected-icon" />
+			<p className="noComponentSelected-title">No Results Found</p>
+		</div>
+	)
+}
 
-const skeleton            = <div className="sample-items-favorites">
-								<Skeleton className="skeleton-favorites" variant="rectangular" width={235} height={30} />
-								<Skeleton className="skeleton-favorites" variant="rectangular" width={235} height={30} />
-								<Skeleton className="skeleton-favorites" variant="rectangular" width={235} height={30} />
-								<Skeleton className="skeleton-favorites" variant="rectangular" width={235} height={30} />
-								<Skeleton className="skeleton-favorites" variant="rectangular" width={235} height={30} />
-							</div>;
-const noResultFound       = <div className="noComponentSelected-box">
-								<BookmarkIcon className="noComponentSelected-icon" />
-								<p className="noComponentSelected-title">No Results Found</p>
-							</div>;
+const sectionHelperText = "In this section you will be able to visualize the elements marked \
+						in the table of stored queries. Currently localStorage is being used, \
+						try not to delete it to avoid losing the queries."
 
-const sectionHelperText = "In this section you will be able to visualize the elements marked in the table of stored queries. Currently localStorage is being used, try not to delete it to avoid losing the queries."							
-
+const localStorageItemName = 'favorites'
 
 /*
  * localStorage => 
@@ -77,7 +93,7 @@ function FavoriteQueries({addItem}) {
 	 */
 	const getLocalStorage = async () => {
 		try {
-			return await JSON.parse(localStorage.getItem('favorites'))
+			return await JSON.parse(localStorage.getItem(localStorageItemName))
 		} catch (error) {
 			PopUpMessage({type:'error', message:error})
 		}
@@ -88,7 +104,7 @@ function FavoriteQueries({addItem}) {
 	 */
 	const setLocalStorage = async (data) => {
 		try {
-			localStorage.setItem('favorites', JSON.stringify(data))
+			localStorage.setItem(localStorageItemName, JSON.stringify(data))
 		} catch (error) {
 			PopUpMessage({type:'error', message:error})
 		}
@@ -325,8 +341,8 @@ function FavoriteQueries({addItem}) {
 			</div>
 			<div className="sample-items sample-items-favorites">
 				{
-					(loadingFavorites) ? skeleton :
-					(resultQueryFavorite.length === 0) ? noResultFound :
+					(loadingFavorites) ? skeleton() :
+					(resultQueryFavorite.length === 0) ? noResultFound() :
 					resultQueryFavorite.map((element, index) =>
 						<FavoriteElement
 							key = { index }

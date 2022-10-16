@@ -163,6 +163,7 @@ function PerformQuery() {
 			const searchedMonitors = monitor.map(e => e["id"]) // save the monitors id's that where choosen for the search
 	
 			dispatch(setActualPage(false, 0, 0)) // reset pagination if it is already display
+			// TODO: change name of hadleSearch to currentSearch
 			dispatch(hadleSearch(perform, timeQuery.beginDate, timeQuery.endDate, timeQuery.sampling, searchedMonitors))
 			dispatch(setloadingButton(false))
 			dispatch(loadGraphic(true))
