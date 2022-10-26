@@ -30,6 +30,7 @@ import FavoriteQueries	 from './FavoriteQueries/FavoriteQueries'
 import HandleMessage      from '../../handleErrors/HandleMessage';
 import buildUrl		 	 from './buildUrl';
 import { usesTyles } from '../../../commons/uiStyles/usesTyles';
+import HandleSearch from './HandleSearch';
 
 
 const { REACT_APP_IDISPLAYLENGTH } = process.env
@@ -44,8 +45,10 @@ const hideAndShowSection = () => {
 
 function PerformQuery() {
 	const classes = usesTyles()
-	const dispatch             = useDispatch()
+	const dispatch = useDispatch()
 	const [msg, PopUpMessage] = HandleMessage()
+
+	const doSearch = HandleSearch()
 
 	const monitor          = useSelector(state => state.monitor)
 	const loadWhileGetData = useSelector(state => state.loadingButton)
@@ -87,44 +90,15 @@ function PerformQuery() {
 	 * Get Samples From Server
 	 */
 	const getSamplesFromServer = async () => {
-		const url = buildUrl(monitor, timeQuery, pagination) // construct url
-		dispatch(getUrl(url)) // refactor => eliminar
-		
-		await Promise.resolve( getDataFromServer(url) )
-		.then(res => { 
-			const totalArraysRecive  = res.samples.length
-			const totalRecords       = res.reportInfo.totalSamples
-			const totalPerPage       = REACT_APP_IDISPLAYLENGTH
-			
-			// TODO: quitar
-			console.log("🚀 ~ file: PerformQuery.js ~ line 101 ~ getSamplesFromServer ~ es.reportInfo.totalPages", res.reportInfo.totalPages)
-			console.log("🚀 ~ file: PerformQuery.js ~ line 96 ~ getSamplesFromServer ~ totalArraysRecive", totalArraysRecive)
-			if(totalArraysRecive === 0 && res.reportInfo.totalPages > 1){
-			 	PopUpMessage({type:'default', message:'No data was collected on this page, this may happen if the monitor goes into FAULT state.'})
-			}
-
-			dispatch(setSamples(res, timeQuery.sampling))
-			dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
-			dispatch(setSearchErrors(false))
-			console.log(`\
-				MonitorsMagnitude Data was recibe successfully!!\n \
-				Sampling Period Choosen: ${timeQuery.sampling} microsegundos\n \
-				Arrays Recived: ${totalArraysRecive}\n \
-				total Records: ${totalRecords}\n \
-				----------------------------------------------------------------`
-			)
-		})
-		.catch(error => {
-			const error_message = (error.response?.data) ? error.response.data.toString() : "Unsupported error";
-			const error_status = (error.response?.status) ? error.response.status : "Unknown"
-			dispatch(setSearchErrors(true))
-			PopUpMessage({type:'error', message:'Error: '+error_message+" - Code "+error_status})
+		try {
+			setLoadingSearch(true)
+			setCurrentSearch()
+			const url = buildUrl(monitor, timeQuery, pagination) // construct url
+			dispatch(getUrl(url)) // refactor => eliminar
+			doSearch(url, 0, timeQuery.sampling) // url : page : sampling
+		} catch (error) {
 			console.error(error)
-		})
-		.finally(() => {
-			dispatch(setloadingButton(true))
-			dispatch(loadGraphic(false))
-		})
+		}
 	}
 
 	/*
@@ -157,18 +131,16 @@ function PerformQuery() {
 	/*
 	 * dispatch acction if submit was correct
 	 */
-	const dispatchActionsOnSubmit = () => {
+	const setCurrentSearch = () => {
 		try {
-			const perform = true; // initial state use to check searched monitors selected comparation
+			const perform = true // initial state use to check searched monitors selected comparation
 			const searchedMonitors = monitor.map(e => e["id"]) // save the monitors id's that where choosen for the search
-	
-			dispatch(setActualPage(false, 0, 0)) // reset pagination if it is already display
 			// TODO: change name of hadleSearch to currentSearch
-			dispatch(hadleSearch(perform, timeQuery.beginDate, timeQuery.endDate, timeQuery.sampling, searchedMonitors))
-			dispatch(setloadingButton(false))
-			dispatch(loadGraphic(true))
+			dispatch(
+				hadleSearch(perform, timeQuery.beginDate, timeQuery.endDate, timeQuery.sampling, searchedMonitors)
+			)
 		} catch (error) {
-			console.log(error)
+			console.error(error)
 		}
 	}
 
@@ -200,8 +172,6 @@ function PerformQuery() {
 		}
 		else{
 			if(button_click !== "download"){ // refactor llamar buildUrl desde download
-				setLoadingSearch(true)
-				dispatchActionsOnSubmit()
 				getSamplesFromServer()
 			}
 			else{
@@ -285,7 +255,8 @@ function PerformQuery() {
 						<div className="flex-row">
 							<LoadingButton
 								onClick={() => {
-									checkOnSubmit('display');
+									// checkOnSubmit('display');
+									getSamplesFromServer()
 								}}
 								loading={loadingSearch}
 								loadingPosition="start"

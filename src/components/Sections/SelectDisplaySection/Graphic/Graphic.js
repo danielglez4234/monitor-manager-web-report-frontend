@@ -180,15 +180,15 @@ function Graphic() {
 			console.error(error)
 		}
 	}
-		
+
 	/*
 	 * handle the server's values for display
 	 */
 	const buildGraphicValues = (date, _value, logarithm) => {
 		try {
-			const parseDate = parseInt(date) 
+			const parseDate = parseInt(date)
 			const parseValue = parseFloat(_value)
-			const value_ = (logarithm) 
+			const value_ = (logarithm)
 			? convertToLogarithm(parseValue)
 			: parseValue
 

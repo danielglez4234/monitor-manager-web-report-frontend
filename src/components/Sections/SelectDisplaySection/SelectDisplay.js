@@ -30,6 +30,7 @@ import MonitorList			from './SelectedMonitor/MonitorList';
 import ButtonGeneralOptions from './OptionsBarSection/ButtonGeneralOptions';
 import HandleMessage         from '../../handleErrors/HandleMessage';
 import ButtonMagnitudeReference from './OptionsBarSection/ButtonMagnitudeReference'
+import HandleSearch from '../PerformSearchSection/HandleSearch';
 // import RangeThresholdsOptions from './OptionsBarSection/RangeThresholdsOptions';
 
 const { REACT_APP_IDISPLAYLENGTH } = process.env
@@ -56,34 +57,35 @@ const cubeSpinnerImg = () => {
 
 function SelectDisplay() {
 	const dispatch = useDispatch();
-	const [msg, PopUpMessage] = HandleMessage();
+	const [msg, PopUpMessage] = HandleMessage()
+	const doSearch = HandleSearch()
 
-	const monitor = useSelector(state => state.monitor);
-	const getResponse = useSelector(state => state.getResponse);
-	const onSearch = useSelector(state => state.onSearch);
-	const totalResponseData = useSelector(state => state.totalResponseData);
+	const monitor = useSelector(state => state.monitor)
+	const getResponse = useSelector(state => state.getResponse)
+	const onSearch = useSelector(state => state.onSearch)
+	const totalResponseData = useSelector(state => state.totalResponseData)
 
-	const graphicStillLoading = useSelector(state => state.loadingButton);
-	const loadingGraphic = useSelector(state => state.loadingGraphic);
+	const graphicStillLoading = useSelector(state => state.loadingButton)
+	const loadingGraphic = useSelector(state => state.loadingGraphic)
 
 	// pagination => todo => refactor 
-	let url = useSelector(state => state.url);
-	const pagination = useSelector(state => state.pagination);
-	const [disabled, setDisabled] = useState(true);
+	let url = useSelector(state => state.url)
+	const pagination = useSelector(state => state.pagination)
+	const [disabled, setDisabled] = useState(true)
 
-	const [startloadingGraphic, setStartloadingGraphic]   = useState(false);
+	const [startloadingGraphic, setStartloadingGraphic]   = useState(false)
 
-	const [page, setPage]                             = useState(1);
-	const [totalPages, setTotalPages]                 = useState(0);
-	const [activatePagination, setActivatePagination] = useState(false);
-	const [loadingPage, setLoadingPage]               = useState(false);
-	const [totalPerPage, setTotalPerPages]            = useState(0);
+	const [page, setPage]                             = useState(1)
+	const [totalPages, setTotalPages]                 = useState(0)
+	const [activatePagination, setActivatePagination] = useState(false)
+	const [loadingPage, setLoadingPage]               = useState(false)
+	const [totalPerPage, setTotalPerPages]            = useState(0)
 
-	const [infoSamplesByPage, setInfoSamplesByPage]   = useState(0);
-	const [infoTotalSamples, setInfoTotalSamples]     = useState(0);
+	const [infoSamplesByPage, setInfoSamplesByPage]   = useState(0)
+	const [infoTotalSamples, setInfoTotalSamples]     = useState(0)
 
-	const [references, setReferences] = useState([]);
-	const [referenceComponent, setReferenceComponent] = useState([]);
+	const [references, setReferences] = useState([])
+	const [referenceComponent, setReferenceComponent] = useState([])
 
 
 
@@ -91,33 +93,29 @@ function SelectDisplay() {
 	 * Update reload button when 'loadingbutton' and 'responseData' states change
 	 */
 	useEffect(() => {
-		if(graphicStillLoading)
+		if (graphicStillLoading && (getResponse?.responseData?.samples.length > 0 || getResponse?.responseData?.reportInfo?.totalPages > 1))
 		{
-			if (getResponse?.responseData?.samples.length > 0 || getResponse?.responseData?.reportInfo?.totalPages > 1)
-			{
-				const totalPages   = getResponse.responseData.reportInfo.totalPages
-				const totalSamples = getResponse.responseData.reportInfo.totalSamples
-				const totalDisplay = getResponse.responseData.reportInfo.totalDisplaySamplesByPage
-				const totalPerPage = totalResponseData.totalPerPage 
-				// info display
-				setInfoSamplesByPage(totalDisplay)
-				setInfoTotalSamples(totalSamples)
-				// set pagination
-				setTotalPages(totalPages)
-				setTotalPerPages(totalPerPage)
-				setPage(1) // default page
-				setDisabled(false)
-				setActivatePagination((totalPages <= 1) ? false : true)
-
-				checkIfExistsMagnitudes(getResponse.responseData.columns)
-			}
-			else 
-			{
-				setDisabled(true)
-				setTotalPages(0)
-				setInfoSamplesByPage(0)
-				setInfoTotalSamples(0)
-			}
+			const totalPages   = getResponse.responseData.reportInfo.totalPages
+			const totalSamples = getResponse.responseData.reportInfo.totalSamples
+			const totalDisplay = getResponse.responseData.reportInfo.totalDisplaySamplesByPage
+			const totalPerPage = totalResponseData.totalPerPage 
+			// info display
+			setInfoSamplesByPage(totalDisplay)
+			setInfoTotalSamples(totalSamples)
+			// set pagination
+			setTotalPages(totalPages)
+			setTotalPerPages(totalPerPage)
+			setPage(1) // default page
+			setDisabled(false)
+			setActivatePagination(totalPages > 1)
+			checkIfExistsMagnitudes(getResponse.responseData.columns)
+		}
+		else 
+		{
+			setDisabled(true)
+			setTotalPages(0)
+			setInfoSamplesByPage(0)
+			setInfoTotalSamples(0)
 		}
 	}, [graphicStillLoading])
 
@@ -164,7 +162,7 @@ function SelectDisplay() {
     const handleClickOpenInfo = () => {
 		$('.totalRecord-button-close_rangeZone').toggleClass('display-none')
 		$('.totalRecord-button-Popover ').toggleClass('display-none')
-    };
+    }
 
 
 	/*
@@ -172,63 +170,49 @@ function SelectDisplay() {
 	 */
 	const handleChange = (event, value) => {
 		setPage(value)
-		dispatch(setActualPage(activatePagination, totalPerPage, value, totalPages))
-	};
+		// console.log("🚀 ~ file: SelectDisplay.js ~ line 173 ~ handleChange ~ value", value)
+		dispatch(setActualPage(true, totalPerPage, value, totalPages))
+		getSamplesFromServer(value)
+	}
 
 	/*
 	 * Handle next page dataSamples REFACTOR: => eliminar, llamar a funcion general
 	 */
-	useEffect(()=>{
-		if (getResponse.length !== 0 && pagination.active ) 
-		{
-			dispatch(loadGraphic(true))
+	const getSamplesFromServer = async (actualPage) => {
+		try {
+				// setLoadingPage(true)
+				const page = actualPage - 1
 
-			const iDisplayLength = pagination.displayLength
-			const actualPage     = pagination.actualPage
+				const url_params = new URLSearchParams(url)
+				url_params.set("page", page)
 
-			let start = actualPage-1
+				const url_str = url.toString()
+				dispatch(getUrl(url_str))
 
-			dispatch(setloadingButton(true))
-			setLoadingPage(true)
+				await doSearch(url_str, page, getResponse.sampling_period)
 
-			url = url.split('&page')
-			url[0] += "&page="+ start +"&length="+ iDisplayLength
-			url = url[0]
-
-			dispatch(getUrl(url))
-
-			Promise.resolve( getDataFromServer(url) )
-			.then(res => {
-				const totalArraysRecive  = res.samples.length
-				const totalRecords       = res.reportInfo.totalSamples
-				const totalPerPage       = REACT_APP_IDISPLAYLENGTH
-				const sampling_period    = getResponse.sampling_period
-				dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
-					if (totalArraysRecive === 0) 
-					{
-						PopUpMessage({type:'default', message:'No data was collected on this page, this may happen if the monitor goes into FAULT state.'})
-					}
-					else
-					{
-						dispatch(setSamples(res, sampling_period))
-						setInfoSamplesByPage(res.reportInfo.totalDisplaySamplesByPage)
-					}
-					console.log("Data recibe successfully");
-				})
-				.catch(error => {
-					const error_message = (error.response?.data) ? error.response.data.toString() : "Unsupported error";
-					const error_status = (error.response?.status) ? error.response.status : "Unknown"
-					PopUpMessage({type:'error', message:'Error: '+error_message+" - Code "+error_status})
-					console.error(error)
-				})
-				.finally(() => {
-					dispatch(setloadingButton(true))
-					dispatch(loadGraphic(false))
-					setLoadingPage(false)
-					setDisabled(false)
-				})
+				console.log("🚀 ~ file: SelectDisplay.js ~ line 191 ~ getSamplesFromServer ~ url_str", url_str)
+				// change to currentUrl
+				// setLoadingPage(false)
+		} catch (error) {
+			console.error(error)
 		}
-	},[pagination]);
+	}
+
+	// useEffect(() => {
+	// 	if (getResponse.length !== 0 && pagination.active ) 
+	// 	{
+	// 		setLoadingPage(true)
+	// 		// new 
+	// 		const page = pagination.actualPage - 1
+	// 		const url_params = new URLSearchParams(url)
+	// 		url_params.set("page", page)
+	// 		doSearch(url_params, page, getResponse.sampling)
+	// 		dispatch(getUrl(url_params))
+	// 		// change to currentUrl
+	// 		setLoadingPage(true)
+	// 	}
+	// },[pagination]);
 
 
 	/*
@@ -313,7 +297,10 @@ function SelectDisplay() {
 						// <RangeThresholdsOptions />
 					}
 				</div>
-
+				
+				{
+					console.log("startloadingGraphic && pagination?.active === false", startloadingGraphic && pagination?.active === false, isEmpty(totalResponseData))
+				}
 				{
 					(startloadingGraphic && pagination?.active === false) ? "" :
 					(isEmpty(totalResponseData)) ? "" :

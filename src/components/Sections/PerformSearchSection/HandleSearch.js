@@ -13,18 +13,23 @@ import {
 from '../../../actions';
 import HandleMessage      from '../../handleErrors/HandleMessage';
 
+
+
+
 const { REACT_APP_IDISPLAYLENGTH } = process.env
 
-function HandleSearch({url, sampling}) {
-	const dispatch = useDispatch()
-	const [msg, PopUpMessage] = HandleMessage()
-
-    const getSamplesFromServer = async () => {
+function HandleSearch() {
+    const dispatch = useDispatch()
+    const [msg, PopUpMessage] = HandleMessage()
+    
+    const getSamplesFromServer = async (url, page, sampling) => {
 		dispatch(getUrl(url)) // TODO: refactor => eliminar
         /*
          * reset pagination if it is already display
          */
-        dispatch(setActualPage(false, 0, 0))
+        // const isPaginating = page > 0
+        // dispatch(setActualPage(isPaginating, page, 0))
+        // dispatch(setActualPage(true, totalPerPage, value, totalPages))
         /*
          * disable reset button while loading
          */
@@ -33,7 +38,6 @@ function HandleSearch({url, sampling}) {
          * set start loading grahic
          */
         dispatch(loadGraphic(true))
-
         /*
          * perform server call
          */
@@ -58,7 +62,7 @@ function HandleSearch({url, sampling}) {
             // TODO: refactor
 			if(totalArraysRecive === 0 && res.reportInfo.totalPages > 1){
                 PopUpMessage({type:'default', message:'No data was collected on this page, this may happen if the monitor goes into FAULT state.'})
-           }
+            }
 
 			console.log(`\
 				MonitorsMagnitude Data was recibe successfully!!\n \
@@ -87,8 +91,7 @@ function HandleSearch({url, sampling}) {
 		})
 	}
 
-    getSamplesFromServer()
-    return ""
+    return getSamplesFromServer
 }
 
 export default HandleSearch;
