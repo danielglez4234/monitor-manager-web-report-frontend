@@ -527,7 +527,7 @@ const getSeries = (props, data) => {
 		let config
 		const isBoxplotEnabled = data?.boxplot?.isEnable
 		const onlyCollapseValues = data?.boxplot?.onlyCollapseValues
-		const seriesType = data.graphicType
+		const seriesType = data.graphic_type
 
 		if(isBoxplotEnabled && !onlyCollapseValues)
 			config = boxplotSeriesConfiguration(data.name)
