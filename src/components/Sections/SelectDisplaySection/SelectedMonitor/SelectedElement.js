@@ -124,7 +124,7 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	 */
 	const getOptions = () => {
 		return {
-			boxplot: boxplot,
+			// boxplot: boxplot,
 			logarithm: logarithm,
 			curved: curved,
 			filled: filled,
@@ -291,7 +291,8 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 
 
 					{
-					(monitorData.summaryConfigs) &&
+					// (monitorData.summaryConfigs) &&
+					(false) &&
 						<GetSummarySelect
 							id={id}
 							monitorData={monitorData}
@@ -300,7 +301,6 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 							constraints={constraints}
 						/>
 					}
-
 					
 						<div className="monitor-selected-select-box">
 
