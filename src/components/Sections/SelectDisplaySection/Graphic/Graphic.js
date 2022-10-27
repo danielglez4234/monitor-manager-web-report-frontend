@@ -244,22 +244,22 @@ function Graphic() {
 					let value  = sample_val.at(index+2) // +2 => jumping timestamp and timestampLong
 					
 					const isMagnitude = columns_row?.stateOrMagnitudeValuesBind
-					const isSummary = columns_row?.summaryValuesBind
+					// const isSummary = columns_row?.summaryValuesBind
 
 					if (value !== "" && value.length > 0){
-						if (isMagnitude)
+						if (isMagnitude){
 							value = isMagnitude[value]
-
-						if(isSummary && options.boxplot.isEnable && !options.boxplot.onlyCollapseValues){
-							data.push( buildBoxplotGraphicValues(date, value, isSummary))
 						}
-						else
-						{
-							const min_l = options.limit_min || -Infinity
-							const max_l = options.limit_max || Infinity
-							if (value > min_l && value < max_l)
-								data.push( buildGraphicValues(date, value, options.logarithm) )
-						}
+						// if(isSummary && options.boxplot.isEnable && !options.boxplot.onlyCollapseValues){
+						// 	data.push( buildBoxplotGraphicValues(date, value, isSummary))
+						// }
+						// else
+						// {
+						const min_l = options.limit_min || -Infinity
+						const max_l = options.limit_max || Infinity
+						if (value > min_l && value < max_l)
+							data.push( buildGraphicValues(date, value, options.logarithm) )
+						// }
 					}
 					return null
 				})
@@ -525,25 +525,30 @@ const addMedianSeriesDefaultConf = (props) => {
 const getSeries = (props, data) => {
 	try {
 		let config
-		const isBoxplotEnabled = data?.boxplot?.isEnable
-		const onlyCollapseValues = data?.boxplot?.onlyCollapseValues
-		const seriesType = data.graphicType
+		// const isBoxplotEnabled = data?.boxplot?.isEnable
+		// const onlyCollapseValues = data?.boxplot?.onlyCollapseValues
+		const seriesType = data.graphic_type
 
-		if(isBoxplotEnabled && !onlyCollapseValues)
-			config = boxplotSeriesConfiguration(data.name)
-		else
-			config = seriesConfiguration(data)
+		// if(isBoxplotEnabled && !onlyCollapseValues)
+		// 	config = boxplotSeriesConfiguration(data.name)
+		// else
+		config = seriesConfiguration(data)
 		
 		config["xAxis"] = props.dateAxis
 		config["yAxis"] = props.valueAxis
 
-		if(isBoxplotEnabled && !onlyCollapseValues)
-			return props.chart.series.push(am5xy.CandlestickSeries.new(root, config))
-		else if(seriesType === "Step Line Series")
+		// if(isBoxplotEnabled && !onlyCollapseValues)
+		// 	return props.chart.series.push(am5xy.CandlestickSeries.new(root, config))
+		// else if(seriesType === "Step Line Series")
+		// 	return props.chart.series.push(am5xy.StepLineSeries.new(root, config))
+		// else
+		// 	return props.chart.series.push(am5xy.LineSeries.new(root, config))
+		if(seriesType === "Step Line Series") {
 			return props.chart.series.push(am5xy.StepLineSeries.new(root, config))
-		else
+		}
+		else {
 			return props.chart.series.push(am5xy.LineSeries.new(root, config))
-
+		}
 	} catch (error) {
 		console.log(error)
 	}
@@ -707,17 +712,17 @@ const generateGraphic = (info) =>{
 		series = getSeries(graphProps, data_)
 
 		// if boxplot is enabled the way to show the median is using the steps series type
-		if(data_?.boxplot.isEnable && !data_?.boxplot.onlyCollapseValues){
-			addMedianSeriesDefaultConf(graphProps).data.setAll(data_.data)
-			// addMeanSeriesDefaultConf(graphProps).data.setAll(data_.data)
-		}
-		else{
+		// if(data_?.boxplot.isEnable && !data_?.boxplot.onlyCollapseValues){
+		// 	addMedianSeriesDefaultConf(graphProps).data.setAll(data_.data)
+		// 	// addMeanSeriesDefaultConf(graphProps).data.setAll(data_.data)
+		// }
+		// else{
 			// Set Series line weight and dashArray view // this doesn't work with boxplot series type
-			series.strokes.template.setAll({
-				strokeWidth: getLineStroke(data_.stroke),
-				strokeDasharray: getLineCanvas(data_.canvas)
-			})
-		}
+		series.strokes.template.setAll({
+			strokeWidth: getLineStroke(data_.stroke),
+			strokeDasharray: getLineCanvas(data_.canvas)
+		})
+		// }
 
 		// Set filled
 		if (data_?.filled) {

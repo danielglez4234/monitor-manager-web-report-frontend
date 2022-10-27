@@ -216,13 +216,14 @@ function SaveQuery({timeQuery, editing}) {
 	const confOptionsSeparator = (val) => {
 		try {
 			const options = val.options
-			const summary = getSummaryConf(val.options?.boxplot)
+			// const summary = getSummaryConf(val.options?.boxplot)
 			const unit  = (options.unit === null || options?.unit === "Default") ? undefined : options.unit
 			const prefix = (options.prefix === null || options?.prefix === "Default") ? undefined : options.prefix
 			const decimal = (options.decimal === null || options.decimal === "Default") ? undefined : options.decimal
 			const pos = (fnIsArray(val.type)) ? 
 			(options.pos === null || options.pos === "" || options.pos === undefined) ? "[[-1]]" : options.pos : undefined
-			return { unit, prefix, decimal, pos, summary, options }
+			// return { unit, prefix, decimal, pos, summary, options }
+			return { unit, prefix, decimal, pos, options }
 		} catch (error) {
 			PopUpMessage({type:'error', message:error})
 		}
