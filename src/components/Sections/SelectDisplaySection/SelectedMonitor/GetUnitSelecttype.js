@@ -2,6 +2,7 @@ import { useState, Fragment } from 'react';
 import { getUnitConversion } from '../../../../services/services';
 import { TextField, Autocomplete, CircularProgress } from '@mui/material';
 import HandleMessage from '../../../handleErrors/HandleMessage';
+import { isEmpty } from '../../../standarFunctions';
 
 function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix, applyChangesWarning}) {
 	const defualtRest = ["Default"]
@@ -27,25 +28,20 @@ function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix, a
     /*
      *  get list of compatible units from the server
      */
-    const getcompatibleconversion = () => {
-	console.log("sdoñbfsdioñbco")
-		Promise.resolve( getUnitConversion(DefaultUnit) )
+    const getcompatibleconversion = async () => {
+		await Promise.resolve( getUnitConversion(DefaultUnit) )
 		.then(res => {
 				const units    = res.units
-				const prefixes   = res.prefixes
-				const fullname = prefixes.map(value => value.fullName)
-				if (units.length > 0)
-				{
-					const  test = preventDuplicatesOptions(unit, units)
-					console.log("test", test)
-					setUnitOptions(preventDuplicatesOptions(unit, units)) // unit -> "Default" option
-					setPrefixesOptions(preventDuplicatesOptions(prefix, fullname)) // prefix -> "Default" option
-				}
-				else 
-				{
-					setUnitOptions(defualtRest)
-					setPrefixesOptions([])
-				}
+				const prefixes = res.prefixes
+				const fullName = prefixes.map(value => value.fullName)
+				setUnitOptions(
+					(isEmpty(units)) ? defualtRest :
+					preventDuplicatesOptions(unit, units) // unit -> "Default" option
+				) 
+				setPrefixesOptions(
+					(isEmpty(units)) ? [] :
+					preventDuplicatesOptions(prefix, fullName) // prefix -> "Default" option
+				)
 		})
 		.catch(error => {
 			console.log(error)
@@ -55,7 +51,7 @@ function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix, a
 		})
 		.finally(() => {
 				setLoading(false)
-		});
+		})
     }
 
 	return (

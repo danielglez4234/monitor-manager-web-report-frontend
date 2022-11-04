@@ -2,7 +2,7 @@ import axios from "axios";
 /*
  * get server name from .env
  */
-const { REACT_APP_SERVICES_IP, REACT_APP_SERVER_PORT, PORT } = process.env;
+const { REACT_APP_SERVICES_IP, REACT_APP_SERVER_PORT} = process.env;
 
 // apaño temporal hacia el backend --> replace '###' por %23 forzando el cambio de esta forma para evitar errores
 const fnReplacePad = (val) => val.replace(/#/g, '%23');
@@ -52,9 +52,9 @@ export const getMonitorsFromComponent = async (componentName) => {
  * GET the data 
  */
 export const getDataFromServer = async (url) => {
-    const replacePad = fnReplacePad(encodeURI(url))
-    logUrl(replacePad, "search", "GET")
-    const res = await axios.get(`${REACT_APP_SERVICES_IP}/WebReport/rest/search/${replacePad}`, {header: headers});
+    const url_ecd = fnReplacePad(encodeURI(url))
+    logUrl(url_ecd, "search", "GET")
+    const res = await axios.get(`${REACT_APP_SERVICES_IP}/WebReport/rest/search/${url_ecd}`, {header: headers});
     return res.data;
 }
 
@@ -62,9 +62,9 @@ export const getDataFromServer = async (url) => {
  * GET csv transform data
  */
 export const getDownloadData = async (url) => {
-    const replacePad = fnReplacePad(encodeURI(url))
-    logUrl(replacePad, "download", "GET")
-    const res = await axios.get(`${REACT_APP_SERVICES_IP}/WebReport/rest/download/${replacePad}`, {header: headers});
+    const url_ecd = fnReplacePad(encodeURI(url))
+    logUrl(url_ecd, "download", "GET")
+    const res = await axios.get(`${REACT_APP_SERVICES_IP}/WebReport/rest/download/${url_ecd}`, {header: headers});
     return res.data;
 }
 
@@ -115,8 +115,8 @@ export const insertQuery = async (payload) => {
  * UPDATE a new query
  */
 export const updateQuery = async (name, payload) => {
-    const replacePad = fnReplacePad(encodeURI(name))
-    const res = await axios.put(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${replacePad}`, payload, {header: headers});
+    const params_ecd = fnReplacePad(encodeURI(name))
+    const res = await axios.put(`${REACT_APP_SERVICES_IP}/WebReport/rest/query/${params_ecd}`, payload, {header: headers});
     return res.data;
 }
 
@@ -124,7 +124,26 @@ export const updateQuery = async (name, payload) => {
  * DELETE query
  */
 export const deleteQuery = async (params) => {
-    const replacePad = fnReplacePad(encodeURI(params))
-    const res = await axios.delete(`${REACT_APP_SERVICES_IP}/WebReport/rest/query?${replacePad}`, {header: headers});
+    const params_ecd = fnReplacePad(encodeURI(params))
+    const res = await axios.delete(`${REACT_APP_SERVICES_IP}/WebReport/rest/query?${params_ecd}`, {header: headers});
+    return res.data;
+}
+
+
+/*
+-------------------------------
+*
+* SUMMARY ROUTES
+*
+-------------------------------
+*/
+
+/*
+ * GET INTERVALS OF
+ */
+export const getSummaryIntervals = async (component, magnitude) => {
+    const magnitude_ecd = fnReplacePad(encodeURI(magnitude))
+    const component_ecd = fnReplacePad(encodeURI(component))
+    const res = await axios.get(`${REACT_APP_SERVICES_IP}/WebReport/rest/components/${component_ecd}/monitors/${magnitude_ecd}/summary`, {header: headers});
     return res.data;
 }

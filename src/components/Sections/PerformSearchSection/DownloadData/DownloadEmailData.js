@@ -114,10 +114,10 @@ function DownloadEmailData({checkOnSubmit}){
 	/*
 	 * Get data for donwload
 	 */
-	const getSamplesFromServerForDownload = (url) => {
+	const getSamplesFromServerForDownload = async (url) => {
 		setLoadingSearch(true);
 		console.log("Downloading.....")
-		Promise.resolve( getDownloadData(url) )
+		await Promise.resolve( getDownloadData(url) )
 		.then(res => {
 			console.log("** Downloaded successfully **")
 			PopUpMessage({type:'success', message:'Data downloaded successfully'})
