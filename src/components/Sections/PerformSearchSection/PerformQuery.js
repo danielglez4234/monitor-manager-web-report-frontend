@@ -12,7 +12,8 @@ import {
 	setSamples,
 	setTotalResponseData,
 	getUrl,
-	setActualPage
+	setActualPage,
+	setSearchErrors
 }
 from '../../../actions';
 import LoadingButton                            from '@mui/lab/LoadingButton';
@@ -25,9 +26,14 @@ import DownloadEmailData from './DownloadData/DownloadEmailData';
 // import AdvancedOptions from './AdvancedOptions';
 import SaveQuery     	 from './StroreQuerys/SaveQuery';
 import ViewHandleQuery 	 from './StroreQuerys/handleQuerys/ViewHandleQuery';
-import PopUpMessage      from '../../handleErrors/PopUpMessage';
-import buildUrl		 	 from './buildUrl'
+import FavoriteQueries	 from './FavoriteQueries/FavoriteQueries'
+import HandleMessage      from '../../handleErrors/HandleMessage';
+import buildUrl		 	 from './buildUrl';
+import { usesTyles } from '../../../commons/uiStyles/usesTyles';
+import HandleSearch from './HandleSearch';
 
+
+const { REACT_APP_IDISPLAYLENGTH } = process.env
 
 /*
  * Hide Component and monitor list
@@ -37,9 +43,12 @@ const hideAndShowSection = () => {
 	$('.arrow-showPerfomSection').toggleClass('hide-sections')
 }
 
-function PerformQuery(props) {
-	const dispatch             = useDispatch()
-	const [msg, handleMessage] = PopUpMessage()
+function PerformQuery() {
+	const classes = usesTyles()
+	const dispatch = useDispatch()
+	const [msg, PopUpMessage] = HandleMessage()
+
+	const doSearch = HandleSearch()
 
 	const monitor          = useSelector(state => state.monitor)
 	const loadWhileGetData = useSelector(state => state.loadingButton)
@@ -56,36 +65,15 @@ function PerformQuery(props) {
 		sampling: 0
 	})
 
-	/*
-	 * Show Error
-	 */
-	const showErrorMessage = (mesage) => {
-		handleMessage({ 
-			message: mesage, 
-			type: 'error',
-			persist: true,
-			preventDuplicate: false
-		})
-	}
-	/*
-	 * handle warning message
-	 */
-	const showWarningMeggage = (message) => {
-		handleMessage({ 
-			message: message, 
-			type: 'warning', 
-			persist: false,
-			preventDuplicate: false
-		})
-	}
+	// TODO: temporal
+	const [addItem, setAddItem] = useState(null)
 	
 	/*
 	 * 'loadWhileGetData' will be set to true when the data has arrived, and then the buttons will be active again
 	 */
 	useEffect(() => {
-		if (loadWhileGetData) {
-			setLoadingSearch(false);
-		}
+		if (loadWhileGetData)
+			setLoadingSearch(false)
 	}, [loadWhileGetData])
 
 	/*
@@ -101,36 +89,16 @@ function PerformQuery(props) {
 	/*
 	 * Get Samples From Server
 	 */
-	const getSamplesFromServer = () => {
-		const url = buildUrl(monitor, timeQuery, pagination) // construct url
-		dispatch(getUrl(url)) // refactor => eliminar
-		
-		Promise.resolve( getDataFromServer(url) )
-		.then(res => { 
-			const totalArraysRecive  = res.samples.length
-			const totalRecords       = res.reportInfo.totalSamples
-			const totalPerPage       = props.urliDisplayLength
-
-			dispatch(setSamples(res, timeQuery.sampling))
-			dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
-			console.log("\n \
-				MonitorsMagnitude Data was recibe successfully!! \n \
-				Sampling Period Choosen: " + timeQuery.sampling + " microsegundos \n \
-				Arrays Recived: " + totalArraysRecive + " \n \
-				total Records: " + totalRecords + " \n \
-				----------------------------------------------------------------"
-			)
-		})
-		.catch(error => {
-			const error_message = (error.response?.data) ? error.response.data.toString() : "Unsupported error";
-			const error_status = (error.response?.status) ? error.response.status : "Unknown"
-			showErrorMessage('Error: ' + error_message + " - Code " + error_status)
-		console.error(error)
-		})
-		.finally(() => {
-			dispatch(setloadingButton(true))
-			dispatch(loadGraphic(false))
-		})
+	const getSamplesFromServer = async () => {
+		try {
+			setLoadingSearch(true)
+			setCurrentSearch()
+			const url = buildUrl(monitor, timeQuery, pagination) // construct url
+			dispatch(getUrl(url)) // refactor => eliminar
+			doSearch(url, 0, timeQuery.sampling) // url : page : sampling
+		} catch (error) {
+			console.error(error)
+		}
 	}
 
 	/*
@@ -147,7 +115,7 @@ function PerformQuery(props) {
 			else if(dateFieldName === "endDate")
 				setEndDateInput(date)
 		} catch (error) {
-			showErrorMessage(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 	
@@ -163,13 +131,17 @@ function PerformQuery(props) {
 	/*
 	 * dispatch acction if submit was correct
 	 */
-	const dispatchActionsOnSubmit = () => {
-		const perform = true; // initial state use to check searched monitors selected comparation
-		dispatch(setActualPage(false, 0, 0)) // reset pagination if it is already display
-		const searchedMonitors = monitor.map(e => e["id"]) // save the monitors id's that where choosen for the search
-		dispatch(hadleSearch(perform, timeQuery.beginDate, timeQuery.endDate, timeQuery.sampling, searchedMonitors))
-		dispatch(setloadingButton(false))
-		dispatch(loadGraphic(true))
+	const setCurrentSearch = () => {
+		try {
+			const perform = true // initial state use to check searched monitors selected comparation
+			const searchedMonitors = monitor.map(e => e["id"]) // save the monitors id's that where choosen for the search
+			// TODO: change name of hadleSearch to currentSearch
+			dispatch(
+				hadleSearch(perform, timeQuery.beginDate, timeQuery.endDate, timeQuery.sampling, searchedMonitors)
+			)
+		} catch (error) {
+			console.error(error)
+		}
 	}
 
 	/*
@@ -178,38 +150,45 @@ function PerformQuery(props) {
 	const checkOnSubmit = (button_click) => {
 		// convert to unix 
 		// we use this to get a better control over the correct validation of the dates
-		const unixBeginDate = convertToUnix(timeQuery["beginDate"])
-		const unixEndDate = convertToUnix(timeQuery["endDate"])
+		const unixBeginDate = convertToUnix(timeQuery.beginDate)
+		const unixEndDate = convertToUnix(timeQuery.endDate)
 
 		// handle all errors from the date inputs
 		if (timeQuery.beginDate === '' || timeQuery.endDate === ''){
-			showWarningMeggage('The Date Fields cannot be empty')
+			PopUpMessage({type:'warning', message:'The Date Fields cannot be empty'})
 			return false
 		}
 		else if (unixBeginDate > unixEndDate){
-			showWarningMeggage('The begin Date cannot be greater than end Date')
+			PopUpMessage({type:'warning', message:'The begin Date cannot be greater than end Date'})
 			return false
 		}
 		else if (timeQuery.beginDate === timeQuery.endDate){
-			showWarningMeggage('The begin and end Date cannot be the same')
+			PopUpMessage({type:'warning', message:'The begin and end Date cannot be the same'})
 			return false
 		}
 		else if (monitor[0] === undefined){
-			showWarningMeggage('There are no monitors selected')
+			PopUpMessage({type:'warning', message:'There are no selected monitors'})
 			return false
 		}
 		else{
 			if(button_click !== "download"){ // refactor llamar buildUrl desde download
-				setLoadingSearch(true)
-				dispatchActionsOnSubmit()
 				getSamplesFromServer()
 			}
 			else{
-				return buildUrl(monitor, timeQuery, pagination, true)
+				return buildUrl(monitor, timeQuery, pagination, true) // true to identified download
 			}
 			return true
 		}
 	}
+
+
+	/*
+	 * TODO: temporal => cuendo se tenga una tabla dedicada esto se borrara
+	 */
+	const addItemtoLocalStorage = (items) => {
+		setAddItem(items)
+	}
+
 
     return(
 		<>
@@ -276,10 +255,12 @@ function PerformQuery(props) {
 						<div className="flex-row">
 							<LoadingButton
 								onClick={() => {
-									checkOnSubmit('display');
+									// checkOnSubmit('display');
+									getSamplesFromServer()
 								}}
 								loading={loadingSearch}
 								loadingPosition="start"
+								// className={classes.perfrom_query_button_search}
 								className="perfrom-query-button-search"
 								variant="contained"
 								startIcon={<PlayCircleFilledWhiteIcon/>}
@@ -290,7 +271,6 @@ function PerformQuery(props) {
 
 						{ // Only_Download data component // TODO: change file name
 							<DownloadEmailData
-								service ={props.serviceIP}
 								checkOnSubmit={checkOnSubmit}
 							/>
 						}
@@ -308,13 +288,16 @@ function PerformQuery(props) {
 								/>
 								{
 									(editing?.active) ? "" :
-										<ViewHandleQuery 
-											editing={editing}
+										<ViewHandleQuery
+											addItemtoLocalStorage={addItemtoLocalStorage}
 										/>
 								}
 						</Stack>
 					</div>
 				</div>
+					<FavoriteQueries 
+						addItem={addItem}
+					/>
 			</div>
 		</>
     );

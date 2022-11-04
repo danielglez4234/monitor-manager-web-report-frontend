@@ -5,7 +5,7 @@ import {
 	insertQuery,
 	updateQuery
 } from '../../../../services/services'
-import { getCategory, fnIsState } from '../../../standarFunctions'
+import { getCategory, fnIsArray } from '../../../standarFunctions'
 import {makeStyles}					from '@material-ui/core';
 import { Modal, Box, Grid, Button, Backdrop, CircularProgress } from '@mui/material';
 
@@ -16,7 +16,7 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 
-import PopUpMessage                 from '../../../handleErrors/PopUpMessage';
+import HandleMessage                 from '../../../handleErrors/HandleMessage';
 
 
 const usesTyles = makeStyles({
@@ -68,7 +68,7 @@ function SaveQuery({timeQuery, editing}) {
 	const dispatch = useDispatch()
 	const classes = usesTyles()
 	const monitor = useSelector(state => state.monitor)
-	const [msg, handleMessage] = PopUpMessage()
+	const [msg, PopUpMessage] = HandleMessage()
 
 	const [disabled, setDisabled] = useState(true)
 	const [openSaveQuery, setOpenSaveQuery] = useState(false)
@@ -76,7 +76,6 @@ function SaveQuery({timeQuery, editing}) {
     const [queryName, setQueryName] = useState("")
 	const [ifSameQueryName, setifSameQueryName] = useState(true)
     const [queryDescription, setQueryDescription] = useState("")
-	const [infoUpdateDescription, setInfoUpdateDescription] = useState("");
     const [openBackDrop, setOpenBackDrop] = useState(false)
     const [monitorList, setMonitorList] = useState([""]);
 
@@ -88,26 +87,6 @@ function SaveQuery({timeQuery, editing}) {
 		buildList()
 	}
 	const handleCloseSaveQuery = () => setOpenSaveQuery(false)
-
-	/*
-	 * Show Warning message snackbar
-	 */
-	const showWarningMessage = (message) => {
-		handleMessage({
-			message: message,
-			type: "warning",
-			persist: false,
-			preventDuplicate: false
-		})
-	}
-	const showErrorMessage = (message) => {
-		handleMessage({
-			message: message,
-			type: "error",
-			persist: true,
-			preventDuplicate: false
-		})
-	}
 
 	/*
 	 * check active save button
@@ -133,7 +112,7 @@ function SaveQuery({timeQuery, editing}) {
 	/*
 	 * check the changes in queryName when editing
 	 */
-	const checkIfQueryEditing = (newValue) => {
+	const setValuesForEditing = (newValue) => {
 		setQueryName(newValue)
 		setifSameQueryName((newValue === editing.name))
 	}
@@ -152,17 +131,17 @@ function SaveQuery({timeQuery, editing}) {
 	const onSubmit = () => {
 		try {
 			if(queryName === "" || queryName === undefined){
-				showWarningMessage("Name field cannot be empty")
+				PopUpMessage({type:'warning', message:'Name field cannot be empty'})
 			}
 			else if(!testRegex(queryName, REACT_APP_QUERY_NAME_PATTERN)){
-				showWarningMessage("name cannot have special characters other than '_-@.()'")
+				PopUpMessage({type:'warning', message:"name cannot have special characters other than '_-@.()'"})
 			}
 			else{
 				backDropLoadOpen()
 				fnSaveQuery()
 			}
 		} catch (error) {
-			showWarningMessage(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -173,7 +152,6 @@ function SaveQuery({timeQuery, editing}) {
 		dispatch(editingQuery({active: false}))
 		setQueryName("")
 		setQueryDescription("")
-		setInfoUpdateDescription("")
 	}
 
 	/*
@@ -198,36 +176,32 @@ function SaveQuery({timeQuery, editing}) {
 		const payload = createPayload()
 
 		const fnAction = (editing?.active && ifSameQueryName) 
-		? () => updateQuery(queryName, payload) 
-		: () => insertQuery(payload);
+			? () => updateQuery(queryName, payload) 
+			: () => insertQuery(payload);
 
 		Promise.resolve( fnAction() )
 		.then(() =>{
 			if(editing?.active){
-				if(ifSameQueryName && queryDescription !== editing.description){
+				if(ifSameQueryName && queryDescription !== editing.description)
+				{
 					editing["description"] = queryDescription
 					dispatch(editingQuery(editing))
 				}
+
 				setQueryDescription(editing.description) // input
-				setInfoUpdateDescription((ifSameQueryName) ? queryDescription : editing.description) // info text
-				setQueryName(editing.name)
+				setQueryName(editing.name) // input
 				setifSameQueryName(true)
 			}else{
 				setQueryName("")
 				setQueryDescription("")
 			}
 			handleCloseSaveQuery()
-			handleMessage({
-				message: "Query save successfully!",
-				type: "success",
-				persist: false,
-				preventDuplicate: false
-			})
+			PopUpMessage({type:'success', message:'Query save successfully!'})
 		})
 		.catch((error) =>{
 			console.error(error)
 			const error_message = (error?.response?.message) ? error.response.message : error.message
-			showErrorMessage(error_message)
+			PopUpMessage({type:'error', message:error_message})
 		}).finally(() => {
 			backDropLoadClose()
 		})
@@ -237,17 +211,21 @@ function SaveQuery({timeQuery, editing}) {
 	 * buil monitor data list
 	 */
 	const buildList = () => {
-		let list = []
-		for (let i = 0; i < monitor.length; i++) {
-			list.push({
-				component: monitor[i]?.name,
-				id: monitor[i]?.id,
-				magnitude: monitor[i]?.magnitude,
-				prefix: monitor[i]?.options?.prefix,
-				unit: monitor[i]?.options?.unit
-			});
+		try {
+			let list = []
+			for (let i = 0; i < monitor.length; i++) {
+				list.push({
+					component: monitor[i]?.name,
+					id: monitor[i]?.id,
+					magnitude: monitor[i]?.magnitude,
+					prefix: monitor[i]?.options?.prefix,
+					unit: monitor[i]?.options?.unit
+				});
+			}
+			setMonitorList(list)
+		} catch (error) {
+			PopUpMessage({type:'error', message:error})
 		}
-		setMonitorList(list)
 	}
 
 
@@ -259,7 +237,8 @@ function SaveQuery({timeQuery, editing}) {
 		const unit  = (options.unit === null || options?.unit === "Default") ? undefined : options.unit
 		const prefix = (options.prefix === null || options?.prefix === "Default") ? undefined : options.prefix
 		const decimal = (options.decimal === null || options.decimal === "Default") ? undefined : options.decimal
-		const pos = (options.pos === null || options.pos === "" || options.pos === undefined) ? undefined : "["+options.pos+"]"
+		const pos = (fnIsArray(val.type)) ? 
+		(options.pos === null || options.pos === "" || options.pos === undefined) ? "[[-1]]" : "["+options.pos+"]" : undefined
 		delete val.options.prefix
 		delete val.options.unit
 		delete val.options.decimal
@@ -279,31 +258,24 @@ function SaveQuery({timeQuery, editing}) {
 	const getMonitorListSeparator = () => {
 		try {
 			let [monitorDescriptions, magnitudeDescriptions, states] = [[],[],[]]
-			monitor.map(val => {
-				let [id, conf] = ["", ""];
+			monitor.map(val => 
+			{
 				const category = getCategory(val.type)
-				if(category === "monitor")
-				{
-					id = val?.id
-					conf = confOptionsSeparator(val)
-					monitorDescriptions.push({id, ...conf})
+				const data = {id: val?.id, ...confOptionsSeparator(val)}
+
+				if(category === "monitor"){
+					monitorDescriptions.push(data)
 				}
-				else if(category=== "magnitud")
-				{
-					id = val?.id
-					conf = confOptionsSeparator(val)
-					magnitudeDescriptions.push({id, ...conf})
+				else if(category=== "magnitud"){
+					magnitudeDescriptions.push(data)
 				}
-				else if(category === "state")
-				{
-					id = val?.id
-					conf = confOptionsSeparator(val)
-					states.push({id, ...conf})
+				else if(category === "state"){
+					states.push(data)
 				}
 			})
 			return {monitorDescriptions, magnitudeDescriptions, states}
 		} catch (error) {
-			console.log(error)
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -343,32 +315,6 @@ function SaveQuery({timeQuery, editing}) {
 					>
 							Update Current Query 
 					</Button>
-					{/* <Button
-						onClick={() => { 
-							resetMonitors()
-						}}
-						disabled={false}
-						className={classes.resetQueryButton}
-						variant="contained"
-						startIcon={<RestartAltIcon />}
-					>
-							Reset
-					</Button> */}
-					<div>
-						Edit Mode: ACTIVE
-					</div>
-					<div className="save-query-editing-message">
-						Now executing the query: <i>{editing?.name}</i> 
-					</div>
-					<div className="save-query-editing-message">
-						Descirption: <i>{
-						(editing.description === "") 
-						? "No desciption provided" 
-						: (infoUpdateDescription === "") 
-						? editing.description
-						: infoUpdateDescription  // if description was edited, shows the current description without doing another petition to the server
-						}</i> 
-					</div>
 				</>
 				:
 				<Button
@@ -419,7 +365,7 @@ function SaveQuery({timeQuery, editing}) {
 										value={queryName}
 										onChange={(e) => {
 											(editing?.active) 
-											? checkIfQueryEditing(e.target.value)
+											? setValuesForEditing(e.target.value)
 											: setQueryName(e.target.value)
 										}}
 									/>

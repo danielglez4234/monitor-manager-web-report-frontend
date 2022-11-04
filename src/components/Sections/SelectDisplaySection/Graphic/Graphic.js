@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState }  from 'react';
+import React, { useEffect, useState }  from 'react';
 
 import { useSelector }    from 'react-redux';
 import getGraphicoptions  from './getGraphicoptions';
 import * as $             from 'jquery';
-import { useSnackbar }    from 'notistack';
 
 import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
 import am5themes_Micro    from "@amcharts/amcharts5/themes/Micro";
@@ -11,38 +10,138 @@ import * as am5exporting  from "@amcharts/amcharts5/plugins/exporting";
 import * as am5           from "@amcharts/amcharts5";
 import * as am5xy         from "@amcharts/amcharts5/xy";
 import * as d3            from "d3-shape";
-// import * as am5pie        from "@amcharts/amcharts5/percent";
 
 import InsertChartIcon    from '@mui/icons-material/InsertChart';
 import LiveHelpIcon       from '@mui/icons-material/LiveHelp';
 import MoreHorizIcon      from '@mui/icons-material/MoreHoriz';
 import NearbyErrorIcon from '@mui/icons-material/NearbyError';
 
-import PopUpMessage from '../../../handleErrors/PopUpMessage';
-import { ConstructionOutlined } from '@mui/icons-material';
+import HandleMessage from '../../../handleErrors/HandleMessage';
 
 
+// const data_test = [
+// 	{
+// 	  time_sample: "2019-08-01 13:00:00.000",
+// 	  q3: 132.3,
+// 	  max: 136.96,
+// 	  min: 131.15,
+// 	  q1: 136.49,
+// 	  median: 135.96,
+// 	  mean: (135.9 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:05:00.000",
+// 	  q3: 135.26,
+// 	  max: 135.95,
+// 	  min: 131.5,
+// 	  q1: 131.85,
+// 	  median: 133.95,
+// 	  mean: (133.9 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:10:00.000",
+// 	  q3: 129.9,
+// 	  max: 133.27,
+// 	  min: 128.3,
+// 	  q1: 132.25,
+// 	  median: 130.40,
+// 	  mean: (130.40 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:15:00.000",
+// 	  q3: 132.94,
+// 	  max: 136.24,
+// 	  min: 132.63,
+// 	  q1: 135.03,
+// 	  median: 134.27,
+// 	  mean: (134.27 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:20:00.000",
+// 	  q3: 136.76,
+// 	  max: 137.86,
+// 	  min: 132.0,
+// 	  q1: 134.01,
+// 	  median: 135.27,
+// 	  mean: (135.27 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:25:00.000",
+// 	  q3: 131.11,
+// 	  max: 133.0,
+// 	  min: 125.09,
+// 	  q1: 126.39,
+// 	  median: 129.27,
+// 	  mean: (129.27 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:30:00.000",
+// 	  q3: 130.11,
+// 	  max: 133.0,
+// 	  min: 125.09,
+// 	  q1: 127.39,
+// 	  median: 129.27,
+// 	  mean: (129.27 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:35:00.000",
+// 	  q3: 125.11,
+// 	  max: 126.0,
+// 	  min: 121.09,
+// 	  q1: 122.39,
+// 	  median: 124.27,
+// 	  mean: (124.2 -1)
+// 	},
+// 	{
+// 	  time_sample: "2019-08-01 13:40:00.000",
+// 	  q3: 131.11,
+// 	  max: 133.0,
+// 	  min: 122.09,
+// 	  q1: 124.39,
+// 	  median: 130.27,
+// 	  mean: 130.27
+// 	}
+//   ];
+
+
+
+const PROCESSOR = {
+	numericField: "value",
+	dateField: "time_sample",
+	lowValueField: "min",
+	highValueField: "max",
+	q1ValueField: "q1",
+	q3ValueField: "q3",
+	meanValueField: "mean",
+	meadianValueField: "median"
+}
+const FORMATER = {
+	dateFormat: "yyyy-MM-dd HH:mm:ss.SSS",
+	timeFormat: "HH:mm:ss.SSS",
+	numberFormat: "#",
+	timeInterval: "millisecond"
+}
 
 /*
  * obtain the index of the element of the second matrix that matches it
  */
 const getIndexFromID = (fromArray, inArray) => {
-	const result = []
-	fromArray.map((val) => {
+	return fromArray.map((val) => {
 		const index = inArray.map(object => object.id).indexOf(val.id)
 		if(index !== -1)
-			result.push(index)
+			return index
+		return false
 	})
-	return result
 }
 
 
 function Graphic() {
-	const [msg, handleMessage] = PopUpMessage();
-	const getResponse          = useSelector(state => state.getResponse);
+	const [msg, PopUpMessage]  = HandleMessage()
+	const getResponse          = useSelector(state => state.getResponse)
 	const monitor 			   = useSelector(state => state.monitor)
-	const reload               = useSelector(state => state.reload);
-	const searchErrors         = useSelector(state => state.searchErrors);
+	const reload               = useSelector(state => state.reload)
+	const searchErrors         = useSelector(state => state.searchErrors)
+	let root // graphic root variable initialization
 
 	const [nodataRecive, setNodataRecive] = useState(false);
 	const [error, setError] = useState(false);
@@ -55,21 +154,41 @@ function Graphic() {
    	}, [searchErrors])
 
    	/*
-	 * handle the server's transformation value for display
+	 * handle the server's values for display
 	 */
 	const buildGraphicValues = (date, _value, logarithm) => {
-		const time_sample = parseInt(date)
-		const value = (logarithm) ? Math.log10(parseFloat(_value)) : parseFloat(_value)
-		if (logarithm && value === 0 || isNaN(value)) {
-			handleMessage({ 
-				message: 'Error: Logarithm can\'t have zero values, disabled the Logarithm option and click reload', 
-				type: 'error', 
-				persist: false,
-				preventDuplicate: true
-			});
+		try {
+			const value = (logarithm) ? Math.log10(parseFloat(_value)) : parseFloat(_value)
+			if ((logarithm && value === 0) || isNaN(value))
+				PopUpMessage({type:'error', message:'Error: Logarithm can\'t have zero values, disabled the Logarithm option and click reload'})
+			else{
+				return { 
+					[PROCESSOR.dateField]: parseInt(date), 
+					[PROCESSOR.numericField]: value 
+				}
+			}
+		} catch (error) {
+			PopUpMessage({type:'error', message:error})
 		}
-		else{
-			return { time_sample, value }
+	}
+
+	/*
+	 * handle server's values for collapse display using the collapseBind object
+	 */
+	const buildBoxplotGraphicValues = (date, _value, collapseBind) => {
+		try {
+			if(Array.isArray(_value)) {
+				const instance = {}
+				const time_sample = parseInt(date)
+				for (const [key, value] of Object.entries(collapseBind))
+					instance[key] = parseFloat(_value[value])
+				return { time_sample, ...instance }
+			}
+			else{
+				PopUpMessage({type:'error', message:'The data type is not valid!! please contact the administrator to fix this'})
+			}
+		} catch (error) {
+			console.log(error)
 		}
 	}
 
@@ -89,45 +208,51 @@ function Graphic() {
 				columns_.shift() // delete timeStampLong
 			}
 			const indexOfFrom_ = getIndexFromID(columns_, monitor)
+			
 			columns_.map((columns_row, index) => {
 				const optionsIndex = indexOfFrom_[index]
-				const options = (optionsIndex !== undefined) ?  monitor[optionsIndex].options : monitor[0].options
-		
-				const dateAndSamples_ = []
+				const options = (optionsIndex !== undefined) ? monitor[optionsIndex].options : monitor[0].options
+				
+				const data = []
 				samples_.map((sample_val) => {
-					const date = sample_val[1].substring(0, sample_val[1].length - 3)
+
+					const date = sample_val[1].substring(0, sample_val[1].length - 3) // convert to milliseconds (the chart does not support microseconds)
 					let value  = sample_val[index+2] // +2 => jumping timestamp and timestampLong
 					
-					const isMagnitude = columns_row.stateOrMagnitudeValuesBind
-					if (value !== ""){
+					const isMagnitude = columns_row?.stateOrMagnitudeValuesBind
+					const isCollapsed = columns_row?.collapseValuesBind
+
+					if (value !== "" && value.length > 0){
 						if (typeof isMagnitude !== "undefined" && isMagnitude !== null){
 							value = isMagnitude[value]
 						}
-						const min_l = (options.limit_min === "") ? -Infinity : options.limit_min
-						const max_l = (options.limit_max === "") ? Infinity  : options.limit_max
-						if (value > min_l && value < max_l){
-							dateAndSamples_.push( buildGraphicValues(date, value, options.logarithm) )
+						if(typeof isCollapsed !== "undefined" && isCollapsed !== null){
+							data.push( buildBoxplotGraphicValues(date, value, isCollapsed))
+						}
+						else
+						{
+							const min_l = options.limit_min || -Infinity
+							const max_l = options.limit_max || Infinity
+							if (value > min_l && value < max_l)
+								data.push( buildGraphicValues(date, value, options.logarithm) )
 						}
 					}
 				})
-				let unit_abbr = ""
-				let sTitle = columns_row.sTitle
-				if(graphicOptions.general.legendTrunkName){
-					sTitle = sTitle.split("/")
-					sTitle = sTitle[sTitle.length - 1]
+				// if "Only monitor name" is checked
+				let _name = columns_row.name
+				if(graphicOptions.legendTrunkName)
+				{
+					_name = _name.split("/")
+					_name = _name[_name.length - 1]
 				}
-				if(columns_row?.unit !== null){ 
-					unit_abbr = columns_row.unit.abbreviature 
-				}
-				const position = (columns_row.position === -1) ? " " : " /" + columns_row.position 
-				const data = {
-					sTitle: sTitle,
-					name: sTitle + position,
-					unit_abbr: unit_abbr,
-					data: dateAndSamples_,
-					sampling_period: columns_row.storagePeriod
-				}
-				info_.push({...data, ...options})
+				// the graphic removes the "[]" so we force the position number with the "/"
+				const name = _name + ((columns_row.position === -1) ? " " : " /" + columns_row.position) 
+				// show the abbreviation if the monitor has a unit
+				const unit_abbr = (columns_row?.unit !== null) ? columns_row.unit.abbreviature : ""
+				// save monitor storage period
+				const storagePeriod = columns_row.storagePeriod
+
+				info_.push({name, unit_abbr, storagePeriod, data, ...options})
 			})
 			return info_
 		} catch (error) {
@@ -135,25 +260,34 @@ function Graphic() {
 		}
 	}
 
-
+/*
+ * get root selected theme
+ */
+const getRootTheme = () => {
+	try {
+		const graphicOptions = getGraphicoptions()
+		const setThemes = []
+		if (graphicOptions.animations) { setThemes.push(am5themes_Animated.new(root)) }
+		if (graphicOptions.microTheme) { setThemes.push(am5themes_Micro.new(root)) }
+		return setThemes
+	} catch (error) {
+		console.log(error)
+	}
+}
 
   /*
    *  Chart initialization
-   *   - When the component is mounted, the root is initialized, since responseData is empty at the moment nothing is shown
+   *   - When the component is mounted, the root is initialized, since responseData is empty for the moment nothing is shown
    +   - When the responseData subscriber receives the data the function is executed again, the change of [responseData] will trigger the update of the function.
    *       - the same for [reload] the function will be updated with the new data
    +   - The root element of amchart cannot be duplicated, we avoid this by using the 'retun () => {...}' method to execute the 'dispose()' when the component is unmount
    */
-let root;
-
 useEffect(() => {
     root = am5.Root.new("chartdiv") // Create root element =ref=> <div id="chartdiv"></div>
     root.fps = 40
 
 	if (getResponse.length === 0)
-	{
 		setNodataRecive(false)
-	}
 	else
 	{
 		if(!getResponse.responseData?.samples)
@@ -163,35 +297,19 @@ useEffect(() => {
 		}
 		else if (getResponse.responseData.samples.length > 0)
 		{
-			const graphicOptions = getGraphicoptions()
-
-			const setThemes = []
-			if (graphicOptions.general.animations) { setThemes.push(am5themes_Animated.new(root)) }
-			if (graphicOptions.general.microTheme) { setThemes.push(am5themes_Micro.new(root)) }
-			root.setThemes(setThemes)
-
-			const sampling_period = getResponse.sampling_period
+			root.setThemes(getRootTheme())
 			const graphicData = arrangeData(getResponse)
 
 			if(graphicData !== undefined)
 			{
-				generateGraphic(graphicData, graphicOptions, sampling_period)
+				generateGraphic(graphicData)
 				setNodataRecive(false)
 			}
 			else
-			{
-				handleMessage({ 
-					message: "The data could not be processed, please contact the administrator to fix this.", 
-					type: 'error', 
-					persist: false,
-					preventDuplicate: true
-				})
-			}
+				PopUpMessage({type:'error', message:'The data could not be processed, please contact the administrator to fix this.'})
 		}
 		else
-		{
 			setNodataRecive(true)
-		}
 	}
 
     // store current value of root and restore root element when update
@@ -199,34 +317,282 @@ useEffect(() => {
     return () => {
       	root.dispose()
     }
-  }, [getResponse, reload]);
+}, [getResponse, reload])
+
+
+/*
+ * get Y renderer Axis
+ */
+const getYRenderer = (grid) => {
+	try {
+		let yRenderer = am5xy.AxisRendererY.new(root, {
+			opposite: false,
+		})
+		if (grid) // hide grid
+			  yRenderer.grid.template.set("visible", false)
+		return yRenderer
+	} catch (error) {
+		console.log(error)
+	}
+}
+
+/*
+ * get X renderer Axis
+ */
+const getXRenderer = (grid) => {
+	try {
+		let xRenderer = am5xy.AxisRendererX.new(root, {
+			minGridDistance: 100,
+		})
+		if (grid) // hide grid
+			xRenderer.grid.template.set("visible", false)
+		return xRenderer
+	} catch (error) {
+		console.log(error)
+	}
+}
+
+
+
+/*
+ * Calculate tooltip 
+ */
+const getMillisecondBaseCount = (info) => {
+	let totalSum = 0;
+	const globalSampling = getResponse.sampling_period
+	const totalLength = info.length
+	if (globalSampling === 0) 
+	{
+		for (let n = 0; n < info.length; n++) 
+		{
+			const ifsampling = (info[n].storagePeriod === "") ? 2000000 : info[n].storagePeriod
+			const numSampling = Math.trunc(ifsampling) / 1000 // tranform to milliseconds
+			totalSum += numSampling
+		}
+		return totalSum / totalLength
+	}
+	else 
+	{
+		return globalSampling / 1000
+	}
+}
+
+/*
+ * Set properties configuration to a series function
+ */
+const seriesConfiguration = (data) => {
+	try {
+		const generalOptions = getGraphicoptions()
+		const gaps = generalOptions.connect
+		const tooltip = generalOptions.tooltip
+		const name = data.name
+		const color = data.color
+		const curved = data.curved
+		const unitAbbr = data.unit_abbr
+		const properties = {
+			name: name,
+			connect: !gaps,
+			valueYField: PROCESSOR.numericField,
+			valueXField: PROCESSOR.dateField,
+			calculateAggregates: true,
+			legendLabelText: "{name}: ",
+			legendRangeLabelText: "{name}: ",
+			legendValueText: "[bold]{valueY}",
+			legendRangeValueText: "{valueYClose}",
+			minBulletDistance: 10
+		}
+	
+		const setTooltip = am5.Tooltip.new(root, {
+			exportable: false,
+			pointerOrientation: "horizontal",
+			labelText: `[bold]{name}[/]\n{valueX.formatDate('${FORMATER.dateFormat}')}\n[bold]{valueY}[/] ${unitAbbr}`
+		})
+	
+		if (tooltip)
+			properties["tooltip"] = setTooltip
+		if (curved)
+			properties["curveFactory"] = d3.curveBumpX
+		if (color) {
+			properties["stroke"] = am5.color(color)
+			properties["fill"] = am5.color(color)
+		}
+		return properties;
+	} catch (error) {
+		console.log(error)
+	}
+}
+
+/*
+ * get CandlestickSeries default config
+ */
+const boxplotSeriesConfiguration = (name) => {
+	return {
+		fill: "#333",
+		stroke: "#333",
+		name: name,
+		valueYField: PROCESSOR.q1ValueField,
+		openValueYField: PROCESSOR.q3ValueField,
+		lowValueYField: PROCESSOR.lowValueField,
+		highValueYField: PROCESSOR.highValueField,
+		valueXField: PROCESSOR.dateField,
+		tooltip: am5.Tooltip.new(root, {
+			pointerOrientation: "horizontal",
+			labelText: "open: {openValueY}\nlow: {lowValueY}\nhigh: {highValueY}\nclose: {valueY},\nmedian: {median}\nmean: {mean}"
+		})
+	}
+}
+
+/*
+ * // median series
+ * get boxplot median values default options 
+ */
+const addMedianSeriesDefaultConf = (props) => {
+	return props.chart.series.push(
+		am5xy.StepLineSeries.new(root, {
+			stroke: "#d1d8d9",
+			name: PROCESSOR.meadianValueField,
+			xAxis: props.dateAxis,
+			yAxis: props.valueAxis,
+			valueYField: PROCESSOR.meadianValueField,
+			valueXField: PROCESSOR.dateField,
+			noRisers: true
+		})
+	)
+}
+
+/*
+ * // mean series
+ * get boxplot mean values default options 
+ */
+const addMeanSeriesDefaultConf = (props) => {
+	let meanSeries = props.chart.series.push(
+		am5xy.StepLineSeries.new(root, {
+			stroke: "#d1d8d9",
+			// name: "josué " +PROCESSOR.meanValueField,
+			xAxis: props.dateAxis,
+			yAxis: props.valueAxis,
+			valueYField: PROCESSOR.meanValueField,
+			valueXField: PROCESSOR.dateField,
+			noRisers: true
+		})
+	)
+	meanSeries.strokes.template.setAll({
+		strokeDasharray: [2, 2],
+		strokeWidth: 2
+	})
+	return meanSeries
+}
+
+/*
+ * get series
+ */
+const getSeries = (props, data) => {
+	try {
+		let config
+		const isBoxplotEnabled = data?.boxplot?.isEnable
+		const seriesType = data.graphicType
+
+		if(isBoxplotEnabled)
+			config = boxplotSeriesConfiguration(data.name)
+		else
+			config = seriesConfiguration(data)
+		
+		config["xAxis"] = props.dateAxis
+		config["yAxis"] = props.valueAxis
+
+		if(isBoxplotEnabled)
+			return props.chart.series.push(am5xy.CandlestickSeries.new(root, config))
+		else if(seriesType === "Step Line Series")
+			return props.chart.series.push(am5xy.StepLineSeries.new(root, config))
+		else
+			return props.chart.series.push(am5xy.LineSeries.new(root, config))
+
+	} catch (error) {
+		console.log(error)
+	}
+}
+
+/*
+ * get line stroke
+ */
+const getLineStroke = (stroke) => {
+	try {
+		if (stroke === "Medium")
+			return 2
+		else if (stroke === "Light")
+			return 1
+		else if (stroke === "Bold")
+			return 3
+		else if (stroke === "Bolder")
+			return 4
+		else 
+			return 1
+	} catch (error) {
+		console.log(error)
+	}
+}
+
+/*
+ * get line canvas 
+ */
+const getLineCanvas = (canvas) => {
+	try {
+		if (canvas === "Dotted")
+			return ["1"]
+		else if (canvas === "Dashed")
+			return ["3","3"]
+		else if (canvas === "Large Dashed")
+			return ["10"]
+		else if (canvas === "Dotted Dashed")
+			return ["10", "5", "2", "5"]
+		else
+			return false
+	} catch (error) {
+		console.log(error)
+	}
+}
+
+/*
+ * get legend height
+ */
+const getLegendHeight = (length) => {
+	try {
+		if (length === 1 || length === 2) 
+			return 50
+		else if (length === 3) 
+			return 80
+		else if (length === 4) 
+			return 110
+		else 
+			return 150
+	} catch (error) {
+		console.log(error)
+	}
+}
 
 
 
 //----------------------------------------Generate Graphic-----------------------------------------------------
 
-const generateGraphic = (info, generalOptions, sampling_period) =>{
+const generateGraphic = (info) =>{
+   	// Initialize variables for chart
+	let [chart, dateAxis, valueAxis, series, legend, scrollbarX, scrollbarY] = [] // [] => this represents undefined
+	// Initialize variables for general options
+	const generalOptions 	 = getGraphicoptions()
+	const grid 				 = !generalOptions.grid
+	const limitMIN 			 = generalOptions.limitMIN
+	const limitMAX 			 = generalOptions.limitMAX
+	const groupData 		 = generalOptions.groupData
+	const microTheme 		 = !generalOptions.microTheme
+	const showLegends 		 = generalOptions.legends
+	const legendContainerPos = generalOptions.legendContainerPos
+	
     /*
-     * Initialize variables for chart
-     */
-    let chart;
-    let xRenderer;
-    let dateAxis;
-    let yRenderer;
-    let valueAxis;
-    let series;
-    let legend;
-    let scrollbarX;
-    let scrollbarY;
-    let exporting;
-
-
-    /*
-     * Set the root format number for received values depending on whether the number is integer or not
-     */
-    const sciNotation = (generalOptions.general.scientificNotation) ? "e" : "";
+	* Set the root format number for received values depending on whether the number is integer or not
+	*/
+	const sciNotation = (generalOptions.scientificNotation) ? "e" : ""
     root.numberFormatter.setAll({
-		numberFormat: "#" + sciNotation,
+		numberFormat: FORMATER.numberFormat + sciNotation,
     });
 
     /*
@@ -239,7 +605,6 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
      */
     chart = root.container.children.push(
 		am5xy.XYChart.new(root, {
-			// focusable: true,
 			panY: false,
 			wheelY: "zoomX",
 			maxTooltipDistance: 0
@@ -251,200 +616,79 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
      * format suported -> 5e-7 or 0.0000005, 450000 or 45e+4
      * ***WARNING*** on this version the exponential format is up to 7, this does not work in the plugin: 1e-8, +etc...
      */
-    yRenderer = am5xy.AxisRendererY.new(root, {
-		opposite: false,
-    });
-    // hide grid
-    if (!generalOptions.general.grid) {
-      	yRenderer.grid.template.set("visible", false);
-    }
     valueAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-		// logarithmic: true,
 		extraTooltipPrecision: 1,
-		min: generalOptions.general.limitMIN,
-		max: generalOptions.general.limitMAX,
-		renderer: yRenderer
+		min: limitMIN,
+		max: limitMAX,
+		renderer: getYRenderer(grid)
     }));
 
-    /*
-     * Add Date X Axis
-     */
-    xRenderer = am5xy.AxisRendererX.new(root, {
-		minGridDistance: 100,
-    });
-    // hide grid
-    if (!generalOptions.general.grid) {
-      	xRenderer.grid.template.set("visible", false);
-    }
-
-    /*
-     * Calculate tooltip 
-     */
-    let millisecondBaseCount;
-    let totalSum = 0;
-    const totalLength = info.length;
-    if (sampling_period === 0) 
-    {
-		for (let n = 0; n < info.length; n++) 
-		{
-			const ifsampling = (info[n].sampling_period === "") ? 2000000 : info[n].sampling_period;
-			const numSampling = Math.trunc(ifsampling) / 1000; // tranform to milliseconds
-			totalSum += numSampling;
-		}
-		millisecondBaseCount = totalSum / totalLength; 
-    }
-    else 
-    {
-      	millisecondBaseCount = sampling_period / 1000;
-    }
     /*
      *  Set the format for representing the values and set the data count interval 
      */
     dateAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
-		groupData: generalOptions.general.groupData,
+		groupData: groupData,
 		maxDeviation: 0,
 		baseInterval: {
-			timeUnit: "millisecond",
-			count: millisecondBaseCount
+			timeUnit: FORMATER.timeInterval,
+			count: getMillisecondBaseCount(info)
 		},
-		renderer: xRenderer
-    }));
+		renderer: getXRenderer(grid)
+    }))
 
     /*
      * Format the date depending on the time unit to be displayed
      */
-    dateAxis.get("dateFormats")["millisecond"] = "HH:mm:ss.SSS";
+    dateAxis.get("dateFormats")[FORMATER.timeInterval] = FORMATER.timeFormat
 
-    /*
-     * We Create an empty series to generate the 'toggle All' legend
-     */
-    // series = chart.series.push(am5xy.LineSeries.new(
-    //   root, { name: 'Toggle All', xAxis: dateAxis, yAxis: valueAxis }
-    // ));
-
-    /*
-     * --- --- --- --- --- --- Add All series --- --- --- --- --- --- ---
-     */
-     /*
-      * Set properties configuration to a series function
-      */
-     const  configuration = (info) => {
-		let properties = {
-			name: info.name,
-			connect: !generalOptions.general.connect,
-			xAxis: dateAxis,
-			yAxis: valueAxis,
-			valueYField: "value",
-			valueXField: "time_sample",
-			calculateAggregates: true,
-			legendLabelText: "{name}: ",
-			legendRangeLabelText: "{name}: ",
-			legendValueText: "[bold]{valueY}",
-			legendRangeValueText: "{valueYClose}",
-			minBulletDistance: 10
-		}
-		let setTooltip = am5.Tooltip.new(root, {
-			exportable: false,
-			pointerOrientation: "horizontal",
-			labelText: `[bold]{name}[/]\n{valueX.formatDate('yyyy-MM-dd HH:mm:ss.SSS')}\n[bold]{valueY}[/] ${info.unit_abbr}`
-		});
-		if (generalOptions.general.tooltip) { properties["tooltip"] = setTooltip };
-		if (info.curved) { properties["curveFactory"] = d3.curveBumpX };
-		if (info.color) {
-			properties["stroke"] = am5.color(info.color);
-			properties["fill"] = am5.color(info.color);
-		};
-		return properties;
-     }
-
-	/*
-	 * Create series
-	 */
+    // --- --- --- --- --- --- Add All series --- --- --- --- --- --- ---
+    
 	for (let y = 0; y < info.length; y++) {
-		/*
-		 * Set Graphic type
-		 */
-		let graphtype = info[y].graphic_type;
-		if (graphtype === "Line Series") {
-			series = chart.series.push(am5xy.LineSeries.new(root, configuration(info[y])));
+		// Set Graphic data
+		const data_ = info[y]
+		const graphProps = {chart, dateAxis, valueAxis}
+		
+		// Set Series
+		series = getSeries(graphProps, data_)
+
+		// if a boxplot exist the way to show the median is using the steps series type
+		if(data_?.boxplot){
+			addMedianSeriesDefaultConf(graphProps).data.setAll(data_.data)
+			// addMedianSeriesDefaultConf(graphProps).data.setAll(data_test)
+			addMeanSeriesDefaultConf(graphProps).data.setAll(data_.data)
+			// addMeanSeriesDefaultConf(graphProps).data.setAll(data_test)
 		}
-		else if(graphtype === "Step Line Series") {
-			series = chart.series.push(am5xy.StepLineSeries.new(root, configuration(info[y])));
-		}
-		else if(graphtype === "Vertical Bar Series") {
-			series = chart.series.push(am5xy.ColumnSeries.new(root, configuration(info[y])));
-		}
-		else if(graphtype === "Candel Sticks Series") {
-			series = chart.series.push(am5xy.LineSeries.new(root, configuration(info[y])));
-		}
-		else {
-			series = chart.series.push(am5xy.LineSeries.new(root, configuration(info[y])));
+		else{
+			// Set Series line weight and dashArray view // this doesn't work with boxplot series type
+			series.strokes.template.setAll({
+				strokeWidth: getLineStroke(data_.stroke),
+				strokeDasharray: getLineCanvas(data_.canvas)
+			})
 		}
 
-		/*
-		 * Set Series line weight and dashArray view
-		 */
-		let handleStroke;
-		let stroke = info[y].stroke;
-		if      (stroke === "Medium") { handleStroke = 2 }
-		else if (stroke === "Light")  { handleStroke = 1 }
-		else if (stroke === "Bold")   { handleStroke = 3 }
-		else if (stroke === "Bolder") { handleStroke = 4 }
-		else { handleStroke = 1 }
-
-		let handleCanvasArray;
-		let caNv = info[y].canvas;
-		if      (caNv === "Dotted")        { handleCanvasArray = ["1"] }
-		else if (caNv === "Dashed")        { handleCanvasArray = ["3","3"] }
-		else if (caNv === "Large Dashed")  { handleCanvasArray = ["10"] }
-		else if (caNv === "Dotted Dashed") { handleCanvasArray = ["10", "5", "2", "5"] }
-        else { handleCanvasArray = false }
-
-		/*
-		 * Set Stroke
-		 */
-		series.strokes.template.setAll({
-			strokeWidth: handleStroke,
-			strokeDasharray: handleCanvasArray
-		});
-
-		/*
-		 * Set filled
-		 */
-		if (info[y].filled) {
+		// Set filled
+		if (data_?.filled) {
 			series.fills.template.setAll({
 				visible: true,
 				fillOpacity: 0.3
 			});
 		}
 
-		/*
-		 * Set bullets
-		 */
-		// if (info[y].dotted) {
-		// 	series.bullets.push(function() {
-		// 		return am5.Bullet.new(root, {
-		// 		sprite: am5.Circle.new(root, {
-		// 			radius: 1.5,
-		// 			fill: "#333"
-		// 		})
-		// 		});
-		// 	});
-		// }
-
-		/*
-		 * Set Data to the Series
-		 */
-		// Set up data processor to parse string dates
+		// Set up data processor to parse string dates		
 		series.data.processor = am5.DataProcessor.new(root, {
-			dateFormat: "yyyy-MM-dd HH:mm:ss.SSS",
-			dateFields: ["time_sample"]
+			dateFormat: FORMATER.timeInterval,
+			dateFields: [PROCESSOR.dateField]
 		});
-		series.data.setAll(info[y].data);
-		//  series.data.setAll(dataTest);
+		
+		// Set series DATA
+		series.data.setAll(data_.data)
+		// series.data.setAll(data_test)
+    } 	
+	
+	// --- --- --- --- --- end for 'Add All series ' --- --- --- --- --- --- ---
 
-    } // --- --- --- --- --- end for 'info.length' --- --- --- --- --- --- ---
 
+	// TODO:
 	// Create axis ranges
 	// function createRange(series, value, endValue, color) {
 	//   var rangeDataItem = valueAxis.makeDataItem({
@@ -472,60 +716,57 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
    /*
     * set legend height depending on how many legends
     */
-    let legendHeight;
-    if (info.length === 1 || info.length === 2) { legendHeight = 50  }
-    else if (info.length === 3) { legendHeight = 80 }
-    else if (info.length === 4) { legendHeight = 110 }
-    else { legendHeight = 150 }
 
     /*
      * Set legends to the chart
      */
-    if (generalOptions.general.legends) {
-		let legendSettings = {
+    if (showLegends) {
+		const legendSettings = {
 			width: am5.percent(100),
-			height: legendHeight,
+			height: getLegendHeight(info.length),
 			verticalScrollbar: am5.Scrollbar.new(root, {
 				orientation: "vertical"
 			})
 		}
 
-      	if (generalOptions.general.legendContainerPos) { legend = chart.bottomAxesContainer.children.push(am5.Legend.new(root, legendSettings)) }
-    	else { legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, legendSettings)) }
+      	if (legendContainerPos) { 
+			legend = chart.bottomAxesContainer.children.push(am5.Legend.new(root, legendSettings)) 
+		}
+    	else { 
+			legend = chart.rightAxesContainer.children.push(am5.Legend.new(root, legendSettings)) 
+		}
 
-		//  When hovering over the legend element container, all series are dimmed except the one hovered over.
-		legend.itemContainers.template.events.on("pointerover", function(e) {
-			let itemContainer = e.target;
-			//  As the list of series is data from a legend, dataContext is the series
-			let series = itemContainer.dataItem.dataContext;
+		// TODO: NOT_WORKING: el evento hover salta un excepción con el tipo de gráfica boxplot
+		// if(false){
+			//  When hovering over the legend element container, all series are dimmed except the one hovered over.
+			legend.itemContainers.template.events.on("pointerover", function(e) {
+				let itemContainer = e.target;
+				//  As the list of series is data from a legend, dataContext is the series
+				let series = itemContainer.dataItem.dataContext;
 
-			chart.series.each(function(chartSeries) {
-			if (chartSeries != series) {
-				chartSeries.strokes.template.setAll({
-					strokeOpacity: 0.15,
-					stroke: am5.color(0x000000)
-				});
-			} else {
-				chartSeries.strokes.template.setAll({
-					// strokeWidth: 3
-				});
-			}
+				chart.series.each(function(chartSeries) {
+				if (chartSeries !== series) {
+					chartSeries.strokes.template.setAll({
+						strokeOpacity: 0.15,
+						stroke: am5.color(0x000000)
+					});
+				} else {
+					chartSeries.strokes.template.setAll({});
+				}
+				})
 			})
-		})
 
-		// When legend item container is unhovered, make all series as they are
-		legend.itemContainers.template.events.on("pointerout", function(e) {
-			let itemContainer = e.target;
-			let series = itemContainer.dataItem.dataContext;
+			// When legend item container is unhovered, make all series as they are
+			legend.itemContainers.template.events.on("pointerout", function(e) {
+				chart.series.each(function(chartSeries) {
+					chartSeries.strokes.template.setAll({
+						strokeOpacity: 1,
+						stroke: chartSeries.get("fill")
+					});
+				});
+			})
+		// }
 
-			chart.series.each(function(chartSeries) {
-			chartSeries.strokes.template.setAll({
-				strokeOpacity: 1,
-				// strokeWidth: 1,
-				stroke: chartSeries.get("fill")
-			});
-			});
-		})
 		// align legends content in the container
 		legend.itemContainers.template.set("width", am5.p100);
 		legend.valueLabels.template.setAll({
@@ -534,7 +775,6 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 		});
 		// It is important to set the legend data after all events are set in the template, otherwise the events will not be applied.
 		legend.data.setAll(chart.series.values);
-		// https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
     }
 
 
@@ -546,8 +786,10 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 		xAxis: dateAxis
 	}));
 
-
-	if (!generalOptions.general.microTheme) {
+	/*
+	 * if microTheme is active
+	 */
+	if (microTheme) {
 		valueAxis.set("tooltip", am5.Tooltip.new(root, {
 			themeTags: ["axis"]
 		}));
@@ -579,12 +821,12 @@ const generateGraphic = (info, generalOptions, sampling_period) =>{
 	/*
 	 * Set Exporting menu
 	 */
-	exporting = am5exporting.Exporting.new(root, {
+	am5exporting.Exporting.new(root, {
 		menu: am5exporting.ExportingMenu.new(root, {}),
 		// dataSource: getResponse.responseData.samples,
-		numericFields: ["value"],
-		dateFields: ["time_sample"],
-		dateFormat: "yyyy-MM-dd HH:mm:ss.SSS",
+		numericFields: [PROCESSOR.numericField],
+		dateFields: [PROCESSOR.dateField],
+		dateFormat: FORMATER.dateFormat,
 		dataFields: {
 			value: "Value",
 			time_sample: "Date"

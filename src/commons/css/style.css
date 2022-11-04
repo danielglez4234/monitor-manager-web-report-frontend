@@ -14,6 +14,64 @@ code {
     monospace;
 }
 
+/*
+--------------------------------------------------------------------------------------
+CSS INDIVIDUALS TAGS
+--------------------------------------------------------------------------------------
+*/
+
+/*
+* DISPLAYS
+*/
+.hide-sections{ display: none !important}
+.display-block{ display: block !important; }
+.display-none{ display: none !important; }
+.flex{ display: flex !important; }
+.flex-row{ display: flex; flex-direction: row; }
+.flex-column{ display: flex; flex-direction: column; }
+
+/*
+ * ROTATIONS
+ */
+.rotate90{ transform: rotate(90deg); }
+.rotate180{ transform: rotate(180deg); }
+.rotate270{ transform: rotate(270deg); }
+
+/*
+ * POSITIONS
+ */
+.position-static{ position: static !important; }
+.position-absolute{ position: absolute !important; z-index: 20; }
+
+/*
+ * 
+ */
+.wrong-set-input{ border: 4px double #f23e3e !important; }
+
+/*
+ * COLORS
+ */
+.gray-iconcolor{ color:#a2aeb3 !important; }
+.red-iconcolor{ color:#ff4a4a !important; }
+.blue-iconcolor{ color:#5fb2bb !important; }
+
+/*
+--------------------------------------------------------------------------------------
+*** END *** CSS INDIVIDUALS TAGS
+--------------------------------------------------------------------------------------
+*/
+
+
+
+
+
+
+
+
+
+
+
+
 .amcharts-amexport-item {
   border: 1px solid #999292;
   background-color: #d1d8d9 !important;
@@ -44,40 +102,13 @@ code {
   margin-top: 175px;
 }
 
-.display-block{
-  display: block !important;
-}
 
-.display-none{
-  display: none !important;
-}
 
-.flex-row{
-  display: flex;
-  flex-direction: row;
-}
-
-.hide-sections{ display: none !important}
-
-.rotate90{
-  transform: rotate(90deg);
-}
-.rotate180{
-  transform: rotate(180deg);
-}
-.rotate270{
-  transform: rotate(270deg);
+.divide-vertical-left{
+  border-left: 2px dashed lightgray !important;
 }
 
 
-.position-static{
-  position: static !important;
-}
-
-.position-absolute{
-  position: absolute !important;
-  z-index: 20;
-}
 
 
 .highlight-drop-zone{
@@ -101,19 +132,6 @@ code {
   color:white;
 }
 
-.wrong-set-input{
-  border: 4px double #f23e3e !important;
-}
-
-.gray-iconcolor{
-  color:#a2aeb3 !important;
-}
-.red-iconcolor{
-  color:#ff4a4a !important;
-}
-.blue-iconcolor{
-  color:#5fb2bb !important;
-}
 
 /* .tool-tip-options{
   
@@ -129,6 +147,8 @@ code {
   margin-left: 12px;
   border-radius: 6px
 }
+
+
 
 
 
@@ -757,6 +777,13 @@ table.table-selected-monitors tr:nth-child(odd)
   cursor: pointer;
 }
 
+.sumary-info-icon{
+  color:#daee4e !important;
+  font-size: 23px !important;
+  top: 0px;
+  cursor: default;
+}
+
 
 .monitor-seleted-item{
   border-top: 0px;
@@ -781,11 +808,17 @@ table.table-selected-monitors tr:nth-child(odd)
   display: flex;
   flex-direction: column;
 }
+
+.checkbox-monitor-selected-label{
+  font-family: "RobotoMono-SemiBold";
+  font-size: 12px;
+  position: relative;
+  top: 1.5px;
+}
+
 .input-settings-checkbox{
   display: flex;
   flex-direction: column;
-  margin-bottom: 27px;
-  margin-top: 10px;
 }
 
 .settings-checkbox-presnetation{
@@ -830,7 +863,7 @@ table.table-selected-monitors tr:nth-child(odd)
 
 
 .monitor-selected-item-title-box{
-  display: inline-block !important;
+  display: flex;
   margin-left: 10px;
   font-family: "RobotoMono-Regular";
   flex: 1;
@@ -1892,7 +1925,7 @@ font-size: 13px !important;
 
 .css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root.Mui-selected {
     background-color: rgba(25, 118, 210, 0.08);
-    justify-content: center !important;
+    /* justify-content: center !important; */
 }
 
 .css-kk1bwy-MuiButtonBase-root-MuiMenuItem-root {
@@ -2107,7 +2140,7 @@ font-size: 13px !important;
       font-size: 12px !important;
       font-weight: bold !important;
       width: 100%;
-      padding: 20px 0px !important;
+      padding: 10px 0px !important;
     }
 
     .perfrom-query-button-email-data{
@@ -2132,6 +2165,80 @@ font-size: 13px !important;
     .perfrom-query-button-cancel-data:disabled{
       background-color: #69717b !important;
     } */
+
+
+/*---------------------------------------------------------------------------------------------------*/
+/* FAVORITES SECTION */
+/*---------------------------------------------------------------------------------------------------*/
+.favorite-sample-header{
+  background-color: #333a44;
+  color: #c8d2d2;
+  height: 107px;
+  width: 100%;
+  padding-top: 10px;
+  padding-left: 16px;
+  padding-right: 16px;
+  box-sizing: border-box;
+  /* line-height: 48px; */
+  list-style: none;
+  font-family: 'RobotoMono-Bold' !important;
+  word-spacing: -2px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.skeleton-favorites{
+  margin-top: 10px;
+  margin-left: 12px;
+  border-radius: 6px;
+  width: 93% !important;
+}
+
+.sample-items-favorites{
+  width: 100%;
+  /* height: 100%; */
+  flex:1;
+  border-left: 3px solid #333a44;
+}
+
+.favorites-over-div-items{
+  /* height: 100%;
+  overflow-y: scroll; */
+}
+
+
+.favoriteItem-title-div{
+  width: 100%;
+  flex: 1;
+}
+
+.favoriteItem-title-actions-icons{
+  display:flex;
+  background-color: #515760;
+  width:110px;
+  border-top-left-radius: 18.9px;
+  border-bottom-left-radius: 18.9px;
+  padding-left: 10px;
+  border-left: 3px solid #85d1ff;
+}
+
+.favorite-bottom-menu-actions{
+  background-color: #3b424d;
+  border-top: 2px solid #62bfa5;
+  height: 46px;
+}
+
+
+/*---------------------------------------------------------------------------------------------------*/
+/* END ************************************************ FAVORITES SECTION */
+/*---------------------------------------------------------------------------------------------------*/
+
+
+
+
+
 
 
 
@@ -2259,10 +2366,11 @@ font-size: 13px !important;
   display: flex;
   flex-direction: column;
   /* height: 0%; */
-  flex: 1;
+  /* flex: 1; */
 }
 
 .sample-header-store-query{
+  flex: 0;
   box-sizing: border-box;
   line-height: 48px;
   list-style: none;
@@ -2273,8 +2381,9 @@ font-size: 13px !important;
   padding-left: 16px;
   padding-right: 16px;
   background-color: #333a44;
-  /* height: 153px; */
   border-top: 2px solid #475160 !important;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #475160 !important;
 }
 
 /* .sample-header-store-query:hover{
@@ -2488,6 +2597,7 @@ table.save-query-table-monitor-list tr:nth-child(odd)
   background-color: white;
 }
 
+
 .store-query-confirm-delete .MuiPaper-root{
   width: 350px !important;
 }
@@ -2495,6 +2605,28 @@ table.save-query-table-monitor-list tr:nth-child(odd)
   font-family: "RobotoMono-Regular" !important;
   font-size: 16px !important;
   color:rgba(0, 0, 0, 0.6);
+}
+
+.store-query-preview-modal{
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.store-query-preview-content{
+  background-color: #fff;
+  height: 100%;
+  box-shadow: 0 0 10px #333;
+  padding: 25px;
+}
+
+.store-query-preview-name{
+  font-family: "RobotoMono-Bold";
+}
+
+.save-list-store-query{
+  margin: 0;
 }
 
 

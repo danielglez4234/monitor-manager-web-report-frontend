@@ -31,7 +31,6 @@ import {
 	DialogTitle, 
 	DialogActions, 
 	Tooltip,
-	Checkbox,
 	Modal
 } from '@mui/material';
 
@@ -39,10 +38,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import UploadIcon from '@mui/icons-material/Upload';
 import PreviewIcon from '@mui/icons-material/Preview';
-import { BookmarkBorder, Bookmark } from '@mui/icons-material';
+import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import AddIcon from '@mui/icons-material/Add';
 
+import { arrageMonitors } from '../../manageMonitorData';
 import HEADS from './columnsHeads'
-import PopUpMessage from '../../../../handleErrors/PopUpMessage';
+import HandleMessage from '../../../../handleErrors/HandleMessage';
+import { Grid } from '@material-ui/core';
 
 const StyledGridOverlay = styled('div')(({ theme }) => ({
 	display: 'flex',
@@ -70,19 +73,7 @@ const StyledGridOverlay = styled('div')(({ theme }) => ({
 
 
 
-/*
- * CustomToolbar: up button section
- * filter, density
- */
-function CustomToolbar() {
-	return (
-	  <GridToolbarContainer>
-		{/* <GridToolbarColumnsButton /> */}
-		<GridToolbarFilterButton />
-		<GridToolbarDensitySelector />
-	  </GridToolbarContainer>
-	);
-}
+
 
 /*
  * CustomColumnMenu: column side button
@@ -158,9 +149,9 @@ function CustomPagination() {
   }
 
 
-export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
+export default function QueryTable({addItemtoLocalStorage, openViewQuery, handleCloseSaveQuery}) {
 	const dispatch = useDispatch()
-	const [msg, handleMessage] = PopUpMessage()
+	const [msg, PopUpMessage] = HandleMessage()
 	const [rows, setRows] = useState([])
 	const [anchorEl, setAnchorEl] = useState(null)
 	const [rowPopOverValue, setRowPopOverValue] = useState("")
@@ -168,18 +159,62 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	const [queryId, setQueryId] = useState(null)
 	const [openConfirm, setOpenConfirm] = useState(false)
 	const [openPreviewModal, setOpenPreviewModal] = useState(false);
-	const [monitorsListPreview, setMonitorsListPreview] = useState([]);
-	// const [selectionModel, setSelectionModel] = useState([]);
-	// const [checked, setChecked] = useState(false); // TODO: => change to array
 
+	const [previewQueryName, setPreviewQueryName] = useState(null);
+	const [monitorsListPreview, setMonitorsListPreview] = useState([]);
+	
+	// table checkbox selsection
+	const [selectionModel, setSelectionModel] = useState([]);
+	const [checkedRowsData, setCheckedRowsData] = useState([]);
+
+	/*
+	 *
+	 */
 	/*
 	 * Confirm before Delete
 	 */
-    const handleOpenConfirmDelete = (id) => {
-		setQueryId(id)
-		setOpenConfirm(true)
+	const handleOpenConfirmDelete = (query_name) => {
+			setQueryId(query_name)
+			setOpenConfirm(true)
 	}
-    const handleCloseConfirmDelete = () => setOpenConfirm(false);
+	const handleCloseConfirmDelete = () => setOpenConfirm(false);
+
+
+	/*
+	 * CustomToolbar: up button section
+	 * filter, density, concat, delete selected
+	 */
+	function CustomToolbar() {
+		return (
+		<GridToolbarContainer>
+			{/* <GridToolbarColumnsButton /> */}
+			<GridToolbarFilterButton variant="contained" 
+				sx={{backgroundColor: "#555e6a", padding: "5px 16px", marginLeft: "5px", '&:hover': {background: 'rgb(51, 58, 68)'}}}
+			/>
+			<GridToolbarDensitySelector variant="contained" 
+				sx={{backgroundColor: "#67b9cc", padding: "6px 16px", marginLeft: "5px", '&:hover': {background: '#5ea9bb'}}}
+			/>
+			<Button 
+				onClick={() =>{handleLoadQuery(rows)}}
+				disabled={(rows.length === 0 || selectionModel.length === 0)}
+				variant="contained"
+				sx={{backgroundColor: "#5fb2bb", marginLeft: "5px", '&:hover': {background: '#53989f'}}} 
+				startIcon={<AddIcon />}
+			>
+				concat
+			</Button>
+			<Button 
+				onClick={() => {handleOpenConfirmDelete(checkedRowsData)}}
+				disabled={(rows.length === 0 || selectionModel.length === 0)}
+				variant="contained" 
+				sx={{backgroundColor: "#df3f91", marginLeft: "5px", '&:hover': {background: '#c13b80'}}} 
+				startIcon={<DeleteForeverIcon />}
+			>
+				delete selected
+			</Button>
+		</GridToolbarContainer>
+		);
+	}
 
 	/*
 	 * calculate text width in the DOM
@@ -233,79 +268,74 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 		.catch((error) => {
 			console.error(error)
 			setRows([])
-			showErrorMessage("Error obtaining querys on the server.")
+			PopUpMessage({type:'error', message:'Error obtaining querys on the server.'})
 		})
 		.finally(() => {
 			setLoadingQuerys(false)
 		})
+	}
+	
+	/*
+	 * set object from entries
+	 */
+	const setObjectFromEntries = (arr, field) => {
+		try {
+			return arr.map((e) => e[field])
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	/*
 	 * delete query
 	 */
-	const deleteQueryFromServer = (id) => {
+	const deleteQueryFromServer = (name) => {
 		setLoadingQuerys(true)
-		Promise.resolve(deleteQuery(id))
-		.then((res) => {
+		const obj = (typeof name === "object") ? setObjectFromEntries(name, "name") : name
+
+		let params = new URLSearchParams()
+		if(Array.isArray(obj))
+			for (let i = 0; i < obj.length; i++) {params.append('name', obj[i])}
+		else
+			params.append('name', obj);
+
+		Promise.resolve(deleteQuery(params))
+		.then(() => {
 			loadQuerys()
 			console.log("Query Deleted Correctly!!")
+			PopUpMessage({type:'success', message:'Query Deleted Correctly!!'})
 		})
 		.catch((error) => {
 			console.error(error)
-			showErrorMessage("Error deleting the query on the server")
+			PopUpMessage({type:'error', message:'Error deleting the query on the server'})
 		})
 		.finally(() => {
 			setLoadingQuerys(false)
 		})
-	}
-
-	/*
-	 * Arrange monitors from storedquery
-	 */
-	const getArrageMonitorList = (val) => {
-		const monitorList = []
-		val.map(item => {
-			const component_id = item.id_monitor_component.id
-			const name = item.id_monitor_component.name
-			const options = item.options
-			let monitorData
-			if(item?.id_magnitude_description){
-				monitorData = item.id_magnitude_description
-				monitorList.push({component_id, name, ...monitorData, options})
-			}
-			else if(item?.id_monitor_description){
-				monitorData = item.id_monitor_description
-				item.options["prefix"] 	= item.prefix
-				item.options["unit"] 	= item.unit
-				item.options["decimal"] = item.decimal
-				item.options["pos"] = (item?.pos && fnIsArray(item.id_monitor_description.type)) ? item.pos.slice(1, -1) : ""
-				monitorList.push({component_id, name, ...monitorData, options})
-			}
-			else{
-				monitorList.push({id: component_id, name, magnitude: "STATE", type: "state", options})
-			}
-		})
-		return monitorList
 	}
 
 	/*
 	 * start editing query
 	 */
 	const handleLoadQuery = (query, edit) => {
-		const monitors_ = getArrageMonitorList(query.row.monitorInfo)
-		delete query.row["monitorInfo"]
-		// if(concatMonitors){
-			// dispatch(handleSelectedElemets('concatMultiple', null, monitors_, null))
-		// }
-		// else{
+		let monitors_ = []
+		if(Array.isArray(query)){
+			for (let i = 0; i < checkedRowsData.length; i++) {
+				monitors_.push(arrageMonitors(getMonitorInfo(checkedRowsData[i])))
+			}
+			dispatch(handleSelectedElemets('concatMultiple', null, monitors_.flat(), null))
+		}else{
+			monitors_ = arrageMonitors(getMonitorInfo(query))
 			dispatch(handleSelectedElemets('addMultiple', null, monitors_, null))
-			handleCloseSaveQuery()
-			if(edit) dispatch(editingQuery({active: true, ...query.row}))
-		// }
+		}
+		handleCloseSaveQuery()
+		if(edit) dispatch(editingQuery({active: true, ...query.row}))
 	}
 
+
+
+	// TODO: handle
 	const previewQuery = (monitorList) => {
-		console.log("monitorList", monitorList)
 		setMonitorsListPreview(monitorList)
 		setOpenPreviewModal(true)
 	}
@@ -313,6 +343,7 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 		setMonitorsListPreview([])
 		setOpenPreviewModal(false)
 	}
+
 	/*
 	 * get cell row value id
 	 */
@@ -320,43 +351,41 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 		if(val?.row?.name)
 			return val.row.name
 		else
-			showErrorMessage("name is undefined")
+			PopUpMessage({type:'error', message:'name is undefined'})
 	}
 
 	const getMonitorInfo = (val) => {
-		if(val?.row?.monitorInfo)
+		if(val?.monitorInfo)
+			return val.monitorInfo
+		else if(val?.row?.monitorInfo)
 			if(val.row.monitorInfo.length > 0)
 				return val.row.monitorInfo
 			else
-				showErrorMessage("monitorInfo is empty")
+				PopUpMessage({type:'error', message:'monitorInfo is empty'})
 		else
-			showErrorMessage("monitorInfo is undefined")
+			PopUpMessage({type:'error', message:'monitorInfo is undefined'})
 	}
 
-	/*
-	 * save query to local storage
-	 */
-	// useEffect(() => {
-		
-	// }, [checked]);
-	// const saveToLocalStorage = (val) => {
-	// 	localStorage.setItem("favorites", val)
-		
-	// }
 	/*
 	 * preview monitors button
 	 */
 	const previewButton = (cellValues) => {
 		return (
-			<Tooltip title="Preview Monitors">
+			<Tooltip
+				title="Preview Monitors"
+				disableInteractive
+				enterDelay={500}
+				leaveDelay={200}
+			>
 				<IconButton
 					color="primary"
 					aria-label="load"
 					onClick={(event) => {
-						previewQuery(getMonitorInfo(cellValues))
+						setPreviewQueryName(getQueryId(cellValues))
+						previewQuery(arrageMonitors(getMonitorInfo(cellValues)))
 					}}
 				>
-					<PreviewIcon/>
+					<PreviewIcon sx={{color: "#31769f"}}/>
 				</IconButton>
 			</Tooltip>
 		);
@@ -368,7 +397,12 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 	const actionsButtons = (cellValues) => {
 		return (
 			<>
-			<Tooltip title="Load">
+			<Tooltip
+				title="Load"
+				disableInteractive
+				enterDelay={500}
+				leaveDelay={200}
+			>
 				<IconButton
 					color="primary"
 					aria-label="load"
@@ -379,7 +413,12 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 					<UploadIcon className="rotate90 blue-iconcolor"/>
 				</IconButton>
 			</Tooltip>
-			<Tooltip title="Edit">
+			<Tooltip
+				title="Edit"
+				disableInteractive
+				enterDelay={500}
+				leaveDelay={200}
+			>
 				<IconButton
 					color="secondary"
 					aria-label="load"
@@ -390,7 +429,12 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 					<EditIcon className="gray-iconcolor" />
 				</IconButton>
 			</Tooltip>
-			<Tooltip title="Delete">
+			<Tooltip
+				title="Delete"
+				disableInteractive
+				enterDelay={500}
+				leaveDelay={200}
+			>
 				<IconButton
 					color="error"
 					aria-label="delete"
@@ -401,18 +445,28 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 					<DeleteIcon className="red-iconcolor" />
 				</IconButton>
 			</Tooltip>
-			{/* <Tooltip title="Add To Favorites">
-				<Checkbox 
-					// checked={true}
-					icon={<BookmarkBorder />}
-					checkedIcon={<Bookmark />} 
-				/>
-			</Tooltip> */}
+			<Tooltip
+				title="Add To Favorites"
+				disableInteractive
+				enterDelay={500}
+				leaveDelay={200}
+			>
+				<IconButton
+					color="error"
+					aria-label="delete"
+					onClick={(event) => {addItemtoLocalStorage(cellValues.row)}} // TODO: temporal
+				>
+					<BookmarkAddIcon sx={{color: "#2fd38e"}}/>
+				</IconButton>
+			</Tooltip>
 			</>
 		);
 	}
 
-	const getButtonsCell = (type, ) => {
+	/*
+	 * get action botons cells
+	 */
+	const getButtonsCell = (type) => {
 		return {
 			renderCell: (cellValues) => {
 				if(type === "preview")
@@ -489,18 +543,6 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 		}
 	}, [openViewQuery])
 	
-	/*
-	 * Show Warning message snackbar
-	 */
-	const showErrorMessage = (message) => { 
-		handleMessage({
-			message: message,
-			type: "error",
-			persist: true,
-			preventDuplicate: true
-		})
-	}
-
 	return (
 		<>
 		<Dialog
@@ -511,43 +553,75 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 			aria-describedby="alert-dialog-description"
 		>
 			<DialogTitle className="store-query-confirm-delete-text">
-				{`Are you sure you want to delete this query?`}
+				{`Are you sure you want to proceed with this action?`}
 			</DialogTitle>
 			<DialogActions>
 				<Button onClick={handleCloseConfirmDelete}>Cancel</Button>
-				<Button onClick={e => {deleteQueryFromServer(queryId); handleCloseConfirmDelete();}} autoFocus color="error">
+				<Button onClick={e => {
+					deleteQueryFromServer(queryId); 
+					handleCloseConfirmDelete();
+				}} 
+				autoFocus color="error"
+				>
 					Delete
 				</Button>
 			</DialogActions>
 		</Dialog>
 
-		<Modal
-			// open={openPreviewModal}
-			open={false}
-			onClose={closePreviewQuery}
-			aria-labelledby="modal-modal-title"
-			aria-describedby="modal-modal-description"
-		>
-		<Box>
-			{
-				(monitorsListPreview.length > 0) ? 
-					monitorsListPreview.map((val) => {
-						return (
-							<Typography id="modal-modal-title" variant="h6" component="h2">
-								{val.magnitude}
-							</Typography>
-						);
-					})
-				: ""
-			}
-			<Typography id="modal-modal-title" variant="h6" component="h2">
-				Text in a modal
-			</Typography>
-			<Typography id="modal-modal-description" sx={{ mt: 2 }}>
-				Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-			</Typography>
-		</Box>
-		</Modal>
+			<Modal
+				// keepMounted
+				open={openPreviewModal}
+				onClose={closePreviewQuery}
+				aria-labelledby="modal-modal-title"
+				aria-describedby="modal-modal-description"
+				className="store-query-preview-modal"
+			>
+				<Box className="store-query-preview-content">
+					<Grid item xs={12} sm={12} md={12}>
+						<p className="store-query-preview-name">
+							Name: {previewQueryName}
+						</p>
+					</Grid>
+					<Grid item xs={12} sm={12} md={12} className="save-query-list-info-label">
+							<Grid container spacing={0} sx={{backgroundColor: "rgb(40, 46, 57)", borderBottom: "3px solid #85e1d0", padding: "3px 0px 3px 15px"}}>
+								<Grid item md={12}>Monitors Settings</Grid>
+							</Grid>
+					</Grid>
+					<Grid container spacing={0} className="save-query-list-box save-list-store-query">
+						<Grid item xs={12} sm={12} md={12}>
+							<table id="drop-area" className="save-query-table-monitor-list">
+								<tbody>
+									{
+										(monitorsListPreview === "") ? <td></td>
+										:
+										monitorsListPreview.map((value, index) => {
+											return (
+												<tr key={index} className="save-query-table-tr">
+													<td>
+														<div className="save-query-table-item-header">
+															<p className="sv-component">{value.component}</p>
+															<p className="sv-prefix">
+																{(value?.prefix === "Default") ? "--": value.prefix} 
+															</p>
+															<p className="sv-unit"> 
+																{(value?.unit === "Default") ? "--": value.unit}
+															</p>
+														</div>
+														<div className="save-query-table-item-title">
+															{value.magnitude}
+														</div>
+													</td>
+												</tr>
+											)
+										})
+									}
+								</tbody>
+							</table>
+						</Grid>
+					</Grid>
+					<Button onClick={closePreviewQuery}>Close Modal</Button>
+				</Box>
+			</Modal>
 
 		<Box
 			sx={{
@@ -560,11 +634,17 @@ export default function QueryTable({openViewQuery, handleCloseSaveQuery}) {
 			}}
 			>
 			<DataGrid
-				// checkboxSelection
-				// onSelectionModelChange={(newSelectionModel) => {
-				// 	setSelectionModel(newSelectionModel);
-				// }}
-				// selectionModel={selectionModel}
+				checkboxSelection
+				disableSelectionOnClick
+				onSelectionModelChange={(ids) => {
+					const selectedIDs = new Set(ids);
+					const selectedRowData = rows.filter((row) =>
+						selectedIDs.has(row.id)
+					);
+					setSelectionModel(ids)
+					setCheckedRowsData(selectedRowData)
+				}}
+				selectionModel={selectionModel}
 				pagination
 				pageSize={11}
 				className="store-querys-table"

@@ -1,6 +1,6 @@
-// --- Dependecies
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import CandlestickChartIcon from '@mui/icons-material/CandlestickChart';
 import * as $ from 'jquery';
 import {
   fnIsArray,
@@ -9,13 +9,18 @@ import {
 }
 from '../../../standarFunctions';
 import { LtTooltip } from '../../../../commons/uiStyles';
-import {Stack, IconButton, Box, TextField, Autocomplete } from '@mui/material';
+import {Stack, IconButton, Box, TextField, Autocomplete, FormControlLabel, Checkbox } from '@mui/material';
 import CloseIcon           from '@mui/icons-material/Close';
 import HelpIcon            from '@mui/icons-material/Help';
+
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+
 import InfoRoundedIcon     from '@mui/icons-material/InfoRounded';
 import GetMonitordIconType from './GetMonitordIconType';
 import GetIndexArrayModal  from './GetIndexArrayModal';
 import GetUnitSelecttype   from './GetUnitSelecttype';
+// import GetSummarySelect    from './GetSummarySelect';
 import TuneIcon            from '@mui/icons-material/Tune';
 import AnnouncementIcon    from '@mui/icons-material/Announcement';
 
@@ -34,23 +39,15 @@ const prefixOpt   = [ "Default" ]
  */
 const applyChangesWarning = <LtTooltip
 								title={
-								<React.Fragment>
-									<b className="label-indHlp-tooltip">{"To apply these changes you have"}</b><br />
-									<b className="label-indHlp-tooltip">{"to press the "}<i>{"'Search & Display'"}</i></b><br />
-									<b className="label-indHlp-tooltip">{"button again."}</b>
-								</React.Fragment>
+									<React.Fragment>
+										<b className="label-indHlp-tooltip">{"To apply these changes you have"}</b><br />
+										<b className="label-indHlp-tooltip">{"to press the "}<i>{"'Search & Display'"}</i></b><br />
+										<b className="label-indHlp-tooltip">{"button again."}</b>
+									</React.Fragment>
 								}
-								placement="left" className="tool-tip-options">
+									placement="left" className="tool-tip-options">
 								<AnnouncementIcon className="index-help-icon"/>
 							</LtTooltip>
-
-/*
- * If the button is alredy active when a new monitor is selected, apply the changes
- */
-let lessDetailIfActive;
-if ($('#lessDetail-icon').hasClass('color-menu-active')) {
-	lessDetailIfActive = 'display-none'
-}
 
 /*
  * Handle monitor settings options OPEN popover
@@ -61,85 +58,68 @@ const handleClickOpenSettings = (id) => {
 	$('.close-settingsMon' + id).toggleClass('display-none')
 }
 
-const checkLog 		   = (value, id) => {$(".logarithm"+id).prop('checked', value)}
-const checkCurved 	   = (value, id) => {$(".curved"+id).prop('checked', value)}
-const checkFilled 	   = (value, id) => {$(".filled"+id).prop('checked', value)}
-const checkEnableColor = (value, id) => {$(".enabled_color"+id).prop('checked', value)}
 
 
-function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
+function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateReload}) {
 	const loadWhileGetData = useSelector(state => state.loadingGraphic)
-	const editing = useSelector(state => state.editingQuery) // refactor =>  eliminar editing
-	const [disableWhileSearching, setDisableWhileSearching] = useState(false)
-
-	/*
-	 * Editing or Normal state conditions
-	 */
-	const logarithm_St = 	(monitorData?.options?.logarithm) ? monitorData?.options?.logarithm : false
-	const curved_St = 		(monitorData?.options?.curved) ? monitorData?.options?.curved : false
-	const filled_St = 		(monitorData?.options?.filled) ? monitorData?.options?.filled : false
-	const enabled_color_St =(monitorData?.options?.enabled_color) ? monitorData?.options?.enabled_color : false
 	
-	const limit_max_St = 	(monitorData?.options?.limit_max) ? monitorData?.options?.limit_max : ""
-	const limit_min_St = 	(monitorData?.options?.limit_min) ? monitorData?.options?.limit_min : ""
-	const color_St = 		(monitorData?.options?.color) ? monitorData?.options?.color : ""
-	const pos_St = 			(monitorData?.options?.pos) ? monitorData?.options?.pos : ""
-
-	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0];
-	const graphic_type_St = (monitorData?.options?.graphic_type) ? monitorData?.options?.graphic_type : isEnumOrMonitor
-	const stroke_St = 		(monitorData?.options?.stroke) ? monitorData?.options?.stroke : strokeOpts[0]
-	const canvas_St = 		(monitorData?.options?.canvas) ? monitorData?.options?.canvas : canvasOpts[0]
-	const unit_St = 		(monitorData?.options?.unit) ? monitorData?.options?.unit : unitOpt[0]
-	const prefix_St = 		(monitorData?.options?.prefix) ? monitorData?.options?.prefix : prefixOpt[0]
-	const decimal_St = 		(monitorData?.options?.decimal) ? monitorData?.options?.decimal : patternOpts[0]
+	// If the button is alredy active when a new monitor is selected, apply the changes
+	let lessDetailIfActive
+	if ($('#lessDetail-icon').hasClass('color-menu-active')) {
+		lessDetailIfActive = 'display-none'
+	}
 
 	/*
 	 * STATES
 	 */
-	const [logarithm, setLogarithm] = useState(logarithm_St)
-	const [curved, setCurved] = useState(curved_St)
-	const [filled, setFilled] = useState(filled_St)
-	const [enabled_color, setEnabled_color] = useState(enabled_color_St)
-	const [limit_max, setLimit_max] = useState(limit_max_St)
-	const [limit_min, setLimit_min] = useState(limit_min_St)
-	const [color, setColor] = useState(color_St)
-	const [pos, setPos] = useState(pos_St)
-	const [graphic_type, setGraphic_type] = useState(graphic_type_St)
-	const [stroke, setStroke] = useState(stroke_St)
-	const [canvas, setCanvas] = useState(canvas_St)
-	const [unit, setUnit] = useState(unit_St)
-	const [prefix, setPrefix] = useState(prefix_St)
-	const [decimal, setDecimal] = useState(decimal_St)
+	// checkbox inputs
+	const [logarithm, setLogarithm] 	  = useState(monitorData?.options?.logarithm 	 || false)
+	const [curved, setCurved] 			  = useState(monitorData?.options?.curved 	 	 || false)
+	const [filled, setFilled] 			  = useState(monitorData?.options?.filled 	 	 || false)
+	const [enabledColor, setEnabledColor] = useState(monitorData?.options?.enabled_color || false)
 
-	// => refactor functions
-	useEffect(() => {
-			checkLog(monitorData?.options?.logarithm , id)
-			checkCurved(monitorData?.options?.curved, id)
-			checkFilled(monitorData?.options?.filled, id)
-			checkEnableColor(monitorData?.options?.enabled_color, id)
-	}, [editing]);
+	// string inputs
+	const [limit_max, setLimit_max] = useState(monitorData?.options?.limit_max 	|| "")
+	const [limit_min, setLimit_min] = useState(monitorData?.options?.limit_min 	|| "")
+	const [color, setColor] 		= useState(monitorData?.options?.color 		|| "")
+	const [pos, setPos] 			= useState(monitorData?.options?.pos 		|| "")
+
+	// autocomplete inputs
+	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ?  graphicOpts[1] : graphicOpts[0]
+	const [graphic_type, setgraphic_type]   = useState(monitorData?.options?.graphic_type || isEnumOrMonitor)
+	const [stroke, setStroke] 			  = useState(monitorData?.options?.stroke 	   || strokeOpts[1])
+	const [canvas, setCanvas] 			  = useState(monitorData?.options?.canvas 	   || canvasOpts[0])
+	const [unit, setUnit] 				  = useState(monitorData?.options?.unit 	   || unitOpt[0])
+	const [prefix, setPrefix] 			  = useState(monitorData?.options?.prefix 	   || prefixOpt[0])
+	const [decimal, setDecimal] 		  = useState(monitorData?.options?.decimal 	   || patternOpts[0])
+	
+	// Boxplot
+	// const [boxplot, setBoxplot] = useState({
+	// 	isEnable: false,
+	// 	onlyCollapseValues: false,
+	// 	intervals: null,
+	// 	collapseValues: null
+	// });
 
 	/*
 	 * handle get options
 	 */
 	const getOptions = () => {
 		return {
-			options: {
-				logarithm: logarithm,
-				curved: curved,
-				filled: filled,
-				limit_max: limit_max,
-				limit_min: limit_min,
-				graphic_type: graphic_type,
-				stroke: stroke,
-				canvas: canvas,
-				enabled_color: enabled_color,
-				color: color,
-				pos: (fnIsArray(monitorData.type)) ? pos : null,
-				prefix: fnIfExistDefault(prefix),
-				unit: fnIfExistDefault(unit),
-				decimal: fnIfExistDefault(decimal)
-			}
+			// boxplot: boxplot,
+			logarithm: logarithm,
+			curved: curved,
+			filled: filled,
+			limit_max: limit_max,
+			limit_min: limit_min,
+			graphic_type: graphic_type,
+			stroke: stroke,
+			canvas: canvas,
+			color: (enabledColor) ? color : "",
+			pos: (fnIsArray(monitorData.type)) ? pos : null,
+			prefix: fnIfExistDefault(prefix),
+			unit: fnIfExistDefault(unit),
+			decimal: fnIfExistDefault(decimal)
 		}
 	}
 
@@ -153,25 +133,17 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	/*
 	 *	call save options action
 	 */
-	const saveOptions = () => {
-		menuHandle('saveOptions', id, getOptions())
+	const saveOpt = () => {
+		saveOptions(id, getOptions())
 	}
-
+	
 	/*
 	 * store the selected monitor options in the redux variable
 	 */
 	useEffect(() => {
-		if(monitorData){
-			saveOptions()
-		}
-	}, []);
-
-	/*
-	 * 'loadWhileGetData' will be set to true when the data has arrive, and then buttons will be active again
-	 */
-	useEffect(() => {
-		setDisableWhileSearching(loadWhileGetData)
-	}, [loadWhileGetData]);
+		if(monitorData)
+			saveOpt()
+	}, [])
 
 	/*
 	 * Handle remove item from list 
@@ -184,7 +156,7 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 	/*
 	 * Get Icons
 	 */
-	const icontype = <GetMonitordIconType type={ monitorData.type } />
+	const iconType = <GetMonitordIconType type={ monitorData.type } />
 
   
 	return(
@@ -205,7 +177,7 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 								{
 								(fnIsMagnitude(monitorData.type)) ?              
 									<span>MagnitudeType: { (monitorData?.magnitudeType?.name) ? monitorData.magnitudeType.name : ""} - </span>
-								:             
+								:
 									<span>unit: <span className="default-unit">{ monitorData.unit }</span> - </span>
 								}
 							</>
@@ -225,12 +197,12 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 					aria-label="upload picture" 
 					component="span" 
 					onClick={() => { onRemove(id) }} 
-					disabled={disableWhileSearching} 
+					disabled={loadWhileGetData} 
 				>
 					<CloseIcon  />
 				</IconButton>
 				{
-					icontype
+					iconType
 				}
 			</div>
 
@@ -238,17 +210,35 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 
 				<Stack className="monitor-seleted-item" direction="row">
 					<div className="monitor-selected-item-title-box">
-						<p className="monitor-selected-item-title monitor-name">
+						<p className="monitor-selected-item-title">
+							{
+								// (!fnIsMagnitude(monitorData.type) && !fnIsState(monitorData.type)) ?
+								// <>
+								// 	<LtTooltip
+								// 		disableInteractive
+								// 		title={ 
+								// 			<React.Fragment>
+								// 				<b className="label-indHlp-tooltip">{"This graphic has a summary!!"}</b>
+								// 			</React.Fragment>
+								// 		}
+								// 		placement="bottom" className="tool-tip-options-description">
+								// 		<CandlestickChartIcon className="description-info-icon sumary-info-icon" />
+								// 	</LtTooltip>
+								// </>
+								// : ""
+							}
+						</p>
+						<p className="monitor-selected-item-title">
 							{
 								(!fnIsMagnitude(monitorData.type) && !fnIsState(monitorData.type)) ?
 								<>
 									<LtTooltip
+										disableInteractive
 										title={ 
-										<React.Fragment>
-											<b className="label-indHlp-tooltip">{"Descirption:"}</b><br />
-											<span className="indHlp-vis-desc">{ monitorData.description }</span>
-										</React.Fragment>
-											
+											<React.Fragment>
+												<b className="label-indHlp-tooltip">{"Descirption:"}</b><br />
+												<span className="indHlp-vis-desc">{ monitorData.description }</span>
+											</React.Fragment>
 										}
 										placement="right" className="tool-tip-options-description">
 										<InfoRoundedIcon className="description-info-icon" />
@@ -274,51 +264,80 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 						className={`close_rangeZone-monitor-settings display-none close-settingsMon` + id} 
 						onClick={() => {
 							handleClickOpenSettings(id);
-							saveOptions();
-						}}></div>
+							saveOpt();
+						}}>	
+					</div>
 					<Box className={`setting-selectd-monitor-options-box display-none id-mon-sett` + id} id="mon-settings-sx" sx={{boxShadow: 3}}>
 					<div className="monitor-selected-select-contain">
+					{/* 
+						BOXPLOT
+					*/}
+						{/* <GetSummarySelect 
+							boxplot={boxplot}
+							setBoxplot={setBoxplot}
+						/> */}
+					{/*
+						END BOXPLOT
+					*/}
 						<div className="monitor-selected-select-box">
 
 						<div className="checkbox-monitor-selected">
 							<div className="label-monitor-settings">Presentation:</div>
 							<div className="input-settings-checkbox">
-								<label className="label-cont-inputchecbox settings-checkbox-presnetation">
-									logarithm
-									<input
-										className={"checkboxMo checkboxMo-monitor logarithm logarithm"+id} // REFACTOR:
-										name="logarithm"
-										type="checkbox"
-										onChange={(e) => {setLogarithm(e.target.checked)}}
-										value={logarithm}
-										onClick={() => {checkLog(!logarithm, id)}}
-									/>
-									<span className="checkmark"></span>
-								</label>
-								<label className="label-cont-inputchecbox settings-checkbox-presnetation">
-									curved
-									<input
-										className={"checkboxMo checkboxMo-monitor curved curved"+id} // REFACTOR:
-										name="curved"
-										type="checkbox"
-										onChange={(e) => {setCurved(e.target.checked)}}
-										value={curved}
-										onClick={() => {checkCurved(!curved, id)}}
-									/>
-									<span className="checkmark"></span>
-								</label>
-								<label className="label-cont-inputchecbox settings-checkbox-presnetation">
-									filled
-									<input
-										className={"checkboxMo checkboxMo-monitor filled filled"+id} // REFACTOR:
-										name="filled"
-										type="checkbox"
-										onChange={(e) => {setFilled(e.target.checked)}}
-										value={filled}
-										onClick={() => {checkFilled(!filled, id)}}
-									/>
-									<span className="checkmark"></span>
-								</label>
+								<FormControlLabel
+									sx={{ margin: "-2px 0px"}}
+									label={
+											<React.Fragment>
+												<b className="checkbox-monitor-selected-label">{"Logarithm"}</b>
+											</React.Fragment>
+									}		
+									control={
+										<Checkbox
+											sx={{ '&:hover': { bgcolor: 'transparent' }}}
+											size="small"
+											onChange={(e) => {setLogarithm(e.target.checked)}}
+											checkedIcon={<CheckBoxIcon sx={{color: "#ea1884 "}} /> }
+											icon={<CheckBoxOutlineBlankIcon sx={{color: "#9396a4"}} />}
+											checked={logarithm} 
+										/>
+									}
+								/>
+								<FormControlLabel
+									sx={{margin: "-2px 0px"}}
+									label={
+										<React.Fragment>
+											<b className="checkbox-monitor-selected-label">{"Curved"}</b>
+										</React.Fragment>
+									}
+									control={
+										<Checkbox
+											sx={{ '&:hover': { bgcolor: 'transparent' }}}
+											size="small"
+											onChange={(e) => {setCurved(e.target.checked)}}
+											checkedIcon={<CheckBoxIcon sx={{color: "#52c8bd"}} /> }
+											icon={<CheckBoxOutlineBlankIcon sx={{color: "#9396a4"}} />}
+											checked={curved} 
+										/>
+									}
+								/>
+								<FormControlLabel
+									sx={{margin: "-2px 0px"}}
+									label={
+										<React.Fragment>
+											<b className="checkbox-monitor-selected-label">{"Filled"}</b>
+										</React.Fragment>
+									}
+									control={
+										<Checkbox
+											sx={{ '&:hover': { bgcolor: 'transparent' }}}
+											size="small"
+											onChange={(e) => {setFilled(e.target.checked)}}
+											checkedIcon={<CheckBoxIcon sx={{color: "#99d9bb "}} /> }
+											icon={<CheckBoxOutlineBlankIcon sx={{color: "#9396a4"}} />}
+											checked={filled} 
+										/>
+									}
+								/>
 							</div>
 						</div>
 
@@ -363,7 +382,7 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 									className="input-limits-grafic-options input-select-graphic grafic-type"
 									options={graphicOpts}
 									onChange={(e, newValue) => {
-										setGraphic_type(newValue)
+										setgraphic_type(newValue)
 									}}
 									value={graphic_type}
 									renderInput={(params) => <TextField {...params} />}
@@ -401,24 +420,22 @@ function SelectedElement({ id, monitorData, menuHandle, diActivateReload}) {
 							<span className="monitor-selected-input-label-selects">Color:</span>
 							<div className="monitor-selected-checkbox-color">
 								<input 
-									disabled={!enabled_color}
+									disabled={!enabledColor}
 									className={`monitor-selected-input-color color-line selectColorInput` + id}
 									name="color"
 									type="color"
 									onChange={(e) => {setColor(e.target.value)}}
 									value={color}
 								/>
-								<label className="label-cont-inputchecbox settings-checkbox-presnetation set-color-settings-checkbox">
-								<input 
-									className={`checkboxMo checkboxMo-monitor checkbox-color colorInput` + id + " enabled_color"+id}
-									name="enabled_color"
-									type="checkbox"
-									onChange={(e) => {setEnabled_color(e.target.checked)}}
-									value={enabled_color}
-									onClick={() => {checkEnableColor(!enabled_color, id)}}
+
+								<Checkbox
+									sx={{ '&:hover': { bgcolor: 'transparent' }}}
+									size="small"
+									onChange={(e) => {setEnabledColor(e.target.checked)}}
+									checkedIcon={<CheckBoxIcon sx={{color: "#fff"}} /> }
+									icon={<CheckBoxOutlineBlankIcon sx={{color: "#9396a4"}} />}
+									checked={enabledColor} 
 								/>
-								<span className="checkmark"></span>
-								</label>
 							</div>
 							</div>
 						</div>

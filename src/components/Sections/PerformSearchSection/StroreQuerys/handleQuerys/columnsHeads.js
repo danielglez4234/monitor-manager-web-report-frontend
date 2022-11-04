@@ -26,17 +26,17 @@ const HEADS = [
         "hide": true,
         "disableColumnMenu": false
     },
-    // {    
-    //     "field": "view",
-    //     "type": null,
-    //     "width": "60",
-    //     "sortable": false,
-    //     "filterable": false,
-    //     "hide": false,
-    //     "disableColumnMenu": true,
-    //     "actionCell": true,
-    //     "actionCellType": "preview"
-    // },
+    {    
+        "field": "view",
+        "type": null,
+        "width": "60",
+        "sortable": false,
+        "filterable": false,
+        "hide": true,
+        "disableColumnMenu": true,
+        "actionCell": true,
+        "actionCellType": "preview"
+    },
     {    
         "field": "name",
         "type": "text",

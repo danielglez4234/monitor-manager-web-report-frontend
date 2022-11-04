@@ -1,10 +1,10 @@
 import { useState, Fragment } from 'react';
 import { getUnitConversion } from '../../../../services/services';
 import { TextField, Autocomplete, CircularProgress } from '@mui/material';
-import PopUpMessage from '../../../handleErrors/PopUpMessage';
+import HandleMessage from '../../../handleErrors/HandleMessage';
 
 function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix, applyChangesWarning}) {
-	const [msg, handleMessage] = PopUpMessage()
+	const [msg, PopUpMessage] = HandleMessage()
 	const [loading, setLoading] = useState(false)
 	const [unitOptions, setUnitOptions] = useState([unit]);
 	const [prefixesOptions, setPrefixesOptions] = useState([prefix]);
@@ -31,12 +31,7 @@ function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix, a
       })
       .catch(error => {
         console.log(error)
-        handleMessage({
-			message:"Error obtaining conpatible unit conversion.",
-			type: 'error', 
-			persist: true,
-			preventDuplicate: true
-        })
+		PopUpMessage({type:'error', message:'Error obtaining conpatible unit conversion.'})
         setUnitOptions([unit])
         setPrefixesOptions([])
       })

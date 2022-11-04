@@ -14,9 +14,8 @@ const { REACT_APP_IDISPLAYLENGTH } = process.env
  */
 const getPagination = (pagination, isDownload) => {
     let handlepage
-    const actualPage = pagination.actualPage
-    if(!pagination?.active || isDownload){
-        handlepage = (isDownload && pagination.actualPage !== 1 && pagination.actualPage !== 0) ? actualPage-1 : 0
+    if(!pagination?.active || isDownload){ // pagination?.active === false
+        handlepage = (isDownload && pagination.actualPage !== 1) ? pagination.actualPage-1 : 0
     }
     else{
         handlepage = 0
@@ -34,7 +33,10 @@ const buildOptions = (opt) => {
     const unit    = (opt.unit    !== "Default") ? opt.unit    : false
     const prefix  = (opt.prefix  !== "Default") ? opt.prefix  : false
     const decimal = (opt.decimal !== "Default") ? opt.decimal : false
-    if (unit || decimal){
+    const boxplot = opt?.boxplot?.isEnable
+    const collapseValues = opt?.boxplot?.collapseValues
+    if (unit || decimal)
+    {
         queryOpt += "{"
         if(unit){
             queryOpt += "unit:" + unit
@@ -48,18 +50,33 @@ const buildOptions = (opt) => {
             }
             queryOpt += "decimal:" + decimal
         }
+        if(boxplot){
+            const sumary = ", sumary"
+            queryOpt += (collapseValues) ? `${sumary}: [${collapseValues}]` : sumary
+        }
         queryOpt += "}"
     }
     return queryOpt
 }
 
 /*
+ * get format date
+ */
+const getFormatDate = (date) => {
+    try {
+        return date.replace(/\s{1}/,"@")
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+/*
  * build time range and sampling params
  */
 const buildTimeAndSampling = (tm) => {
-    const beginDate = tm.beginDate.replace(/\s{1}/,"@")+".000"
-    const endDate 	= tm.endDate.replace(/\s{1}/,"@")+".000"
-    const sampling  = tm.sampling
+    const beginDate = getFormatDate(tm.beginDate) + ".000"
+    const endDate 	= getFormatDate(tm.endDate) + ".000"
+    const sampling  = "&sampling=" + tm.sampling
     return { beginDate, endDate, sampling }
 }
 
@@ -82,8 +99,7 @@ export default function buildUrl(monitors, timeAndSampling, pagination, isDownlo
             if (fnIsScalar(type)){
                 queryRest += id
             }else if (fnIsArray(type)){
-
-                if (index === '/' || index === null || index === ""){
+                if (index === '/' || !index){
                     queryRest += id + "[[-1]]"
                 }else{
                     queryRest += id + "[" + index + "]"
@@ -103,7 +119,7 @@ export default function buildUrl(monitors, timeAndSampling, pagination, isDownlo
         const tm = buildTimeAndSampling(timeAndSampling)
         const _pagination = getPagination(pagination, isDownload)
         
-        return tm.beginDate+"/"+tm.endDate+"/"+tm.sampling+"?"+queryRest+_pagination
+        return tm.beginDate + "/" + tm.endDate + "/?" + queryRest + tm.sampling + _pagination
     } catch (error) {
         console.error(error)
     }

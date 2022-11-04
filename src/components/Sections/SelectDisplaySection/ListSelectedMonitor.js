@@ -14,8 +14,7 @@ import {
 	setSamples,
 	getUrl
 } from '../../../actions';
-
-import loadingSls    from '../../../commons/img/loadingSls.svg';
+import { isObjEmpty } from '../../standarFunctions';
 import {
 	Stack,
 	Button,
@@ -29,9 +28,11 @@ import ArrowDropUpIcon              from '@mui/icons-material/ArrowDropUp';
 import Graphic              from './Graphic/Graphic';
 import MonitorList			from './SelectedMonitor/MonitorList';
 import ButtonGeneralOptions from './OptionsBarSection/ButtonGeneralOptions';
-import PopUpMessage         from '../../handleErrors/PopUpMessage';
+import HandleMessage         from '../../handleErrors/HandleMessage';
 import ButtonMagnitudeReference from './OptionsBarSection/ButtonMagnitudeReference'
 // import RangeThresholdsOptions from './OptionsBarSection/RangeThresholdsOptions';
+
+const { REACT_APP_IDISPLAYLENGTH } = process.env
 
 /*
  * css loading cube
@@ -53,9 +54,9 @@ const cubeSpinnerImg = () => {
 }
 
 
-function ListSelectedMonitor(props) {
+function ListSelectedMonitor() {
 	const dispatch             = useDispatch();
-	const [msg, handleMessage] = PopUpMessage();
+	const [msg, PopUpMessage] = HandleMessage();
 
 	const monitor           = useSelector(state => state.monitor);
 	const getResponse       = useSelector(state => state.getResponse);
@@ -202,17 +203,12 @@ function ListSelectedMonitor(props) {
 			.then(res => {
 				const totalArraysRecive  = res.samples.length
 				const totalRecords       = res.reportInfo.totalSamples
-				const totalPerPage       = props.urliDisplayLength
+				const totalPerPage       = REACT_APP_IDISPLAYLENGTH
 				const sampling_period    = getResponse.sampling_period
 				dispatch(setTotalResponseData(totalArraysRecive, totalRecords, totalPerPage))
 					if (totalArraysRecive === 0) 
 					{
-						handleMessage({
-							message: 'No data was collected on this page, this may happen if the monitor goes into FAULT state.', 
-							type: 'default', 
-							persist: true,
-							preventDuplicate: false
-						})
+						PopUpMessage({type:'default', message:'No data was collected on this page, this may happen if the monitor goes into FAULT state.'})
 					}
 					else
 					{
@@ -222,12 +218,7 @@ function ListSelectedMonitor(props) {
 					console.log("Data recibe successfully");
 				})
 				.catch(error => {
-					handleMessage({
-						message: 'Error: Request failed with status code 500', 
-						type: 'error', 
-						persist: true,
-						preventDuplicate: false
-					})
+					PopUpMessage({type:'error', message:error})
 					console.error(error)
 				})
 				.finally(() => {
@@ -251,19 +242,14 @@ function ListSelectedMonitor(props) {
 			{
 				if (data[a]?.stateOrMagnitudeValuesBind !== null)
 				{
-					titles.push(data[a].sTitle)
+					titles.push(data[a].name)
 					references.push(data[a].stateOrMagnitudeValuesBind)
 				}
 			}
 			setReferences(references)
 			setReferenceComponent(titles)
 		} catch (error) {
-			handleMessage({
-				message: error, 
-				type: 'error', 
-				persist: true,
-				preventDuplicate: false
-			})
+			PopUpMessage({type:'error', message:error})
 		}
 	}
 
@@ -274,6 +260,7 @@ function ListSelectedMonitor(props) {
 		dispatch(setloadingButton(false))
 		setDisabled(true)
 	}
+
 
 
     return(
@@ -314,16 +301,13 @@ function ListSelectedMonitor(props) {
 						<ButtonGeneralOptions />
 					}
 					{
-						(startloadingGraphic) ? "" :
-							(!getResponse?.responseData?.samples) ? "" :
-								(Object.keys(getResponse.responseData.samples).length > 0) ?
-									(references.length > 0) ?
-										<ButtonMagnitudeReference 
-											magnitudeTitles={referenceComponent}
-											magnitudeReferences={references}
-										/>
-								: ""
-							: ""
+						(isObjEmpty(getResponse)) ? "" :
+							(isObjEmpty(getResponse?.responseData) && isObjEmpty(getResponse?.responseData?.samples)) ? "" :
+								(isObjEmpty(references)) ? "" :
+									<ButtonMagnitudeReference 
+										magnitudeTitles={referenceComponent}
+										magnitudeReferences={references}
+									/>
 					}
 					{
 						// <RangeThresholdsOptions />
@@ -332,7 +316,7 @@ function ListSelectedMonitor(props) {
 
 				{
 					(startloadingGraphic && pagination?.active === false) ? "" :
-					(totalResponseData.length === 0) ? "" :
+					(isObjEmpty(totalResponseData)) ? "" :
 					<>
 					<div className="displayTotal-responseData">
 						{

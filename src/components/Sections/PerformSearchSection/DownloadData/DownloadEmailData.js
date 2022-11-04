@@ -20,32 +20,31 @@ import { useTheme }      from '@mui/material/styles';
 
 // import EmailIcon    from '@mui/icons-material/Email';
 import DownloadIcon from '@mui/icons-material/Download';
-import PopUpMessage from '../../../handleErrors/PopUpMessage';
+import HandleMessage from '../../../handleErrors/HandleMessage';
 
 
-function DownloadEmailData(props){
+function DownloadEmailData({checkOnSubmit}){
 	// const emailForm = useRef();
-	const [msg, handleMessage] = PopUpMessage();
+	const [msg, PopUpMessage] = HandleMessage()
 
-	const ifSearching  = useSelector(state => state.loadingGraphic);
+	const ifSearching  = useSelector(state => state.loadingGraphic)
 
-	const [urlDownload, seturlDownload]             = useState("");
-	const [activeDisabled, setActiveDisabled]       = useState(false);
-	const [openDonwloadModal, setOpenDonwloadModal] = useState(false);
-	const [loadingSearch, setLoadingSearch]         = useState(false);
+	const [urlDownload, seturlDownload]             = useState("")
+	const [activeDisabled, setActiveDisabled]       = useState(false)
+	const [openDonwloadModal, setOpenDonwloadModal] = useState(false)
+	const [loadingSearch, setLoadingSearch]         = useState(false)
 
 	const theme = useTheme();
-	const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+	const fullScreen = useMediaQuery(theme.breakpoints.down('md'))
 
 	/*
 	 * Disable the button when the search is running
 	 */
 	useEffect(() => {
-		if (ifSearching) {
-			setActiveDisabled(true);
-		}else{
-			setActiveDisabled(false);
-		}
+		if (ifSearching)
+			setActiveDisabled(true)
+		else
+			setActiveDisabled(false)
 	}, [ifSearching]);
 
 
@@ -117,33 +116,23 @@ function DownloadEmailData(props){
 	 */
 	const getSamplesFromServerForDownload = (url) => {
 		setLoadingSearch(true);
-		console.log("Downloading.....");
+		console.log("Downloading.....")
 		Promise.resolve( getDownloadData(url) )
 		.then(res => {
-			console.log("** Downloaded successfully **");
-			handleMessage({ 
-				message: 'Data downloaded successfully', 
-				type: 'success', 
-				persist: false,
-				preventDuplicate: false
-			})
+			console.log("** Downloaded successfully **")
+			PopUpMessage({type:'success', message:'Data downloaded successfully'})
 			downloadToCsv(res)
 		})
 		.catch(error => {
 			console.error(error)
 			const error_message = (error?.response?.message) ? error.response.message : "Unsupported Error"
 			const error_status = (error?.status) ? error.status : "Unkwon"
-			handleMessage({
-				message: "Error: " + error_message + " - Code " + error_status,
-				type: 'error', 
-				persist: false,
-				preventDuplicate: false
-			})
-			console.log("** Fail to download **");
-			console.error(error);
+			PopUpMessage({type:'error', message:'Error: '+error_message+' - Code '+error_status})
+			console.log("** Fail to download **")
+			console.error(error)
 		})
 		.finally(() => {
-			setLoadingSearch(false);
+			setLoadingSearch(false)
 		})
 	}
 
@@ -151,9 +140,9 @@ function DownloadEmailData(props){
 		<Stack className="perform-query-down-and-email-buttons-box" direction="row" spacing={1}>
 			<LoadingButton
 				onClick={() => {
-					if(props.checkOnSubmit('download')){
-						handleClickOpenDonwload();
-						seturlDownload(props.checkOnSubmit('download'));
+					if(checkOnSubmit('download')){
+						handleClickOpenDonwload()
+						seturlDownload(checkOnSubmit('download'))
 					}
 				}}
 				disabled={activeDisabled}
