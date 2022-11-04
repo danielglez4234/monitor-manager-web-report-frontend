@@ -629,6 +629,7 @@ CSS INDIVIDUALS TAGS
   z-index: 10;
   position: absolute;
   border-radius: 4px;
+  max-width: 1000px;
   right: 55px;
   padding: 7px 15px 21px 7px;
   font-family: "RobotoMono-SemiBold";
@@ -954,8 +955,8 @@ table.table-selected-monitors tr:nth-child(odd)
 .choose-array-index-box{
   background-color: #5b697b;
   border-radius: 4px;
-  width: 190px;
-  height: 85px;
+  width: 500px;
+  max-height: 250px;
   position: absolute;
   box-shadow: 2px 2px 3px #393333;
   display: flex;
@@ -964,9 +965,6 @@ table.table-selected-monitors tr:nth-child(odd)
   margin-left: -9px;
 }
 
-.choose-index-box-2D{
-  width: 352px;
-}
 
 .choose-array-index-box:after{
   bottom: 100%;
@@ -984,72 +982,20 @@ table.table-selected-monitors tr:nth-child(odd)
 
 .index-choose-inputs-box{
   flex: 1;
+  padding:10px 25px;
+  overflow-y: scroll;
+  border: 1px solid #393b4a;
 }
+
 
 .index-choose-button-box{
   display: flex;
+  border-bottom: 2px solid #c6d7e8;
   box-shadow: 1px -3px 4px -3px #0c0c0f;
 }
-
-
-.index-inputIndex-choose{
-  height: 35px;
-  font-size: 16px;
-  font-weight: bolder;
-  color: #eeedee;
-  border: 0px;
-  background-color: #3d4051;
-  border-radius: 3px;
-  box-shadow: 1px 1px 2px inset #404354;
-}
-.index-inputIndex-choose::placeholder{
-  color: #b0b5bb;
-}
-.index-inputIndex-choose:focus{
-outline: none;
-}
-
-.index-inputIndex-choose-single-box{
-  display: flex;
-  position: relative;
-  top: 15px;
-  left: 40px;
-}
-
-.choose-single-box2D{
-  left: 70px;
-}
-
-.index-inputIndex-choose-single{
-  width: 110px;
-}
-
-.index-inputIndex-choose-range-box{
-  display: flex;
-  position: relative;
-  top:15px;
-  left:10px;
-}
-.index-inputIndex-choose-range{
-  width: 70px;
-}
-.input-range-separator{
-  font-family: "RobotoMono-Bold";
-  font-size: 16px;
-  margin-left: 2px;
-  margin-right: 2px;
-}
-
-.separator_guion{
-  margin-left:10px;
-  margin-right:10px;
-}
-
-
-
 .index-choose-button {
   font-family: "RobotoMono-SemiBold";
-  font-size: 11px;
+  font-size: 14px;
   background-color: #393b4a;
   flex-grow: 1;
   padding: 2px 10px 2px 10px;
@@ -1057,30 +1003,18 @@ outline: none;
   cursor: pointer;
 }
 
-
-.index-choose-selected{
+.index-choose-reset{
   border-right: 1px solid #54566a;
   transition: all 0.1s linear;
 }
-.index-choose-selected:hover{
-  background-color: #5d5f74;
-  transition: all 0.1s linear;
-} 
-
-
-.index-choose-range{
-  border-bottom-left-radius: 4px;
-  border-right: 1px solid #54566a;
-  transition: all 0.1s linear;
-}
-.index-choose-range:hover{
+.index-choose-reset:hover{
   background-color: #5d5f74;
   transition: all 0.1s linear;
 } 
 
 
 .index-choose-add{
-  background-color: #62bfa5;
+  background-color: #3e4853;
   border-bottom-right-radius: 4px;
   transition: all 0.1s linear;
 }
@@ -2496,11 +2430,6 @@ font-size: 13px !important;
   padding: 30px 30px 0px 30px;
 }
 
-/* .save-query-list-title{
-  background-color: #5a6370 !important;
-  border-bottom: 3px solid #85e1d0 !important;
-  padding: 3px !important;
-} */
 
 .save-query-list-box{
   height: 270px;
@@ -2510,15 +2439,8 @@ font-size: 13px !important;
   box-shadow: 0px 0px 3px inset #474b51;
 }
 
-/* .save-query-list-list{
-  background-color: #929aa6;
-} */
 
-.save-query-saveButton-box{
-  text-align: end;
-  margin: 6px 10px 10px 0px !important;
 
-}
 
 .save-query-box-title-date{
   padding-right: 60px;

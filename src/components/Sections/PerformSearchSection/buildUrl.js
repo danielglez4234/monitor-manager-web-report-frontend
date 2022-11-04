@@ -30,17 +30,18 @@ const getPagination = (pagination, isDownload) => {
  */
 const buildOptions = (opt) => {
     let queryOpt  = String()
-    const boxplot = opt?.boxplot?.isEnable
-    const onlycollapseValues = opt?.boxplot?.onlyCollapseValues
+    // const boxplot = opt?.boxplot?.isEnable
+    // const onlycollapseValues = opt?.boxplot?.onlyCollapseValues
 
     const unit    = (opt.unit    !== "Default") ? opt.unit    : false
     const prefix  = (opt.prefix  !== "Default") ? opt.prefix  : false
     const decimal = (opt.decimal !== "Default") ? opt.decimal : false
 
-    const interval = (opt.boxplot.interval !== "") ? opt.boxplot.interval : false
-    const collapseValue = (opt.boxplot.collapseValue !== "") ? opt.boxplot.collapseValue : false
+    // const interval = (opt.boxplot.interval !== "") ? opt.boxplot.interval : false
+    // const collapseValue = (opt.boxplot.collapseValue !== "") ? opt.boxplot.collapseValue : false
     
-    if (unit || decimal || boxplot || onlycollapseValues)
+    // if (unit || decimal || boxplot || onlycollapseValues)
+    if (unit || decimal)
     {
         queryOpt += "{"
         if(unit){
@@ -56,17 +57,17 @@ const buildOptions = (opt) => {
             queryOpt += `decimal:${decimal}`
         }
 
-        if(interval){
-            if(unit || prefix || decimal){
-                queryOpt += ","
-            }
-            queryOpt += `summary:${interval}`
-            if(onlycollapseValues){
-                if(collapseValue){
-                    queryOpt += `,attr:${collapseValue.toLowerCase()}`
-                }
-            }
-        }
+        // if(interval){
+        //     if(unit || prefix || decimal){
+        //         queryOpt += ","
+        //     }
+        //     queryOpt += `summary:${interval}`
+        //     if(onlycollapseValues){
+        //         if(collapseValue){
+        //             queryOpt += `,attr:${collapseValue.toLowerCase()}`
+        //         }
+        //     }
+        // }
         queryOpt += "}"
     }
     return queryOpt
@@ -112,10 +113,12 @@ export default function buildUrl(monitors, timeAndSampling, pagination, isDownlo
             if (fnIsScalar(type)){
                 queryRest += id
             }else if (fnIsArray(type)){
-                if (index === '/' || !index){
+                if (index === '/' || !index || index === "[-1]"){
+                    console.log("🚀 ~ file: buildUrl.js ~ line 116 ~ buildUrl ~ index", index)
                     queryRest += id + "[[-1]]"
                 }else{
-                    queryRest += id + "[" + index + "]"
+                    console.log("🚀 ~ file: buildUrl.js ~ line 116 ~ buildUrl ~ index", index)
+                    queryRest += id + index
                 }
             }else if (fnIsState(type)){
                 queryRest += component

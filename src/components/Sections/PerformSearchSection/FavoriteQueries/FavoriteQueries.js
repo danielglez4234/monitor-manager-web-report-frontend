@@ -15,12 +15,13 @@ import {
 	Backdrop, 
 	CircularProgress
 }  from '@mui/material';
-import { LtTooltip } from '../../../../commons/uiStyles';
+
 import { 
-  Search,
-  SearchIconWrapper,
-  StyledInputBase 
-} from '../../../../commons/uiStyles';
+	LtTooltip,
+	Search,
+	SearchIconWrapper,
+	StyledInputBase 
+} from '../../../../commons/uiStyles/components';
 import SearchIcon      from '@mui/icons-material/Search';
 import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
 import BookmarkIcon	   from '@mui/icons-material/Bookmark';

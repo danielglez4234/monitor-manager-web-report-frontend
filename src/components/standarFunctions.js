@@ -107,8 +107,8 @@ export const fnIsArray = (type) => {
 export const getCategory = (type) =>{
 	if ((type === "D") || (type ==="F") || (type ==="L") || (type === "S")
 			|| (type === "O") || (type === "9") || (type === "8")
-				|| (type === "7") || (type === "6") || (type === "5")
-				|| (type === "d") || (type === "f") || (type === "l")
+			|| (type === "7") || (type === "6") || (type === "5")
+			|| (type === "d") || (type === "f") || (type === "l")
 			|| (type === "s") || (type === "o")){
 		return "monitor";
 	}else if ((type === "b")  || (type === "e") ){
@@ -130,6 +130,17 @@ export const isEmpty = (x) => {
 		else
 			return false
 	} catch (error) {
-		console.log(error)
+		console.error(error)
+	}
+}
+
+/*
+ * positions array to string
+ */
+export const posTostring = (pos) => {
+	try {
+		return "[" + pos.join(";") + "]"
+	} catch (error) {
+		console.error(error)
 	}
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { usesTyles } from '../../../../commons/uiStyles/usesTyles';
 import { useDispatch, useSelector } from 'react-redux';
 import { editingQuery, handleSelectedElemets, setloadingButton } from '../../../../actions';
 import {
@@ -9,64 +10,22 @@ import { getCategory, fnIsArray } from '../../../standarFunctions'
 import {makeStyles}					from '@material-ui/core';
 import { Modal, Box, Grid, Button, Backdrop, CircularProgress } from '@mui/material';
 
-import ArchiveIcon 					from '@mui/icons-material/Archive';
-import SaveIcon                     from '@mui/icons-material/Save';
-import LoadingButton                from '@mui/lab/LoadingButton';
+import ArchiveIcon from '@mui/icons-material/Archive';
+import SaveIcon from '@mui/icons-material/Save';
+import LoadingButton from '@mui/lab/LoadingButton';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 
-import HandleMessage                 from '../../../handleErrors/HandleMessage';
+import HandleMessage from '../../../handleErrors/HandleMessage';
 
-
-const usesTyles = makeStyles({
-	savebutton: {
-		fontFamily: 'RobotoMono-SemiBold',
-		backgroundColor: '#ac5978',
-		'&:hover': {
-			background: '#ac5978',
-		},
-	},
-	updatebutton:{
-		backgroundColor: '#407b88',
-		height: '60px',
-		fontFamily: 'RobotoMono-SemiBold',
-		'&:hover': {
-			background: '#407b88',
-		},
-	},
-	cancelbutton:{
-		backgroundColor: '#e57070',
-		'&:hover': {
-			background: '#e57070',
-		},
-	},
-	handlebutton: {
-		backgroundColor: '#4b6180',
-		'&:hover': {
-			background: '#4b6180',
-		},
-	},
-	saveQueryButton: {
-		backgroundColor: '#569d90',
-		'&:hover': {
-			background: '#569d90',
-		},
-	},
-	resetQueryButton: {
-		backgroundColor: '#5a6370',
-		'&:hover': {
-			background: '#5a6370',
-		},
-	}
-})
 
 const { REACT_APP_QUERY_NAME_PATTERN } = process.env
 
 
 function SaveQuery({timeQuery, editing}) {
-	const dispatch = useDispatch()
 	const classes = usesTyles()
+	const dispatch = useDispatch()
 	const monitor = useSelector(state => state.monitor)
 	const [msg, PopUpMessage] = HandleMessage()
 
@@ -149,18 +108,26 @@ function SaveQuery({timeQuery, editing}) {
 	 * stop editing action
 	 */
 	const stopEditing = () => {
-		dispatch(editingQuery({active: false}))
-		setQueryName("")
-		setQueryDescription("")
+		try {
+			dispatch(editingQuery({active: false}))
+			setQueryName("")
+			setQueryDescription("")
+		} catch (error) {
+			PopUpMessage({type:'error', message:error})
+		}
 	}
 
 	/*
 	 * reset name and description inputs if editing 
 	 */
 	const resetInputs = () => {
-		setQueryName(editing?.name)
-		setQueryDescription(editing?.description)
-		setifSameQueryName(true)
+		try {
+			setQueryName(editing?.name)
+			setQueryDescription(editing?.description)
+			setifSameQueryName(true)
+		} catch (error) {
+			PopUpMessage({type:'error', message:error})
+		}
 	}
 	/*
 	 * reset query monitors
@@ -174,7 +141,7 @@ function SaveQuery({timeQuery, editing}) {
 	 */
 	const fnSaveQuery = async () => {
 		const payload = createPayload()
-
+		console.log("payload", payload)
 		const fnAction = (editing?.active && ifSameQueryName) 
 			? () => updateQuery(queryName, payload) 
 			: () => insertQuery(payload);
@@ -249,13 +216,14 @@ function SaveQuery({timeQuery, editing}) {
 	const confOptionsSeparator = (val) => {
 		try {
 			const options = val.options
-			const summary = getSummaryConf(val.options?.boxplot)
+			// const summary = getSummaryConf(val.options?.boxplot)
 			const unit  = (options.unit === null || options?.unit === "Default") ? undefined : options.unit
 			const prefix = (options.prefix === null || options?.prefix === "Default") ? undefined : options.prefix
 			const decimal = (options.decimal === null || options.decimal === "Default") ? undefined : options.decimal
 			const pos = (fnIsArray(val.type)) ? 
-			(options.pos === null || options.pos === "" || options.pos === undefined) ? "[[-1]]" : "["+options.pos+"]" : undefined
-			return { unit, prefix, decimal, pos, summary, options }
+			(options.pos === null || options.pos === "" || options.pos === undefined) ? "[[-1]]" : options.pos : undefined
+			// return { unit, prefix, decimal, pos, summary, options }
+			return { unit, prefix, decimal, pos, options }
 		} catch (error) {
 			PopUpMessage({type:'error', message:error})
 		}
@@ -309,7 +277,7 @@ function SaveQuery({timeQuery, editing}) {
 				<>
 					<Button
 						onClick={stopEditing}
-						className={classes.cancelbutton}
+						className={classes.cancel_query_button}
 						variant="contained"
 						startIcon={<CancelPresentationIcon />}
 					>
@@ -318,7 +286,7 @@ function SaveQuery({timeQuery, editing}) {
 					<Button
 						disabled={disabled}
 						onClick={handleOpenSaveQuery}
-						className={classes.updatebutton}
+						className={classes.update_query_button}
 						variant="contained"
 						startIcon={<SystemUpdateAltIcon />}
 					>
@@ -328,7 +296,7 @@ function SaveQuery({timeQuery, editing}) {
 				:
 				<Button
 					onClick={handleOpenSaveQuery}
-					className={classes.savebutton}
+					className={classes.save_actual_query_button}
 					variant="contained"
 					startIcon={<ArchiveIcon />}
 					disabled={disabled}
@@ -420,7 +388,7 @@ function SaveQuery({timeQuery, editing}) {
 							</Grid>
 						</Grid>
 						<Grid item xs={12} sm={12} md={12} className="save-query-list-info-label">
-							<Grid container spacing={0} sx={{backgroundColor: "rgb(40, 46, 57)", borderBottom: "3px solid #85e1d0", padding: "3px 0px 3px 15px"}}>
+							<Grid container spacing={0} className={classes.monitor_settings_grid}>
 								<Grid item md={12}>Monitors Settings</Grid>
 							</Grid>
 						</Grid>
@@ -465,26 +433,26 @@ function SaveQuery({timeQuery, editing}) {
 										<Grid item xs={12} md={12} className="save-query-title-warning">
 											Name is the query Id if you change it you will add a new one
 										</Grid>
-										<Grid item md={12} className="save-query-saveButton-box">
-										<Button
-											size="small"
-											className={classes.resetQueryButton}
-											onClick={() => {
-												resetInputs()
-											}}
-											startIcon={<RestartAltIcon />}
-											variant="contained"
-										>
-											Reset Inputs
-										</Button>
+										<Grid item md={12} className={classes.save_query_box}>
+											<Button
+												size="small"
+												className={classes.reset_query_button}
+												onClick={() => {
+													resetInputs()
+												}}
+												startIcon={<RestartAltIcon />}
+												variant="contained"
+											>
+												Reset Inputs
+											</Button>
 										</Grid>
 										</>
 									: ""
 								}
-								<Grid item md={12} className="save-query-saveButton-box">
+								<Grid item md={12} className={classes.save_query_box}>
 									<LoadingButton
 										size="small"
-										className={classes.saveQueryButton}
+										className={classes.save_query_button}
 										onClick={() => {
 											onSubmit()
 										}}
@@ -503,7 +471,7 @@ function SaveQuery({timeQuery, editing}) {
 				</Box>
 			</Modal>
 			<Backdrop
-				sx={{ color: '#569d90', zIndex: (theme) => theme.zIndex.drawer + 13001 }}
+				className={{...classes.backDropLoad, zIndex: (theme) => theme.zIndex.drawer + 13001 }}
 				open={openBackDrop}
 			>
 				<CircularProgress color="inherit" />

@@ -1,7 +1,7 @@
 import React from 'react';
 import * as $         from 'jquery';
-import { LtTooltip }  from '../../../../commons/uiStyles';
-import {IconButton, Box} from '@mui/material';
+import { LtTooltip }  from '../../../../commons/uiStyles/components';
+import {IconButton, Box, Button} from '@mui/material';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import SettingsIcon              from '@mui/icons-material/Settings';
 import Grid3x3Icon               from '@mui/icons-material/Grid3x3';
@@ -15,10 +15,14 @@ import AnimationIcon             from '@mui/icons-material/Animation';
 import StackedBarChartIcon       from '@mui/icons-material/StackedBarChart';
 import SelectAllIcon             from '@mui/icons-material/SelectAll';
 import Looks3SharpIcon           from '@mui/icons-material/Looks3Sharp';
-
+import { usesTyles } 			 from '../../../../commons/uiStyles/usesTyles';
+import { useDispatch } 			 from 'react-redux';
+import { reloadGrafic } 		 from '../../../../actions';
 
 
 function ButtonGeneralOptions() {
+	const dispatch = useDispatch(); // TODO: quitar posiblemente
+	const classes = usesTyles()
     /*
      * Handle disabled incompatible options
      */
@@ -241,9 +245,17 @@ function ButtonGeneralOptions() {
 				<div className="graphOpt-action-buttons">
 					<div className="graphOpt-action-checkboxButtons">
 						<SelectAllIcon onClick={() => { handleCheckCheckboxes() } }/>
+						<SettingsBackupRestoreIcon onClick={() => { resetOptios() } }/>
 					</div>
 					<div className="graphOpt-action-resetButton">
-						<SettingsBackupRestoreIcon onClick={() => { resetOptios() } }/>
+						<Button 
+							onClick={() => { dispatch(reloadGrafic(1)) }} 
+							variant="contained" 
+							size="small" 
+							className={classes.apply_general_options_button}
+						>
+							APPLY
+						</Button>
 					</div>
 				</div>
 			</Box>

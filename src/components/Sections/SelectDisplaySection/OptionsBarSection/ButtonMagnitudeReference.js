@@ -1,6 +1,6 @@
 import React from 'react';
 import * as $         from 'jquery';
-import { LtTooltip }  from '../../../../commons/uiStyles';
+import { LtTooltip }  from '../../../../commons/uiStyles/components';
 import {IconButton, Box} from '@mui/material';
 import ListIcon from '@mui/icons-material/List';
 

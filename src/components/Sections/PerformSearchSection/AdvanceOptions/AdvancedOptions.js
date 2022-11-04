@@ -9,7 +9,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails
-} from './commons/uiStyles';
+} from './commons/uiStyles/components';
 
 // --- Model Component elements
 import { Button, Typography, Tab }        from '@mui/material';

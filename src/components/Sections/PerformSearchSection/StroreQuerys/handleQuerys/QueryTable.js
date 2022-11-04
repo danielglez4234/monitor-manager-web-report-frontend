@@ -46,34 +46,8 @@ import { arrageMonitors } from '../../manageMonitorData';
 import HEADS from './columnsHeads'
 import HandleMessage from '../../../../handleErrors/HandleMessage';
 import { Grid } from '@material-ui/core';
-
-const StyledGridOverlay = styled('div')(({ theme }) => ({
-	display: 'flex',
-	flexDirection: 'column',
-	alignItems: 'center',
-	justifyContent: 'center',
-	height: '100%',
-	'& .ant-empty-img-1': {
-		fill: theme.palette.mode === 'light' ? '#aeb8c2' : '#262626',
-	},
-	'& .ant-empty-img-2': {
-		fill: theme.palette.mode === 'light' ? '#f5f5f7' : '#595959',
-	},
-	'& .ant-empty-img-3': {
-		fill: theme.palette.mode === 'light' ? '#dce0e6' : '#434343',
-	},
-	'& .ant-empty-img-4': {
-		fill: theme.palette.mode === 'light' ? '#fff' : '#1c1c1c',
-	},
-	'& .ant-empty-img-5': {
-		fillOpacity: theme.palette.mode === 'light' ? '0.8' : '0.08',
-		fill: theme.palette.mode === 'light' ? '#f5f5f5' : '#fff',
-	},
-}));
-
-
-
-
+import { StyledGridOverlay } from '../../../../../commons/uiStyles/components';
+import { usesTyles } from '../../../../../commons/uiStyles/usesTyles';
 
 /*
  * CustomColumnMenu: column side button
@@ -150,6 +124,7 @@ function CustomPagination() {
 
 
 export default function QueryTable({addItemtoLocalStorage, openViewQuery, handleCloseSaveQuery}) {
+	const classes = usesTyles()
 	const dispatch = useDispatch()
 	const [msg, PopUpMessage] = HandleMessage()
 	const [rows, setRows] = useState([])
@@ -167,9 +142,7 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 	const [selectionModel, setSelectionModel] = useState([]);
 	const [checkedRowsData, setCheckedRowsData] = useState([]);
 
-	/*
-	 *
-	 */
+
 	/*
 	 * Confirm before Delete
 	 */
@@ -189,16 +162,16 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 		<GridToolbarContainer>
 			{/* <GridToolbarColumnsButton /> */}
 			<GridToolbarFilterButton variant="contained" 
-				sx={{backgroundColor: "#555e6a", padding: "5px 16px", marginLeft: "5px", '&:hover': {background: 'rgb(51, 58, 68)'}}}
+				className={classes.grid_Toolbar_filter_button}
 			/>
 			<GridToolbarDensitySelector variant="contained" 
-				sx={{backgroundColor: "#67b9cc", padding: "6px 16px", marginLeft: "5px", '&:hover': {background: '#5ea9bb'}}}
+				className={classes.grid_Toolbar_sensity_selector}
 			/>
 			<Button 
 				onClick={() =>{handleLoadQuery(rows)}}
 				disabled={(rows.length === 0 || selectionModel.length === 0)}
 				variant="contained"
-				sx={{backgroundColor: "#5fb2bb", marginLeft: "5px", '&:hover': {background: '#53989f'}}} 
+				className={classes.grid_Toolbar_concat_button}
 				startIcon={<AddIcon />}
 			>
 				concat
@@ -206,8 +179,8 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 			<Button 
 				onClick={() => {handleOpenConfirmDelete(checkedRowsData)}}
 				disabled={(rows.length === 0 || selectionModel.length === 0)}
-				variant="contained" 
-				sx={{backgroundColor: "#df3f91", marginLeft: "5px", '&:hover': {background: '#c13b80'}}} 
+				variant="contained"
+				className={classes.grid_Toolbar_delete_selected}
 				startIcon={<DeleteForeverIcon />}
 			>
 				delete selected
@@ -586,7 +559,7 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 						</p>
 					</Grid>
 					<Grid item xs={12} sm={12} md={12} className="save-query-list-info-label">
-							<Grid container spacing={0} sx={{backgroundColor: "rgb(40, 46, 57)", borderBottom: "3px solid #85e1d0", padding: "3px 0px 3px 15px"}}>
+							<Grid container spacing={0} className={classes.view_store_query_modal_title}>
 								<Grid item md={12}>Monitors Settings</Grid>
 							</Grid>
 					</Grid>
@@ -604,10 +577,14 @@ export default function QueryTable({addItemtoLocalStorage, openViewQuery, handle
 														<div className="save-query-table-item-header">
 															<p className="sv-component">{value.component}</p>
 															<p className="sv-prefix">
-																{(value?.prefix === "Default") ? "--": value.prefix} 
+																{
+																(value?.prefix === "Default") ? "--": value.prefix
+																} 
 															</p>
 															<p className="sv-unit"> 
-																{(value?.unit === "Default") ? "--": value.unit}
+																{
+																(value?.unit === "Default") ? "--": value.unit
+																}
 															</p>
 														</div>
 														<div className="save-query-table-item-title">

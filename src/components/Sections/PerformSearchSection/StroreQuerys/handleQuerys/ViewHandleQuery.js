@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {makeStyles}					from '@material-ui/core';
+import { usesTyles } from '../../../../../commons/uiStyles/usesTyles'
 import { 
     Modal,
     Box,
@@ -7,28 +7,9 @@ import {
 	Button,
 } from '@mui/material';
 
-import InventoryIcon				from '@mui/icons-material/Inventory';
+import InventoryIcon from '@mui/icons-material/Inventory';
 
-import QueryTable 					from './QueryTable';
-
-
-const usesTyles = makeStyles({
-	savebutton: {    
-		'&:hover': {
-			background: '#e57070',
-		},
-	},
-	handlebutton: {    
-		'&:hover': {
-			background: '#4b6180',
-		},
-	},
-	saveQueryButton: {    
-		'&:hover': {
-			background: '#569d90',
-		},
-	}
-})
+import QueryTable from './QueryTable';
 
 
 function ViewHandleQuery({addItemtoLocalStorage, updateItemInLocalStorage}) {
@@ -42,8 +23,7 @@ function ViewHandleQuery({addItemtoLocalStorage, updateItemInLocalStorage}) {
     return(
 		<>
 			<Button
-				sx={{backgroundColor: '#4b6180', height: 60}} 
-				className={classes.handlebutton}
+				className={classes.view_store_queries_button}
 				variant="contained"  
 				startIcon={<InventoryIcon />}
 				onClick={() => {handleOpenViewQuery()}}

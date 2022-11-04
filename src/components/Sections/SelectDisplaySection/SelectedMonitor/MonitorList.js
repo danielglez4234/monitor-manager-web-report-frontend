@@ -8,7 +8,7 @@ import * as $  from 'jquery';
 import {
     IconButton, Button
 } from '@mui/material'
-import { LtTooltip } from '../../../../commons/uiStyles'
+import { LtTooltip } from '../../../../commons/uiStyles/components'
 
 import DataUsageIcon                from '@mui/icons-material/DataUsage';
 import SettingsBackupRestoreIcon    from '@mui/icons-material/SettingsBackupRestore';
@@ -27,7 +27,7 @@ import SelectedElement      from './SelectedElement'
      * Default State of the list
      */
 	let initialInfoText = <div className="no_monitor_selected">
-                            <DataUsageIcon className="img_monitor_selected"/>
+                            	<DataUsageIcon className="img_monitor_selected"/>
                                 <p className="no_monitor_selected_message">Select a Monitor from the MonitorList</p>
                         </div>;
 
@@ -47,22 +47,30 @@ import SelectedElement      from './SelectedElement'
 	 */
 	const handleExpandSection = (icon, setHeightPX) => {
 		$(".menu-monitorSelected-contain").css('height', setHeightPX + "px")
-		if (setHeightPX === 0) {
+		if (setHeightPX === 0) 
+		{
 			$(".menu-monitorSelected-contain").addClass('hide-sections')
 			$(".selected-monitors-select-all").addClass('hide-sections')
-		}else {
+		}
+		else 
+		{
 			$(".menu-monitorSelected-contain").removeClass('hide-sections')
 			$(".selected-monitors-select-all").removeClass('hide-sections')
 		}
 		$('.rotback').removeClass('rotate180 activeExpandColor')
-		if (icon === "visibilityMiddle-icon") {
+		if (icon === "visibilityMiddle-icon") 
+		{
 			if (!$('.visibilityMiddle-icon').hasClass('activeExpandColor')) {
 				$('.' + icon).toggleClass('activeExpandColor')
 			}
-		}else if (icon === "visibilityOff-icon") {
+		}
+		else if (icon === "visibilityOff-icon") 
+		{
 			$('.' + icon).toggleClass('rotate180 activeExpandColor')
 			$('.visibilityMiddle-icon').removeClass('rotate180')
-		}else {
+		}
+		else 
+		{
 			$('.' + icon).toggleClass('rotate180 activeExpandColor')
 			$('.visibilityMiddle-icon').toggleClass('rotate180')
 		}
@@ -145,7 +153,7 @@ function MonitorList({diActivateReload}) {
 	 * add constraints to boxplot
 	 */
 	const constraints = ({apply_to}) => {
-		if(CONSTRAINTS?.apply_constraints)
+		if(Number(CONSTRAINTS.apply_constraints))
 		{ 
 			const boxplot = CONSTRAINTS.boxplot
 			if(boxplot.only_one_collapse_enabled){
@@ -181,7 +189,7 @@ function MonitorList({diActivateReload}) {
 						startIcon={<CachedIcon />}
 						onClick={() =>{ saveOptions()}}
 					>
-						Aply Options
+						Apply
 					</Button>
                 }
 			</div>
@@ -222,12 +230,11 @@ function MonitorList({diActivateReload}) {
 				</div>
 				<div id="resizable" data-bottom="true" className="selected-monitors-box">
 					{
-					// (onSelect) ? initialInfoText :
-					(monitor.length <= 0) ? initialInfoText :
+					(monitor.length === 0) ? initialInfoText :
 						<table id="drop-area" className="table-selected-monitors">
 							<tbody>
 							{
-								monitor.map((element) =>
+								monitor.map((element, index) =>
 									<SelectedElement
 										key           	 = { element.id  }
 										id            	 = { element.id }
@@ -241,7 +248,7 @@ function MonitorList({diActivateReload}) {
 							}
 							</tbody>
 						</table>
-					}
+					 }
 				</div>
 			</div>
             <div className="selected-monitors-extends-buttons">

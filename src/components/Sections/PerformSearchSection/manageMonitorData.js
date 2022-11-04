@@ -21,8 +21,9 @@ const getBoxplotConf = (item) => {
     }
 }
 
+
 /*
- * Arrange the data received from the Backend according to the needs of the Frontend
+ * get boxplot conf
  */
 export const arrageMonitors =  (data) => {
     try {
@@ -48,8 +49,7 @@ export const arrageMonitors =  (data) => {
                 item.options["prefix"] = item.prefix
                 item.options["unit"] = item.unit
                 item.options["decimal"] = item.decimal
-                // TODO: REFACTOR: el slice no debería ser necesario
-                item.options["pos"] = (item?.pos && fnIsArray(item.id_monitor_description.type)) ? item.pos.slice(1, -1) : ""
+                item.options["pos"] = (item?.pos && fnIsArray(item.id_monitor_description.type)) ? item.pos : ""
                 item.options["boxplot"] = getBoxplotConf(item.summary || null)
 
                 monitorList.push({
