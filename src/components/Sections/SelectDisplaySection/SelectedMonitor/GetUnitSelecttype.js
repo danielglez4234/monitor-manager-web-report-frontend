@@ -4,40 +4,58 @@ import { TextField, Autocomplete, CircularProgress } from '@mui/material';
 import HandleMessage from '../../../handleErrors/HandleMessage';
 
 function GetUnitSelecttype({id, DefaultUnit, unit, setUnit, prefix, setPrefix, applyChangesWarning}) {
+	const defualtRest = ["Default"]
 	const [msg, PopUpMessage] = HandleMessage()
 	const [loading, setLoading] = useState(false)
 	const [unitOptions, setUnitOptions] = useState([unit]);
 	const [prefixesOptions, setPrefixesOptions] = useState([prefix]);
-	
+
+	/*
+	 * prevent duplicates and add default option
+	 */
+	const preventDuplicatesOptions = (optionRecived, options) => {
+		// add "default" | option selected from server or default | and available options
+		// prevent dulicates
+		const options_ = [...defualtRest, optionRecived, ...options] 
+		return options_.filter((value, index, self) =>
+			index === self.findIndex((t) => (
+				t === value
+			))
+		)
+	}
+
     /*
      *  get list of compatible units from the server
      */
     const getcompatibleconversion = () => {
-      Promise.resolve( getUnitConversion(DefaultUnit) )
-      .then(res => {
-			const units    = res.units
-			const prefixes   = res.prefixes
-			const fullname = prefixes.map(value => value.fullName)
-			if (units.length > 0)
-			{
-				setUnitOptions([unit, ...units]) // unit -> "Default" option
-				setPrefixesOptions([prefix, ...fullname]) // prefix -> "Default" option
-			}
-			else 
-			{
-				setUnitOptions([unit])
-				setPrefixesOptions([])
-			}
-      })
-      .catch(error => {
-        console.log(error)
-		PopUpMessage({type:'error', message:'Error obtaining conpatible unit conversion.'})
-        setUnitOptions([unit])
-        setPrefixesOptions([])
-      })
-      .finally(() => {
-        	setLoading(false)
-      });
+	console.log("sdoñbfsdioñbco")
+		Promise.resolve( getUnitConversion(DefaultUnit) )
+		.then(res => {
+				const units    = res.units
+				const prefixes   = res.prefixes
+				const fullname = prefixes.map(value => value.fullName)
+				if (units.length > 0)
+				{
+					const  test = preventDuplicatesOptions(unit, units)
+					console.log("test", test)
+					setUnitOptions(preventDuplicatesOptions(unit, units)) // unit -> "Default" option
+					setPrefixesOptions(preventDuplicatesOptions(prefix, fullname)) // prefix -> "Default" option
+				}
+				else 
+				{
+					setUnitOptions(defualtRest)
+					setPrefixesOptions([])
+				}
+		})
+		.catch(error => {
+			console.log(error)
+			PopUpMessage({type:'error', message:'Error obtaining conpatible unit conversion.'})
+			setUnitOptions(defualtRest)
+			setPrefixesOptions([])
+		})
+		.finally(() => {
+				setLoading(false)
+		});
     }
 
 	return (
