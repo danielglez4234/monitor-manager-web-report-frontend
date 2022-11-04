@@ -102,16 +102,16 @@ function SelectedElement({ id, monitorData, saveOptions, menuHandle, diActivateR
 	const [pos, setPos] 			= useState(monitorData?.options?.pos 		|| default_.pos)
 
 	// autocomplete inputs
-	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ? default_.graphic_type.at(1) : default_.graphic_type.at(0)
+	const isEnumOrMonitor = (fnIsMagnitude(monitorData.type)) ? default_.graphic_type[1] : default_.graphic_type[0]
 	const [graphic_type, setgraphic_type] = useState(monitorData?.options?.graphic_type || isEnumOrMonitor)
-	const [stroke, setStroke]             = useState(monitorData?.options?.stroke       || default_.stroke.at(1))
-	const [canvas, setCanvas]             = useState(monitorData?.options?.canvas       || default_.canvas.at(0))
-	const [unit, setUnit]                 = useState(monitorData?.options?.unit         || default_.unit.at(0))
-	const [prefix, setPrefix]             = useState(monitorData?.options?.prefix       || default_.prefix.at(0))
-	const [decimal, setDecimal]           = useState(monitorData?.options?.decimal      || default_.decimal.at(0))
+	const [stroke, setStroke]             = useState(monitorData?.options?.stroke       || default_.stroke[1])
+	const [canvas, setCanvas]             = useState(monitorData?.options?.canvas       || default_.canvas[0])
+	const [unit, setUnit]                 = useState(monitorData?.options?.unit         || default_.unit[0])
+	const [prefix, setPrefix]             = useState(monitorData?.options?.prefix       || default_.prefix[0])
+	const [decimal, setDecimal]           = useState(monitorData?.options?.decimal      || default_.decimal[0])
 	
 	// Boxplot
-	const defautlInterval = (monitorData.summaryConfigs) ? monitorData.summaryConfigs.data.at(0).interval : ""
+	const defautlInterval = (monitorData.summaryConfigs) ? monitorData.summaryConfigs.data[0].interval : ""
 	const [boxplot, setBoxplot] = useState({
 		isEnable: monitorData?.options?.boxplot?.isEnable                       || default_.isEnable,
 		onlyCollapseValues: monitorData?.options?.boxplot?.onlyCollapseValues   || default_.onlyCollapseValues,

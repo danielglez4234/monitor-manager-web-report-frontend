@@ -227,21 +227,21 @@ function Graphic() {
 		
 			const info_ = []
 			// we remove these two fields so that the indexes of the graphical monitor options match more easily
-			if(columns_.at(0).name === "TimeStamp"){
+			if(columns_[0].name === "TimeStamp"){
 				columns_.shift() // delete timeStamp
 				columns_.shift() // delete timeStampLong
 			}
 			const indexOfFrom_ = getIndexFromID(columns_, monitor)
 			
 			columns_.map((columns_row, index) => {
-				const optionsIndex = indexOfFrom_.at(index)
-				const options = (optionsIndex !== undefined) ? monitor.at(optionsIndex).options : monitor.at(0).options
+				const optionsIndex = indexOfFrom_[index]
+				const options = (optionsIndex !== undefined) ? monitor[optionsIndex].options : monitor[0].options
 				
 				const data = []
 				samples_.map((sample_val) => {
 
-					const date = sample_val.at(1).substring(0, sample_val.at(1).length - 3) // convert to milliseconds (the chart does not support microseconds)
-					let value  = sample_val.at(index+2) // +2 => jumping timestamp and timestampLong
+					const date = sample_val[1].substring(0, sample_val[1].length - 3) // convert to milliseconds (the chart does not support microseconds)
+					let value  = sample_val[index+2] // +2 => jumping timestamp and timestampLong
 					
 					const isMagnitude = columns_row?.stateOrMagnitudeValuesBind
 					// const isSummary = columns_row?.summaryValuesBind
