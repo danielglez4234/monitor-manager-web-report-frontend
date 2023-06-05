@@ -147,7 +147,7 @@ const stringToArray = (str) => {
 
 
 function Graphic() {
-	const [msg, PopUpMessage]  = HandleMessage()
+	const [ , PopUpMessage]  = HandleMessage()
 	const getResponse          = useSelector(state => state.getResponse)
 	const monitor 			   = useSelector(state => state.monitor)
 	const reload               = useSelector(state => state.reload)
@@ -246,7 +246,6 @@ function Graphic() {
 		try {
 			const { legendTrunkName } = getGraphicoptions()
 			let { name } = row
-			console.log("🚀 ~ file: Graphic.js ~ line 240 ~ setColumnsRowObjects ~ name", name)
 			const {
 				position,
 				unit,
@@ -254,12 +253,9 @@ function Graphic() {
 				summaryPeriod
 			} = row
 
-			console.log("🚀 ~ file: Graphic.js ~ line 249 ~ setColumnsRowObjects ~ legendTrunkName", legendTrunkName)
 			if(legendTrunkName)
 				name = name.split("/").at(-1)
 			name = name + (~position) ? " /" + position : " "
-
-			console.log("🚀 ~ file: Graphic.js ~ line 252 ~ setColumnsRowObjects ~ !~position)", !~position)
 			
 			const unit_abbr = (unit !== null) ? unit.abbreviature : ""
 
@@ -335,8 +331,8 @@ const getRootTheme = () => {
 	try {
 		const graphicOptions = getGraphicoptions()
 		const setThemes = []
-		if (graphicOptions.animations) { setThemes.push(am5themes_Animated.new(root)) }
-		if (graphicOptions.microTheme) { setThemes.push(am5themes_Micro.new(root)) }
+		if (graphicOptions.animations) setThemes.push(am5themes_Animated.new(root))
+		if (graphicOptions.microTheme) setThemes.push(am5themes_Micro.new(root))
 		return setThemes
 	} catch (error) {
 		console.log(error)
@@ -591,16 +587,14 @@ const getSeries = (props, data) => {
  */
 const getLineStroke = (stroke) => {
 	try {
-		if (stroke === "Medium")
-			return 2
-		else if (stroke === "Light")
-			return 1
-		else if (stroke === "Bold")
-			return 3
-		else if (stroke === "Bolder")
-			return 4
-		else 
-			return 1
+		const stroke_ = {
+			default: 1,
+			light: 1,
+			medium: 2,
+			bold: 3,
+			bolder: 4
+		}
+		return stroke_[stroke.tolowerCase()] || stroke_.default
 	} catch (error) {
 		console.log(error)
 	}
@@ -611,16 +605,14 @@ const getLineStroke = (stroke) => {
  */
 const getLineCanvas = (canvas) => {
 	try {
-		if (canvas === "Dotted")
-			return ["1"]
-		else if (canvas === "Dashed")
-			return ["3","3"]
-		else if (canvas === "Large Dashed")
-			return ["10"]
-		else if (canvas === "Dotted Dashed")
-			return ["10", "5", "2", "5"]
-		else
-			return false
+		const canvas_ = {
+			default: false,
+			dotted: ["1"],
+			dashed: ["3","3"],
+			largedashed: ["10"],
+			dotteddashed: ["10", "5", "2", "5"]
+		}
+		return canvas_[canvas.trim().tolowerCase()] || canvas_.default
 	} catch (error) {
 		console.log(error)
 	}
@@ -631,14 +623,14 @@ const getLineCanvas = (canvas) => {
  */
 const getLegendHeight = (length) => {
 	try {
-		if (length === 1 || length === 2) 
-			return 50
-		else if (length === 3) 
-			return 80
-		else if (length === 4) 
-			return 110
-		else 
-			return 150
+		const lengendLength_ = {
+			default: 150,
+			"1": 50,
+			"2": 50,
+			"3": 80,
+			"4": 110
+		}
+		return lengendLength_[length.toString()] || lengendLength_.default
 	} catch (error) {
 		console.log(error)
 	}
@@ -737,12 +729,11 @@ const generateGraphic = (info) =>{
     dateAxis.get("dateFormats")[FORMATER.timeInterval] = FORMATER.timeFormat
 
     // --- --- --- --- --- --- Add All series --- --- --- --- --- --- ---
-    
-	for (let y = 0; y < info.length; y++) {
+	info.forEach(element => {
 		// Set Graphic data
-		const data_ = info[y]
+		const data_ = element
 		const graphProps = {chart, dateAxis, valueAxis}
-		
+
 		// Set Series
 		series = getSeries(graphProps, data_)
 
@@ -776,9 +767,7 @@ const generateGraphic = (info) =>{
 		// Set series DATA
 		series.data.setAll(data_.data)
 		// series.data.setAll(data_test)
-    } 	
-	
-	// --- --- --- --- --- end for 'Add All series ' --- --- --- --- --- --- ---
+	});
 
 
 	// TODO:
